@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/memoHomeFragment">
+
+    <fragment
+        android:id="@+id/appInfoFragment"
+        android:name="com.kotlinisgood.boomerang.ui.setting.appinfo.AppInfoFragment"
+        android:label="app_info_fragment"
+        tools:layout="@layout/fragment_app_info" />
+    <fragment
+        android:id="@+id/folderAddFragment"
+        android:name="com.kotlinisgood.boomerang.ui.folder.add.FolderAddFragment"
+        android:label="folder_add_fragment"
+        tools:layout="@layout/fragment_folder_add" />
+    <fragment
+        android:id="@+id/canvasFragment"
+        android:name="com.kotlinisgood.boomerang.ui.memo.edit.canvas.CanvasFragment"
+        android:label="canvas_fragment"
+        tools:layout="@layout/fragment_canvas" />
+    <fragment
+        android:id="@+id/folderEditFragment"
+        android:name="com.kotlinisgood.boomerang.ui.folder.edit.FolderEditFragment"
+        android:label="folder_edit_fragment"
+        tools:layout="@layout/fragment_folder_edit" />
+    <fragment
+        android:id="@+id/folderMoveFragment"
+        android:name="com.kotlinisgood.boomerang.ui.folder.move.FolderMoveFragment"
+        android:label="folder_move_fragment"
+        tools:layout="@layout/fragment_folder_move" />
+    <fragment
+        android:id="@+id/folderUpdateFragment"
+        android:name="com.kotlinisgood.boomerang.ui.folder.update.FolderUpdateFragment"
+        android:label="folder_update_fragment"
+        tools:layout="@layout/fragment_folder_update" />
+    <fragment
+        android:id="@+id/imageFragment"
+        android:name="com.kotlinisgood.boomerang.ui.memo.edit.image.ImageFragment"
+        android:label="image_fragment"
+        tools:layout="@layout/fragment_image" />
+    <fragment
+        android:id="@+id/memoHomeFragment"
+        android:name="com.kotlinisgood.boomerang.ui.memo.home.MemoHomeFragment"
+        android:label="memo_home_fragment"
+        tools:layout="@layout/fragment_memo_home" />
+    <fragment
+        android:id="@+id/menuFragment"
+        android:name="com.kotlinisgood.boomerang.ui.menu.MenuFragment"
+        android:label="menu_fragment"
+        tools:layout="@layout/fragment_menu" />
+    <fragment
+        android:id="@+id/ossFragment"
+        android:name="com.kotlinisgood.boomerang.ui.setting.oss.OssFragment"
+        android:label="oss_fragment"
+        tools:layout="@layout/fragment_oss" />
+    <fragment
+        android:id="@+id/recyclerBinFragment"
+        android:name="com.kotlinisgood.boomerang.ui.recyclebin.RecyclerBinFragment"
+        android:label="recycler_bin_fragment"
+        tools:layout="@layout/fragment_recycler_bin" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.kotlinisgood.boomerang.ui.search.SearchFragment"
+        android:label="search_fragment"
+        tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/settingHomeFragment"
+        android:name="com.kotlinisgood.boomerang.ui.setting.home.SettingHomeFragment"
+        android:label="setting_home_fragment"
+        tools:layout="@layout/fragment_setting_home" />
+    <fragment
+        android:id="@+id/sortFragment"
+        android:name="com.kotlinisgood.boomerang.ui.setting.sort.SortFragment"
+        android:label="sort_fragment"
+        tools:layout="@layout/fragment_sort" />
+</navigation>

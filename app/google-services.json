@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "253052119824",
+    "project_id": "boostcamp-boomerang",
+    "storage_bucket": "boostcamp-boomerang.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:253052119824:android:72e2947df2fafb02ef9395",
+        "android_client_info": {
+          "package_name": "com.kotlinisgood.boomerang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "253052119824-oua89b525s5v8edbeqavufnmn09i74lu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kotlinisgood.boomerang",
+            "certificate_hash": "76577f6ae34b3a9a6576723cafeec0455cf84170"
+          }
+        },
+        {
+          "client_id": "253052119824-tqdm2ie7carqotvtn1ocjjhu0ghdhk15.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwZf23qAJ85yzxbwTAHzaqsArFRYkTOeY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "253052119824-tqdm2ie7carqotvtn1ocjjhu0ghdhk15.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
