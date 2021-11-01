@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.kotlinisgood.boomerang.ui.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/ossFragment"
+        android:name="com.kotlinisgood.boomerang.ui.oss.OssFragment"
+        android:label="fragment_oss"
+        tools:layout="@layout/fragment_oss" />
+
+    <fragment
+        android:id="@+id/memoFragment"
+        android:name="com.kotlinisgood.boomerang.ui.memo.MemoFragment"
+        android:label="fragment_memo"
+        tools:layout="@layout/fragment_memo" />
+
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.kotlinisgood.boomerang.ui.setting.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" />
+
+    <fragment
+        android:id="@+id/videoDoodleFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videodoodle.VideoDoodleFragment"
+        android:label="fragment_video_doodle"
+        tools:layout="@layout/fragment_video_doodle" />
+
+    <fragment
+        android:id="@+id/videoEditFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videoedit.VideoEditFragment"
+        android:label="fragment_video_edit"
+        tools:layout="@layout/fragment_video_edit" />
+
+</navigation>
