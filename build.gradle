@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 ext {
     nav_version="2.3.5"
+    material_version="1.5.0-alpha05"
 }
 
 buildscript {
