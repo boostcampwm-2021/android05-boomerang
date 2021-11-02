@@ -40,5 +40,21 @@
         android:name="com.kotlinisgood.boomerang.ui.videoedit.VideoEditFragment"
         android:label="fragment_video_edit"
         tools:layout="@layout/fragment_video_edit" />
+    <fragment
+        android:id="@+id/videoDoodleLightFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videodoodlelight.VideoDoodleLightFragment"
+        android:label="VideoDoodleLightFragment" >
+        <action
+            android:id="@+id/action_videoDoodleLightFragment_to_videoEditLightFragment"
+            app:destination="@id/videoEditLightFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/videoEditLightFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videoeditlight.VideoEditLightFragment"
+        android:label="VideoEditLightFragment" >
+        <argument
+            android:name="subVideos"
+            app:argType="com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo[]" />
+    </fragment>
 
 </navigation>

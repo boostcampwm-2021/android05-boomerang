@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.videodoodle.VideoDoodleFragment">
+
+        <Button
+            android:id="@+id/btn_memo_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="메모 시작"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btn_video_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="영상 재생"
+            app:layout_constraintStart_toEndOf="@id/btn_memo_start"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btn_video_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="영상 정지"
+            app:layout_constraintStart_toEndOf="@id/btn_video_play"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.kotlinisgood.boomerang.ui.videodoodlelight.CustomVideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/btn_move_to_result"
+            app:layout_constraintTop_toBottomOf="@id/btn_memo_start" />
+
+        <FrameLayout
+            android:id="@+id/canvas"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="@id/videoView"
+            app:layout_constraintTop_toTopOf="@id/videoView" />
+
+        <Button
+            android:id="@+id/btn_move_to_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="이동"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
