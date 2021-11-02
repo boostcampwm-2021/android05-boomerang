@@ -15,12 +15,18 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.kotlinisgood.boomerang.R
+import com.kotlinisgood.boomerang.database.AppDatabase
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 const val TAG = "HomeFragment"
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
+    @Inject
+    lateinit var database: AppDatabase
     private var _dataBinding: FragmentHomeBinding? = null
     private val dataBinding get() = _dataBinding!!
     private val homeAdapter by lazy { MemoListAdapter() }
