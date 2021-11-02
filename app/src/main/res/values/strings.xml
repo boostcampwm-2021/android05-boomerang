@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">boomerang</string>
+    <string name="app_name_kr">부메랑</string>
+    <string name="menu_home_search_description">Search a title of video</string>
+    <string name="menu_home_search_title">Search</string>
+    <string name="menu_home_order_title">Order</string>
+    <string name="menu_home_order_description">Order video by selected standard</string>
+    <string name="menu_home_setting_title">Setting</string>
+    <string name="menu_home_setting_description">Navigate setting view</string>
+    <string name="searchable_hint">찾는 동영상 제목을 입력해주세요</string>
 </resources>
