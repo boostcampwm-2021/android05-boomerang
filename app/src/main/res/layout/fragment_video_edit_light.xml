@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.videoedit.VideoEditFragment">
+
+        <Button
+            android:id="@+id/btn_video_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="영상 시작"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_video_start" />
+
+        <com.alphamovie.lib.AlphaMovieView
+            app:alphaColor="#000000"
+            app:accuracy="0.95"
+            android:id="@+id/alphaView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/btn_video_start"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
