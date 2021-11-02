@@ -29,7 +29,7 @@ class HomeFragment : Fragment() {
     lateinit var database: AppDatabase
     private var _dataBinding: FragmentHomeBinding? = null
     private val dataBinding get() = _dataBinding!!
-    private val homeAdapter by lazy { MemoListAdapter() }
+    private val homeAdapter by lazy { MemoListAdapter(requireActivity().contentResolver) }
 
     private val permissionResultCallback = registerForActivityResult(
         ActivityResultContracts.RequestPermission()) {
@@ -96,7 +96,6 @@ class HomeFragment : Fragment() {
         )
 
         query?.use { cursor ->
-            // Cache column indices.
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
             val nameColumn =
                 cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
@@ -105,7 +104,6 @@ class HomeFragment : Fragment() {
             val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
 
             while (cursor.moveToNext()) {
-                // Get values of columns for a given video.
                 val id = cursor.getLong(idColumn)
                 val name = cursor.getString(nameColumn)
                 val duration = cursor.getInt(durationColumn)
@@ -116,8 +114,6 @@ class HomeFragment : Fragment() {
                     id
                 )
 
-                // Stores column values and the contentUri in a local object
-                // that represents the media file.
                 videoList += ExternalVideoDTO(contentUri, name, duration, size)
             }
         }
