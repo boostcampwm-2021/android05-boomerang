@@ -60,7 +60,7 @@ public class ViewRecorder extends SurfaceMediaRecorder {
             int videoWidth = mVideoSize.getWidth();
             int videoHeight = mVideoSize.getHeight();
             Matrix matrix = getMatrix(bitmapWidth, bitmapHeight, videoWidth, videoHeight);
-            canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_OVER);
+            canvas.drawColor(Color.BLACK, PorterDuff.Mode.SRC_OVER);
             canvas.drawBitmap(bitmap, matrix, null);
             mRecordedView.setDrawingCacheEnabled(false);
         }

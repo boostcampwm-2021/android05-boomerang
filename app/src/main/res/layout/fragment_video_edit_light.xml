@@ -28,7 +28,7 @@
             app:layout_constraintTop_toBottomOf="@id/btn_video_start" />
 
         <com.alphamovie.lib.AlphaMovieView
-            app:alphaColor="#FFFFFF"
+            app:alphaColor="#000000"
             app:accuracy="0.05"
             android:id="@+id/alphaView"
             android:layout_width="match_parent"
