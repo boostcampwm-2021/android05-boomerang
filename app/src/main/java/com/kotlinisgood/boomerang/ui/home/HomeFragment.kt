@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.database.AppDatabase
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
@@ -65,6 +66,7 @@ class HomeFragment : Fragment() {
         } else {
             loadVideos()
         }
+        setFabClickListener()
     }
 
     private fun loadVideos() {
@@ -95,6 +97,12 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _dataBinding = null
+    }
+
+    fun setFabClickListener() {
+        dataBinding.fabHomeMoveSelection.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_videoSelectionFragment)
+        }
     }
 
     companion object {

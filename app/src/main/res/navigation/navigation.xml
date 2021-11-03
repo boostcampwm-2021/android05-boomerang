@@ -9,7 +9,11 @@
         android:id="@+id/homeFragment"
         android:name="com.kotlinisgood.boomerang.ui.home.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_videoSelectionFragment"
+            app:destination="@id/videoSelectionFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/ossFragment"
@@ -56,5 +60,9 @@
             android:name="subVideos"
             app:argType="com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo[]" />
     </fragment>
+    <fragment
+        android:id="@+id/videoSelectionFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videoselection.VideoSelectionFragment"
+        android:label="VideoSelectionFragment" />
 
 </navigation>
