@@ -2,12 +2,11 @@ package com.kotlinisgood.boomerang.ui.home
 
 import android.Manifest
 import android.app.SearchManager
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,10 +17,7 @@ import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.database.AppDatabase
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-
-const val TAG = "HomeFragment"
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -30,7 +26,7 @@ class HomeFragment : Fragment() {
     private var _dataBinding: FragmentHomeBinding? = null
     private val dataBinding get() = _dataBinding!!
     private val homeAdapter by lazy { MemoListAdapter(requireActivity().contentResolver) }
-
+    private val videoGallery by lazy { VideoGallery(requireActivity().contentResolver) }
     private val permissionResultCallback = registerForActivityResult(
         ActivityResultContracts.RequestPermission()) {
         when (it) {
@@ -72,53 +68,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadVideos() {
-        val videoList = mutableListOf<ExternalVideoDTO>()
-
-        val projection = arrayOf(
-            MediaStore.Video.Media._ID,
-            MediaStore.Video.Media.DISPLAY_NAME,
-            MediaStore.Video.Media.DURATION,
-            MediaStore.Video.Media.SIZE
-        )
-
-        val selection = "${MediaStore.Video.Media.DURATION} <= ?"
-        val selectionArgs = arrayOf(
-            TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES).toString()
-        )
-        val sortOrder = "${MediaStore.Video.Media.DISPLAY_NAME} ASC"
-
-        val query = requireActivity().contentResolver.query(
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            selection,
-            selectionArgs,
-            sortOrder
-        )
-
-        query?.use { cursor ->
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
-            val nameColumn =
-                cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
-            val durationColumn =
-                cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
-            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
-
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(idColumn)
-                val name = cursor.getString(nameColumn)
-                val duration = cursor.getInt(durationColumn)
-                val size = cursor.getInt(sizeColumn)
-
-                val contentUri: Uri = ContentUris.withAppendedId(
-                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                    id
-                )
-
-                videoList += ExternalVideoDTO(contentUri, name, duration, size)
-            }
-        }
-        Log.i(TAG, videoList.size.toString())
-        videoList.forEach { Log.i(TAG, "$it") }
+        val videoList = videoGallery.loadVideos()
         homeAdapter.submitList(videoList)
     }
 
@@ -131,7 +81,7 @@ class HomeFragment : Fragment() {
         searchView.maxWidth = Int.MAX_VALUE
 
         val searchManager = requireContext().getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        val cn = ComponentName("com.kotlinisgood.boomerang", "com.kotlinisgood.boomerang.MainActivity")
+        val cn = ComponentName(PACKAGE_NAME, MAIN_ACTIVITY)
         searchView.setSearchableInfo(searchManager.getSearchableInfo(cn))
     }
 
@@ -145,5 +95,11 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _dataBinding = null
+    }
+
+    companion object {
+        const val TAG = "HomeFragment"
+        const val PACKAGE_NAME = "com.kotlinisgood.boomerang"
+        const val MAIN_ACTIVITY = "com.kotlinisgood.boomerang.MainActivity"
     }
 }
