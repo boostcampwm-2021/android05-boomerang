@@ -20,27 +20,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/btn_video_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="영상 재생"
-            app:layout_constraintStart_toEndOf="@id/btn_memo_start"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/btn_video_pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="영상 정지"
-            app:layout_constraintStart_toEndOf="@id/btn_video_play"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.kotlinisgood.boomerang.ui.videodoodlelight.CustomVideoView
+        <VideoView
             android:id="@+id/videoView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/btn_move_to_result"
+            android:layout_height="500dp"
+            app:layout_constraintBottom_toTopOf="@id/mediaController"
             app:layout_constraintTop_toBottomOf="@id/btn_memo_start" />
 
         <FrameLayout
@@ -50,6 +34,37 @@
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="@id/videoView"
             app:layout_constraintTop_toTopOf="@id/videoView" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mediaController"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/videoView"
+            app:layout_constraintBottom_toTopOf="@id/rg_doodle_color">
+
+            <ImageButton
+                android:id="@+id/btn_video_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/ic_baseline_play_arrow_24"/>
+            <ImageButton
+                android:src="@drawable/ic_baseline_pause_24"
+                android:id="@+id/btn_video_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/btn_video_play"
+                app:layout_constraintTop_toTopOf="parent"/>
+            <SeekBar
+                android:id="@+id/sb_video_timeline"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_video_pause"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RadioGroup
             android:id="@+id/rg_doodle_color"
@@ -61,15 +76,8 @@
             app:layout_constraintBottom_toTopOf="@id/btn_move_to_result"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/videoView">
+            app:layout_constraintTop_toBottomOf="@id/mediaController">
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rb_black"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/background_rb_black"
-                android:button="@null" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rb_red"
