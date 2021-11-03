@@ -51,6 +51,9 @@
         <action
             android:id="@+id/action_videoDoodleLightFragment_to_videoEditLightFragment"
             app:destination="@id/videoEditLightFragment" />
+        <argument
+            android:name="videoPath"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/videoEditLightFragment"
@@ -63,7 +66,15 @@
     <fragment
         android:id="@+id/videoSelectionFragment"
         android:name="com.kotlinisgood.boomerang.ui.videoselection.VideoSelectionFragment"
-        android:label="VideoSelectionFragment" />
+        android:label="VideoSelectionFragment" >
+        <action
+            android:id="@+id/action_videoSelectionFragment_to_videoDoodleLightFragment"
+            app:destination="@id/videoDoodleLightFragment" >
+            <argument
+                android:name="videoPath"
+                app:argType="string" />
+        </action>
+    </fragment>
 
     <fragment
         android:id="@+id/trashBinFragment"
