@@ -1,6 +1,7 @@
 package com.kotlinisgood.boomerang.ui.videodoodlelight
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -29,6 +30,8 @@ class VideoDoodleLightFragment : Fragment() {
 
     private lateinit var uri: Uri
     private val subVideos: MutableList<SubVideo> = mutableListOf()
+
+    private var doodleColor = Color.BLACK
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,12 +78,22 @@ class VideoDoodleLightFragment : Fragment() {
                 videoView.pause()
             }
             canvas.setOnTouchListener(canvasOnTouchListener)
+            rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
+                when(checkedId){
+                    R.id.rb_black -> doodleColor = Color.parseColor("#000000")
+                    R.id.rb_red -> doodleColor = Color.parseColor("#FF0000")
+                    R.id.rb_green -> doodleColor = Color.parseColor("#00FF00")
+                    R.id.rb_blue -> doodleColor = Color.parseColor("#0000FF")
+                    R.id.rb_yellow -> doodleColor = Color.parseColor("#FFFF00")
+                }
+            }
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private val canvasOnTouchListener = View.OnTouchListener { v, event ->
         val drawView = context?.let { DrawView(it) }!!
+        drawView.changeColor(doodleColor)
         binding.canvas.addView(drawView)
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -102,11 +115,13 @@ class VideoDoodleLightFragment : Fragment() {
     private fun startRecord() {
         val fileName = System.currentTimeMillis()
         viewRecorder = ViewRecorder().apply {
+            val width = Math.round(binding.canvas.width.toFloat()/10)*10
+            val height = Math.round(binding.canvas.height.toFloat()/10)*10
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setVideoFrameRate(50)
             setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            setVideoSize(720, 1280)
+            setVideoSize(width, height)
             setVideoEncodingBitRate(2000 * 1000)
             setOutputFile(context?.cacheDir.toString() + "/$fileName.mp4")
             setOnErrorListener(onErrorListener)

@@ -10,11 +10,11 @@ import android.view.View
 class DrawView(context: Context) : View(context) {
     var points = mutableListOf<Point>()
     val p = Paint()
-    var color = Color.RED
+    var color = Color.parseColor("#FF0000")
 
     override fun onDraw(canvas: Canvas) {
         p.color = color
-        p.strokeWidth = 5F
+        p.strokeWidth = 10F
         for (i in 1 until points.size) {
             if (!points.get(i).check)
                 continue
@@ -26,6 +26,9 @@ class DrawView(context: Context) : View(context) {
                 p
             )
         }
+    }
+    fun changeColor(color: Int){
+        this.color = color
     }
 }
 
