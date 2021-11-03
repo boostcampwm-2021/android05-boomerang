@@ -8,4 +8,6 @@
     <string name="menu_home_setting_title">Setting</string>
     <string name="menu_home_setting_description">Navigate setting view</string>
     <string name="searchable_hint">찾는 동영상 제목을 입력해주세요</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

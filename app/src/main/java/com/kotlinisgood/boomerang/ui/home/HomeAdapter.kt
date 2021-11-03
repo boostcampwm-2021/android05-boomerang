@@ -24,7 +24,6 @@ class MemoListAdapter(
         holder.bind(getItem(position))
     }
 
-
     class MemoViewHolder(
         private val binding: ItemRvHomeShowVideosBinding,
         private val contentResolver: ContentResolver
@@ -35,6 +34,7 @@ class MemoListAdapter(
             binding.itemTvHomeVideoPlaytime.text = StringUtil.convertMilliSec(item.duration)
             binding.itemTvHomeVideoDayInfo.text = "1일 전"
             val thumbnail2 = MediaMetadataRetriever().run {
+                // ToDo (Writer: Green) getPathFromUri 가 "" 일 경우에, 기본 이미지 지정 후 보여줄 것
                 this.setDataSource(getPathFromUri(item.uri))
                 getFrameAtTime(0L)
             }
