@@ -10,4 +10,7 @@
     <string name="searchable_hint">찾는 동영상 제목을 입력해주세요</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fragment_video_selection_title">동영상 선택</string>
+    <string name="menu_video_selection_completion">완료</string>
+    <string name="menu_video_selection_completion_description">If user selects a video and then click the button, screen pass to video doodle</string>
 </resources>
