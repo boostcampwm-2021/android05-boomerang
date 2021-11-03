@@ -10,15 +10,18 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoSelectionBinding
-import com.kotlinisgood.boomerang.ui.home.VideoGallery
 import com.kotlinisgood.boomerang.util.UriUtil
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class VideoSelectionFragment : Fragment() {
     private var _dataBinding: FragmentVideoSelectionBinding? = null
     private val dataBinding get() = _dataBinding!!
+    private val viewModel: VideoSelectionViewModel by viewModels()
     private val videoSelectionAdapter by lazy {
         VideoSelectionAdapter(requireActivity().contentResolver)
     }
@@ -27,7 +30,7 @@ class VideoSelectionFragment : Fragment() {
     ) {
         when (it) {
             true -> {
-                loadVideos()
+                viewModel.loadVideos()
             }
             false -> {
                 Toast.makeText(
@@ -40,6 +43,11 @@ class VideoSelectionFragment : Fragment() {
         }
     }
 
+    fun setBinds() {
+        dataBinding.viewModel = viewModel
+        dataBinding.lifecycleOwner = viewLifecycleOwner
+    }
+
     fun checkPermission() {
         val readPermission = ContextCompat.checkSelfPermission(
             requireContext(),
@@ -50,7 +58,7 @@ class VideoSelectionFragment : Fragment() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             )
         } else {
-            loadVideos()
+            viewModel.loadVideos()
         }
     }
 
@@ -65,10 +73,10 @@ class VideoSelectionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+        setBinds()
         dataBinding.rvVideoSelectionShowVideos.adapter = videoSelectionAdapter
         setTbNavigationIconClickListener()
         checkPermission()
-
         setOnMenuItemClickListener()
     }
 
@@ -81,10 +89,6 @@ class VideoSelectionFragment : Fragment() {
         dataBinding.tbVideoSelection.setNavigationOnClickListener {
             requireActivity().onBackPressed()
         }
-    }
-
-    fun loadVideos() {
-        videoSelectionAdapter.submitList(VideoGallery(requireActivity().contentResolver).loadVideos())
     }
 
     fun setOnMenuItemClickListener() {

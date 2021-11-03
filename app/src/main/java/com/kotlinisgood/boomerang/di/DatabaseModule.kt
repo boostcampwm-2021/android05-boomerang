@@ -1,5 +1,6 @@
 package com.kotlinisgood.boomerang.di
 
+import android.content.ContentResolver
 import android.content.Context
 import androidx.room.Room
 import com.kotlinisgood.boomerang.database.AppDatabase
@@ -27,5 +28,10 @@ object DatabaseModule {
     @Provides
     fun provideVideoMemoDao(database: AppDatabase): VideoMemoDao {
         return database.videoMemoDao()
+    }
+
+    @Provides
+    fun provideContentResolver(@ApplicationContext appContext: Context): ContentResolver {
+        return appContext.contentResolver
     }
 }

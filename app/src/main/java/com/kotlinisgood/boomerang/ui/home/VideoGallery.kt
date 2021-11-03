@@ -5,9 +5,12 @@ import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import com.kotlinisgood.boomerang.MainActivity
+import dagger.hilt.android.EntryPointAccessors
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class VideoGallery(private val contentResolver: ContentResolver) {
+class VideoGallery @Inject constructor(private val contentResolver: ContentResolver) {
 
     fun loadVideos(): MutableList<ExternalVideoDTO> {
         val videoList = mutableListOf<ExternalVideoDTO>()
