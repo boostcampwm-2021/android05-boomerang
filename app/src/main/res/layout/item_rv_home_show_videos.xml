@@ -5,6 +5,10 @@
 
     <data>
 
+        <variable
+            name="videoMemo"
+            type="com.kotlinisgood.boomerang.database.entity.VideoMemo" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textSize="20sp"
+            android:text="@{videoMemo.title}"
             android:layout_marginEnd="10dp"
             android:maxLines="1"
             app:layout_constraintLeft_toLeftOf="@id/item_iv_home_video_thumbnail"
@@ -50,6 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:textSize="16sp"
+            android:text="@{String.valueOf(videoMemo.createTime)}"
             app:layout_constraintStart_toStartOf="@id/item_tv_home_video_title"
             app:layout_constraintTop_toBottomOf="@id/item_tv_home_video_title"
             tools:text="1일 전" />

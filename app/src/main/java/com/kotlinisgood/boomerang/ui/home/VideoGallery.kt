@@ -5,8 +5,7 @@ import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import com.kotlinisgood.boomerang.MainActivity
-import dagger.hilt.android.EntryPointAccessors
+import com.kotlinisgood.boomerang.ui.videoselection.ExternalVideoDTO
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 

@@ -9,7 +9,7 @@ import com.kotlinisgood.boomerang.database.entity.VideoMemo
 import com.kotlinisgood.boomerang.databinding.ItemRvTrashBinShowVideosBinding
 
 class TrashBinAdapter :
-    ListAdapter<VideoMemo, TrashBinAdapter.TrashBinViewHolder>(VideoMemoDiffCallback) {
+    ListAdapter<VideoMemo, TrashBinAdapter.TrashBinViewHolder>(VideoMemoDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrashBinViewHolder {
         return TrashBinViewHolder.from(parent)
@@ -41,7 +41,7 @@ class TrashBinAdapter :
     }
 }
 
-object VideoMemoDiffCallback : DiffUtil.ItemCallback<VideoMemo>() {
+class VideoMemoDiffCallback : DiffUtil.ItemCallback<VideoMemo>() {
     override fun areItemsTheSame(oldItem: VideoMemo, newItem: VideoMemo): Boolean {
         return oldItem.id == newItem.id
     }

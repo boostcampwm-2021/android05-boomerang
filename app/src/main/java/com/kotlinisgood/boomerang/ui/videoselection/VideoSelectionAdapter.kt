@@ -1,22 +1,19 @@
 package com.kotlinisgood.boomerang.ui.videoselection
 
-import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.kotlinisgood.boomerang.databinding.ItemRvVideoSelectionShowVideosBinding
-import com.kotlinisgood.boomerang.ui.home.ExternalVideoDTO
-import com.kotlinisgood.boomerang.ui.home.ExternalVideoDiffItemCallback
 import com.kotlinisgood.boomerang.util.UriUtil.getPathFromUri
 
 class VideoSelectionAdapter(
     private val contentResolver: ContentResolver
 ) : ListAdapter<ExternalVideoDTO, VideoSelectionAdapter.VideoSelectionViewHolder>(
-    ExternalVideoDiffItemCallback
+    ExternalVideoDiffItemCallback()
 ) {
 
     var selectedIndex = -1
@@ -63,4 +60,14 @@ class VideoSelectionAdapter(
         }
     }
 
+}
+
+class ExternalVideoDiffItemCallback : DiffUtil.ItemCallback<ExternalVideoDTO>() {
+    override fun areItemsTheSame(oldItem: ExternalVideoDTO, newItem: ExternalVideoDTO): Boolean {
+        return oldItem.title == newItem.title
+    }
+
+    override fun areContentsTheSame(oldItem: ExternalVideoDTO, newItem: ExternalVideoDTO): Boolean {
+        return oldItem == newItem
+    }
 }
