@@ -84,7 +84,7 @@ class VideoDoodleLightFragment : Fragment() {
                     R.id.rb_red -> doodleColor = Color.parseColor("#FF0000")
                     R.id.rb_green -> doodleColor = Color.parseColor("#00FF00")
                     R.id.rb_blue -> doodleColor = Color.parseColor("#0000FF")
-                    R.id.rb_pink -> doodleColor = Color.parseColor("#ff35b8")
+                    R.id.rb_yellow -> doodleColor = Color.parseColor("#FFFF00")
                 }
             }
         }
