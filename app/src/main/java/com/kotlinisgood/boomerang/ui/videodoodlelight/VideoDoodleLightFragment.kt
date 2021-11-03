@@ -10,12 +10,17 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 
@@ -31,7 +36,10 @@ class VideoDoodleLightFragment : Fragment() {
     private lateinit var uri: Uri
     private val subVideos: MutableList<SubVideo> = mutableListOf()
 
-    private var doodleColor = Color.BLACK
+    private var doodleColor = Color.RED
+
+    private lateinit var seekBar: SeekBar
+    private lateinit var job : Job
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +58,36 @@ class VideoDoodleLightFragment : Fragment() {
     private fun setVideoView(){
         val file = File(context?.cacheDir, "sample.mp4")
         binding.videoView.setVideoPath(file.absolutePath)
+        seekBar = binding.sbVideoTimeline
+        binding.videoView.setOnPreparedListener {
+            seekBar.max = binding.videoView.duration/1000
+            job = CoroutineScope(Dispatchers.IO).launch {
+                while(!seekBar.isPressed) {
+                    seekBar.progress = binding.videoView.currentPosition/1000
+                }
+            }
+        }
+        seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                binding.videoView.pause()
+                binding.videoView.seekTo(seekBar.progress*1000)
+                binding.videoView.setOnPreparedListener { mp ->
+                    mp.setOnSeekCompleteListener {
+                        it.start()
+                    }
+                }
+                println(binding.videoView.currentPosition)
+            }
+
+        })
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -78,9 +116,9 @@ class VideoDoodleLightFragment : Fragment() {
                 videoView.pause()
             }
             canvas.setOnTouchListener(canvasOnTouchListener)
+            rbRed.isChecked = true
             rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
                 when(checkedId){
-                    R.id.rb_black -> doodleColor = Color.parseColor("#000000")
                     R.id.rb_red -> doodleColor = Color.parseColor("#FF0000")
                     R.id.rb_green -> doodleColor = Color.parseColor("#00FF00")
                     R.id.rb_blue -> doodleColor = Color.parseColor("#0000FF")
@@ -157,5 +195,10 @@ class VideoDoodleLightFragment : Fragment() {
         Log.e("MainActivity", "MediaRecorder error: type = $what, code = $extra")
         viewRecorder.reset()
         viewRecorder.release()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        job.cancel()
     }
 }
