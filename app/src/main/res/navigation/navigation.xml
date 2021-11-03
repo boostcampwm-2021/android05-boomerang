@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/trashBinFragment">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -64,5 +64,11 @@
         android:id="@+id/videoSelectionFragment"
         android:name="com.kotlinisgood.boomerang.ui.videoselection.VideoSelectionFragment"
         android:label="VideoSelectionFragment" />
+
+    <fragment
+        android:id="@+id/trashBinFragment"
+        android:name="com.kotlinisgood.boomerang.ui.trashbin.TrashBinFragment"
+        android:label="TrashBinFragment"
+        tools:layout="@layout/fragment_trash_bin" />
 
 </navigation>
