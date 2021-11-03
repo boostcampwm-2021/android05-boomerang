@@ -126,7 +126,6 @@ class VideoDoodleLightFragment : Fragment() {
             rbRed.isChecked = true
             rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
                 when(checkedId){
-                    R.id.rb_black -> doodleColor = Color.parseColor("#000000")
                     R.id.rb_red -> doodleColor = Color.parseColor("#FF0000")
                     R.id.rb_green -> doodleColor = Color.parseColor("#00FF00")
                     R.id.rb_blue -> doodleColor = Color.parseColor("#0000FF")
