@@ -22,6 +22,7 @@ class VideoSelectionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setTbNavigationIconClickListener()
     }
 
     override fun onDestroy() {
@@ -29,4 +30,9 @@ class VideoSelectionFragment : Fragment() {
         _dataBinding = null
     }
 
+    fun setTbNavigationIconClickListener() {
+        dataBinding.tbVideoSelection.setNavigationOnClickListener {
+            requireActivity().onBackPressed()
+        }
+    }
 }
