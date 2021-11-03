@@ -4,7 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.kotlinisgood.boomerang.ui.videoselection.VideoSelectionViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,6 +33,7 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.recyclerview.widget.RecyclerView
+            submitList="@{viewModel.videoList}"
             android:id="@+id/rv_video_selection_show_videos"
             android:layout_width="match_parent"
             android:layout_height="0dp"
