@@ -1,23 +1,18 @@
 package com.kotlinisgood.boomerang.ui.videoselection
 
 import android.Manifest
-import android.app.SearchManager
-import android.content.ComponentName
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoSelectionBinding
-import com.kotlinisgood.boomerang.ui.home.HomeFragment
 import com.kotlinisgood.boomerang.ui.home.VideoGallery
 import com.kotlinisgood.boomerang.util.UriUtil
 
