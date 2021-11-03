@@ -17,6 +17,7 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/item_iv_home_video_thumbnail"
+            imageFromVideoMemo="@{videoMemo}"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
@@ -52,10 +53,10 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_tv_home_video_day_info"
+            dateFromVideoMemo="@{videoMemo}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="@{String.valueOf(videoMemo.trashTime)}"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@id/item_tv_home_video_title"
             app:layout_constraintTop_toBottomOf="@id/item_tv_home_video_title"

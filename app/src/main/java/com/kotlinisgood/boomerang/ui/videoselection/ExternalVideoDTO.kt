@@ -1,4 +1,4 @@
-package com.kotlinisgood.boomerang.ui.home
+package com.kotlinisgood.boomerang.ui.videoselection
 
 import android.net.Uri
 

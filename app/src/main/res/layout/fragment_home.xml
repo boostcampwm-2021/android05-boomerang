@@ -5,6 +5,9 @@
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.kotlinisgood.boomerang.ui.home.HomeViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,6 +34,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_home_show_videos"
+            submitList="@{viewModel.videoMemo}"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="vertical"

@@ -1,50 +1,29 @@
 package com.kotlinisgood.boomerang.ui.home
 
-import android.Manifest
 import android.app.SearchManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.R
-import com.kotlinisgood.boomerang.database.AppDatabase
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
-    @Inject
-    lateinit var database: AppDatabase
     private var _dataBinding: FragmentHomeBinding? = null
     private val dataBinding get() = _dataBinding!!
-    private val homeAdapter by lazy { MemoListAdapter(requireActivity().contentResolver) }
-    private val videoGallery by lazy { VideoGallery(requireActivity().contentResolver) }
-    private val permissionResultCallback = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) {
-        when (it) {
-            true -> { loadVideos() }
-            false -> {
-                Toast.makeText(requireContext(),
-                    "Permission Not Granted By the User",
-                    Toast.LENGTH_SHORT)
-                .show()
-            }
-        }
-    }
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _dataBinding = FragmentHomeBinding.inflate(inflater, container, false)
         return dataBinding.root
     }
@@ -53,25 +32,24 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         handleIntent(requireActivity().intent)
-        dataBinding.rvHomeShowVideos.adapter = homeAdapter
 
-        val readPermission = ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        if (readPermission != PackageManager.PERMISSION_GRANTED) {
-            permissionResultCallback.launch(
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-        } else {
-            loadVideos()
-        }
+        setBinding()
+        setAdapter()
         setFabClickListener()
+        loadVideoMemo()
     }
 
-    private fun loadVideos() {
-        val videoList = videoGallery.loadVideos()
-        homeAdapter.submitList(videoList)
+    private fun setBinding() {
+        dataBinding.viewModel = viewModel
+        dataBinding.lifecycleOwner = viewLifecycleOwner
+    }
+
+    private fun setAdapter() {
+        dataBinding.rvHomeShowVideos.adapter = HomeAdapter()
+    }
+
+    private fun loadVideoMemo() {
+        viewModel.loadVideoMemo()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -99,7 +77,7 @@ class HomeFragment : Fragment() {
         _dataBinding = null
     }
 
-    fun setFabClickListener() {
+    private fun setFabClickListener() {
         dataBinding.fabHomeMoveSelection.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_videoSelectionFragment)
         }

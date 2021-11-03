@@ -1,12 +1,11 @@
-package com.kotlinisgood.boomerang.ui.home
+package com.kotlinisgood.boomerang.ui.videoselection
 
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import com.kotlinisgood.boomerang.MainActivity
-import dagger.hilt.android.EntryPointAccessors
+import com.kotlinisgood.boomerang.ui.home.HomeFragment
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
