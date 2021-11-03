@@ -13,4 +13,5 @@ data class VideoMemo(
     @ColumnInfo(name = "memos") val memos: List<Video>,
     @ColumnInfo(name = "create_date") val createTime: Long,
     @ColumnInfo(name = "edit_date") val editTime: Long,
+    @ColumnInfo(name = "trash_date") val trashTime: Long,
 )
