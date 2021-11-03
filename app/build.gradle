@@ -60,4 +60,7 @@ dependencies {
 
     //Alpha Movie
     implementation 'com.alphamovie.library:alpha-movie:1.2.1'
+    //ExoPlayer
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
 }

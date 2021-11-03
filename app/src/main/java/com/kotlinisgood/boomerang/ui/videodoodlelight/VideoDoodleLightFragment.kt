@@ -68,7 +68,7 @@ class VideoDoodleLightFragment : Fragment() {
         binding.videoView.setOnPreparedListener {
             seekBar.max = binding.videoView.duration/1000
             job = CoroutineScope(Dispatchers.IO).launch {
-                while(!seekBar.isPressed) {
+                while(true) {
                     seekBar.progress = binding.videoView.currentPosition/1000
                 }
             }
@@ -83,14 +83,6 @@ class VideoDoodleLightFragment : Fragment() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                binding.videoView.pause()
-                binding.videoView.seekTo(seekBar.progress*1000)
-                binding.videoView.setOnPreparedListener { mp ->
-                    mp.setOnSeekCompleteListener {
-                        it.start()
-                    }
-                }
-                println(binding.videoView.currentPosition)
             }
 
         })
