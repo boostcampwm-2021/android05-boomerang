@@ -1,17 +1,25 @@
 package com.kotlinisgood.boomerang.ui.videoselection
 
 import android.Manifest
+import android.app.SearchManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoSelectionBinding
+import com.kotlinisgood.boomerang.ui.home.HomeFragment
 import com.kotlinisgood.boomerang.ui.home.VideoGallery
+import com.kotlinisgood.boomerang.util.UriUtil
 
 class VideoSelectionFragment : Fragment() {
     private var _dataBinding: FragmentVideoSelectionBinding? = null
@@ -20,13 +28,18 @@ class VideoSelectionFragment : Fragment() {
         VideoSelectionAdapter(requireActivity().contentResolver)
     }
     private val permissionResultCallback = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) {
+        ActivityResultContracts.RequestPermission()
+    ) {
         when (it) {
-            true -> { loadVideos() }
+            true -> {
+                loadVideos()
+            }
             false -> {
-                Toast.makeText(requireContext(),
+                Toast.makeText(
+                    requireContext(),
                     "Permission Not Granted By the User",
-                    Toast.LENGTH_SHORT)
+                    Toast.LENGTH_SHORT
+                )
                     .show()
             }
         }
@@ -56,9 +69,12 @@ class VideoSelectionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         dataBinding.rvVideoSelectionShowVideos.adapter = videoSelectionAdapter
         setTbNavigationIconClickListener()
         checkPermission()
+
+        setOnMenuItemClickListener()
     }
 
     override fun onDestroy() {
@@ -75,4 +91,27 @@ class VideoSelectionFragment : Fragment() {
     fun loadVideos() {
         videoSelectionAdapter.submitList(VideoGallery(requireActivity().contentResolver).loadVideos())
     }
+
+    fun setOnMenuItemClickListener() {
+        dataBinding.tbVideoSelection.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_video_selection_completion -> {
+                    if (videoSelectionAdapter.selectedIndex == -1) {
+                        Toast.makeText(requireContext(), "동영상이 선택되지 않았습니다", Toast.LENGTH_SHORT).show()
+                        false
+                    } else {
+                        val uri = videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri
+                        val path = UriUtil.getPathFromUri(requireActivity().contentResolver, uri)
+                        val action =
+                            VideoSelectionFragmentDirections
+                                .actionVideoSelectionFragmentToVideoDoodleLightFragment(path)
+                        findNavController().navigate(action)
+                        true
+                    }
+                }
+                else -> false
+            }
+        }
+    }
+
 }

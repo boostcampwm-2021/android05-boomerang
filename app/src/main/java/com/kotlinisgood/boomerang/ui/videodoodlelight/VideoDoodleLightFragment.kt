@@ -10,13 +10,16 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import android.widget.SeekBar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
+import com.kotlinisgood.boomerang.util.UriUtil.getPathFromUri
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,13 +30,14 @@ import java.io.IOException
 class VideoDoodleLightFragment : Fragment() {
 
     private lateinit var binding: FragmentVideoDoodleLightBinding
-
+    private val args: VideoDoodleLightFragmentArgs by navArgs()
     private var drawPoints = mutableListOf<Point>()
 
     private lateinit var viewRecorder: ViewRecorder
     private var recording = false
 
     private lateinit var uri: Uri
+    private lateinit var path: String
     private val subVideos: MutableList<SubVideo> = mutableListOf()
 
     private var doodleColor = Color.RED
@@ -51,12 +55,14 @@ class VideoDoodleLightFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        path = args.videoPath
+        uri = path.toUri()
         setVideoView()
         setListener()
     }
 
     private fun setVideoView(){
-        val file = File(context?.cacheDir, "sample.mp4")
+        val file = File(path)
         binding.videoView.setVideoPath(file.absolutePath)
         seekBar = binding.sbVideoTimeline
         binding.videoView.setOnPreparedListener {
@@ -90,6 +96,7 @@ class VideoDoodleLightFragment : Fragment() {
         })
     }
 
+
     @SuppressLint("ClickableViewAccessibility")
     private fun setListener() {
         with(binding){
@@ -119,6 +126,7 @@ class VideoDoodleLightFragment : Fragment() {
             rbRed.isChecked = true
             rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
                 when(checkedId){
+                    R.id.rb_black -> doodleColor = Color.parseColor("#000000")
                     R.id.rb_red -> doodleColor = Color.parseColor("#FF0000")
                     R.id.rb_green -> doodleColor = Color.parseColor("#00FF00")
                     R.id.rb_blue -> doodleColor = Color.parseColor("#0000FF")
