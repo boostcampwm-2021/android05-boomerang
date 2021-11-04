@@ -31,7 +31,11 @@ class VideoEditLightFragment : Fragment() {
 
     lateinit var jobScanner: Job
     lateinit var jobTimer: Job
+
+    @Volatile
     private var isPlaying = false
+
+    @Volatile
     private var currentTime = 0L
 
     override fun onCreateView(
@@ -93,14 +97,18 @@ class VideoEditLightFragment : Fragment() {
                         println("$index")
                         val time = currentTime
                         // 실행시켜야되는지?
-                        if ((subVideo.startingTime / 1000).toLong() == time / 1000 && !isPlayings[index]) {
+                        if ((subVideo.startingTime / 1000).toLong() <= time / 1000 &&
+                            (subVideo.endingTime / 1000).toLong() >= time / 1000 &&
+                            !isPlayings[index]
+                        ) {
                             withContext(Dispatchers.Main) {
                                 isPlayings[index] = true
                                 binding.alphaView.setVideoFromUri(context, subVideo.uri)
-                                binding.alphaView.mediaPlayer.setOnPreparedListener { mp ->
-                                    binding.alphaView.visibility = View.VISIBLE
+                                binding.alphaView.mediaPlayer.setOnPreparedListener {
                                     binding.alphaView.mediaPlayer.start()
                                     binding.alphaView.setLooping(false)
+                                    binding.alphaView.seekTo((time - subVideo.startingTime.toLong()).toInt())
+                                    binding.alphaView.visibility = View.VISIBLE
                                 }
                                 binding.alphaView.setOnVideoEndedListener {
                                     isPlayings[index] = false
@@ -121,9 +129,9 @@ class VideoEditLightFragment : Fragment() {
     }
 
     private val onPlayStateChangeListener = object : Player.Listener {
-        override fun onIsPlayingChanged(flag: Boolean) {
-            isPlaying = flag
-            if (flag) {
+        override fun onIsPlayingChanged(isPlay: Boolean) {
+            isPlaying = isPlay
+            if (isPlay) {
                 jobScanner = lifecycleScope.launch { scan() }
                 jobTimer = lifecycleScope.launch { timer() }
                 jobScanner.start()
@@ -131,6 +139,9 @@ class VideoEditLightFragment : Fragment() {
             } else {
                 jobScanner.cancel()
                 jobTimer.cancel()
+                binding.alphaView.mediaPlayer.reset()
+                isPlayings.forEachIndexed { index, _ -> isPlayings[index] = false }
+                binding.alphaView.visibility = View.GONE
             }
         }
     }
