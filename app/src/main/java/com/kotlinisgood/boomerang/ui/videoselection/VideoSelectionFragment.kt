@@ -43,12 +43,12 @@ class VideoSelectionFragment : Fragment() {
         }
     }
 
-    fun setBinds() {
+    private fun setBinds() {
         dataBinding.viewModel = viewModel
         dataBinding.lifecycleOwner = viewLifecycleOwner
     }
 
-    fun checkPermission() {
+    private fun checkPermission() {
         val readPermission = ContextCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -65,7 +65,7 @@ class VideoSelectionFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _dataBinding = FragmentVideoSelectionBinding.inflate(inflater, container, false)
         return dataBinding.root
     }
@@ -85,13 +85,13 @@ class VideoSelectionFragment : Fragment() {
         _dataBinding = null
     }
 
-    fun setTbNavigationIconClickListener() {
+    private fun setTbNavigationIconClickListener() {
         dataBinding.tbVideoSelection.setNavigationOnClickListener {
             requireActivity().onBackPressed()
         }
     }
 
-    fun setOnMenuItemClickListener() {
+    private fun setOnMenuItemClickListener() {
         dataBinding.tbVideoSelection.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_video_selection_completion -> {
