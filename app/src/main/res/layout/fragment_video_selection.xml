@@ -24,6 +24,7 @@
                 android:id="@+id/tb_video_selection"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:background="@color/boomerang_theme_color"
                 app:navigationIcon="@drawable/ic_close"
                 app:title="@string/fragment_video_selection_title"
                 app:menu="@menu/menu_fragment_video_selection">
