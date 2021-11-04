@@ -2,12 +2,14 @@ package com.kotlinisgood.boomerang.ui.videoeditlight
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -23,11 +25,14 @@ class VideoEditLightFragment : Fragment() {
 
     private val args: VideoEditLightFragmentArgs by navArgs()
     private lateinit var subVideos: MutableList<SubVideo>
+    private var isPlayings = mutableListOf<Boolean>()
 
     private lateinit var player: SimpleExoPlayer
     private lateinit var baseUri: Uri
 
     lateinit var job: Job
+    private var isPlaying = false
+    private var currentTime = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +51,8 @@ class VideoEditLightFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         subVideos = args.subVideos.toMutableList()
         setVideoView()
+        setCurrentTime()
+        setScanner()
         setPlayer()
     }
 
@@ -56,7 +63,7 @@ class VideoEditLightFragment : Fragment() {
         val mediaItem = MediaItem.fromUri(baseUri)
         player.setMediaItem(mediaItem)
         var string = ""
-        subVideos.forEach{
+        subVideos.forEach {
             string += "$it\n"
         }
         binding.tvSubvideos.text = string
@@ -66,49 +73,52 @@ class VideoEditLightFragment : Fragment() {
         player.addListener(onPlayStateChangeListener)
     }
 
-    private val onPlayStateChangeListener = object : Player.Listener {
-        override fun onIsPlayingChanged(isPlaying: Boolean) {
-            when (isPlaying) {
-                true -> {
-                    val currentTime = player.currentPosition
-                    val videos =
-                        subVideos.filter { it.startingTime > currentTime || (it.startingTime < currentTime && currentTime < it.endingTime) }
-                    with(binding) {
-                        job = CoroutineScope(Dispatchers.Main).launch {
-                            videos.forEachIndexed { index, subVideo ->
-                                if (index == 0) {
-                                    delay(subVideo.startingTime.toLong() - currentTime)
-                                } else {
-                                    delay((subVideo.startingTime - subVideos[index - 1].startingTime).toLong())
-                                }
-                                alphaView.setVideoFromUri(context, subVideo.uri)
-                                alphaView.mediaPlayer.setOnPreparedListener {
-                                    alphaView.visibility = View.VISIBLE
-                                    alphaView.setLooping(false)
-                                    alphaView.setOnVideoEndedListener {
-                                        alphaView.visibility = View.GONE
-                                        alphaView.seekTo(0)
-                                    }
-                                    if (subVideo.startingTime < currentTime) {
-                                        alphaView.seekTo((currentTime - subVideo.startingTime).toInt())
-                                        alphaView.mediaPlayer.start()
-                                    } else {
-                                        alphaView.mediaPlayer.start()
-                                    }
-                                }
-                            }
-                        }
+    private fun setCurrentTime() {
+        lifecycleScope.launch(Dispatchers.Default) {
+            while (true) {
+                if (isPlaying) {
+                    withContext(Dispatchers.Main) {
+                        currentTime = player.currentPosition
                     }
-                }
-                false -> {
-                    job.cancel()
-//                    binding.alphaView.mediaPlayer.pause()
-                    binding.alphaView.visibility = View.GONE
-                    binding.alphaView.seekTo(0)
+                    delay(500)
                 }
             }
         }
     }
 
+    private fun setScanner() {
+        repeat(subVideos.size) { isPlayings.add(false) }
+        job = lifecycleScope.launch(Dispatchers.Default) {
+            while (true) {
+                if (isPlaying) {
+                    subVideos.forEachIndexed { index, subVideo ->
+                        val time = currentTime
+                        // 실행시켜야되는지?
+                        if ((subVideo.startingTime / 1000).toLong() == time / 1000 && !isPlayings[index]) {
+                            withContext(Dispatchers.Main) {
+                                isPlayings[index] = true
+                                binding.alphaView.setVideoFromUri(context, subVideo.uri)
+                                binding.alphaView.mediaPlayer.setOnPreparedListener { mp ->
+                                    binding.alphaView.visibility = View.VISIBLE
+                                    binding.alphaView.mediaPlayer.start()
+                                    binding.alphaView.setLooping(false)
+                                }
+                                binding.alphaView.setOnVideoEndedListener {
+                                    isPlayings[index] = false
+                                    binding.alphaView.visibility = View.GONE
+                                    binding.alphaView.seekTo(0)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    private val onPlayStateChangeListener = object : Player.Listener {
+        override fun onIsPlayingChanged(flag: Boolean) {
+            isPlaying = flag
+        }
+    }
 }
