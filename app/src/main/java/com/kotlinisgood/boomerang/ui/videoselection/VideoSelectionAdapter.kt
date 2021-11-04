@@ -53,7 +53,7 @@ class VideoSelectionAdapter(
             val thumbnail = MediaMetadataRetriever().run {
                 // ToDo (Writer: Green) getPathFromUri 가 "" 일 경우에, 기본 이미지 지정 후 보여줄 것
                 this.setDataSource(getPathFromUri(contentResolver, item.uri))
-                getFrameAtTime(0L)
+                getFrameAtTime(1000 * (item.duration / 2).toLong())
             }
             binding.itemIvVideoSelectionThumbnail.setImageBitmap(thumbnail)
             binding.itemCbVideoSelection.isChecked = item.isChecked
