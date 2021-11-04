@@ -23,7 +23,7 @@ class VideoSelectionFragment : Fragment() {
     private val dataBinding get() = _dataBinding!!
     private val viewModel: VideoSelectionViewModel by viewModels()
     private val videoSelectionAdapter by lazy {
-        VideoSelectionAdapter(requireActivity().contentResolver)
+        VideoSelectionAdapter()
     }
     private val permissionResultCallback = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
