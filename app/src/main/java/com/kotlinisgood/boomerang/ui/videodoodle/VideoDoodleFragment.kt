@@ -10,8 +10,10 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.view.*
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleBinding
 import java.io.File
@@ -24,6 +26,8 @@ private const val TAG = "VideoDoodleFragment"
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     SurfaceTexture.OnFrameAvailableListener {
 
+    private val args: VideoDoodleFragmentArgs by navArgs()
+    private val path by lazy { args.videoPath }
     private var eglCore: EglCore? = null
     private var displaySurface: WindowSurface? = null
     private var encoderSurface: WindowSurface? = null
@@ -112,7 +116,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceView.holder.addCallback(this)
 
         handler = MainHandler(this)
-
         outputVideo = File(requireContext().filesDir, "outputVideo.mp4")
 
         binding.btnPlay.setOnClickListener {
@@ -169,7 +172,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 //        현재 앱별 저장소에서 대상 비디오 파일 가져옴
         mediaPlayer = MediaPlayer.create(
             context,
-            Uri.fromFile(File(requireContext().filesDir, "surfacetest.mp4"))
+            path.toUri()
         )
         mediaPlayer.setSurface(surface)
         videoWidth = mediaPlayer.videoWidth
