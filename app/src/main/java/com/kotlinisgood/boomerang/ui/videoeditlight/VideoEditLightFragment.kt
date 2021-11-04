@@ -2,7 +2,6 @@ package com.kotlinisgood.boomerang.ui.videoeditlight
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,8 @@ class VideoEditLightFragment : Fragment() {
     private lateinit var player: SimpleExoPlayer
     private lateinit var baseUri: Uri
 
-    lateinit var job: Job
+    lateinit var jobScanner: Job
+    lateinit var jobTimer: Job
     private var isPlaying = false
     private var currentTime = 0L
 
@@ -51,7 +51,6 @@ class VideoEditLightFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         subVideos = args.subVideos.toMutableList()
         setVideoView()
-        setCurrentTime()
         setScanner()
         setPlayer()
     }
@@ -73,25 +72,25 @@ class VideoEditLightFragment : Fragment() {
         player.addListener(onPlayStateChangeListener)
     }
 
-    private fun setCurrentTime() {
-        lifecycleScope.launch(Dispatchers.Default) {
+    private suspend fun timer() {
+        withContext(Dispatchers.Default) {
             while (true) {
                 if (isPlaying) {
                     withContext(Dispatchers.Main) {
                         currentTime = player.currentPosition
                     }
-                    delay(500)
                 }
+                delay(500)
             }
         }
     }
 
-    private fun setScanner() {
-        repeat(subVideos.size) { isPlayings.add(false) }
-        job = lifecycleScope.launch(Dispatchers.Default) {
+    private suspend fun scan() {
+        withContext(Dispatchers.Default) {
             while (true) {
                 if (isPlaying) {
                     subVideos.forEachIndexed { index, subVideo ->
+                        println("$index")
                         val time = currentTime
                         // 실행시켜야되는지?
                         if ((subVideo.startingTime / 1000).toLong() == time / 1000 && !isPlayings[index]) {
@@ -112,13 +111,27 @@ class VideoEditLightFragment : Fragment() {
                         }
                     }
                 }
+                delay(500)
             }
         }
+    }
+
+    private fun setScanner() {
+        repeat(subVideos.size) { isPlayings.add(false) }
     }
 
     private val onPlayStateChangeListener = object : Player.Listener {
         override fun onIsPlayingChanged(flag: Boolean) {
             isPlaying = flag
+            if (flag) {
+                jobScanner = lifecycleScope.launch { scan() }
+                jobTimer = lifecycleScope.launch { timer() }
+                jobScanner.start()
+                jobTimer.start()
+            } else {
+                jobScanner.cancel()
+                jobTimer.cancel()
+            }
         }
     }
 }
