@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
@@ -19,7 +18,6 @@ import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
-import com.kotlinisgood.boomerang.util.UriUtil.getPathFromUri
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,7 +29,6 @@ class VideoDoodleLightFragment : Fragment() {
 
     private lateinit var binding: FragmentVideoDoodleLightBinding
     private val args: VideoDoodleLightFragmentArgs by navArgs()
-    private var drawPoints = mutableListOf<Point>()
 
     private lateinit var viewRecorder: ViewRecorder
     private var recording = false
@@ -40,10 +37,12 @@ class VideoDoodleLightFragment : Fragment() {
     private lateinit var path: String
     private val subVideos: MutableList<SubVideo> = mutableListOf()
 
-    private var doodleColor = Color.RED
+    private var doodleColor = 0xFFFF0000
 
     private lateinit var seekBar: SeekBar
     private lateinit var job : Job
+
+    private var drawView: DrawView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,13 +60,19 @@ class VideoDoodleLightFragment : Fragment() {
         setListener()
     }
 
+    private fun setDrawingView() {
+        drawView = DrawView(requireContext())
+        binding.canvas.addView(drawView)
+        drawView?.setColor(doodleColor.toInt())
+    }
+
     private fun setVideoView(){
         val file = File(path)
         binding.videoView.setVideoPath(file.absolutePath)
         seekBar = binding.sbVideoTimeline
         binding.videoView.setOnPreparedListener {
             seekBar.max = binding.videoView.duration/1000
-            job = CoroutineScope(Dispatchers.IO).launch {
+            job = CoroutineScope(Dispatchers.Default).launch {
                 while(true) {
                     seekBar.progress = binding.videoView.currentPosition/1000
                 }
@@ -114,42 +119,21 @@ class VideoDoodleLightFragment : Fragment() {
             btnVideoPause.setOnClickListener {
                 videoView.pause()
             }
-            canvas.setOnTouchListener(canvasOnTouchListener)
             rbRed.isChecked = true
             rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
                 when(checkedId){
-                    R.id.rb_red -> doodleColor = Color.parseColor("#FF0000")
-                    R.id.rb_green -> doodleColor = Color.parseColor("#00FF00")
-                    R.id.rb_blue -> doodleColor = Color.parseColor("#0000FF")
-                    R.id.rb_yellow -> doodleColor = Color.parseColor("#FFFF00")
+                    R.id.rb_red -> doodleColor = 0xFFFF0000
+                    R.id.rb_green -> doodleColor = 0xFF00FF00
+                    R.id.rb_blue -> doodleColor = 0xFF0000FF
+                    R.id.rb_yellow -> doodleColor = 0xFFFFFF00
                 }
+                drawView?.setColor(doodleColor.toInt())
             }
         }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private val canvasOnTouchListener = View.OnTouchListener { v, event ->
-        val drawView = context?.let { DrawView(it) }!!
-        drawView.changeColor(doodleColor)
-        binding.canvas.addView(drawView)
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                drawPoints.add(Point(event.rawX, event.rawY - binding.videoView.y, false))
-            }
-            MotionEvent.ACTION_MOVE -> {
-                drawPoints.add(Point(event.rawX, event.rawY - binding.videoView.y, true))
-                drawView.points = drawPoints
-                drawView.invalidate()
-            }
-            MotionEvent.ACTION_UP -> {
-                drawView.points = drawPoints
-                drawView.invalidate()
-            }
-        }
-        true
     }
 
     private fun startRecord() {
+        setDrawingView()
         val fileName = System.currentTimeMillis()
         viewRecorder = ViewRecorder().apply {
             val width = Math.round(binding.canvas.width.toFloat()/10)*10
@@ -181,7 +165,6 @@ class VideoDoodleLightFragment : Fragment() {
             viewRecorder.stop()
             viewRecorder.reset()
             viewRecorder.release()
-            drawPoints.clear()
             binding.canvas.removeAllViews()
             subVideos.last().endingTime = binding.videoView.currentPosition
             Log.d("MainActivity", "stopRecord successfully!")
