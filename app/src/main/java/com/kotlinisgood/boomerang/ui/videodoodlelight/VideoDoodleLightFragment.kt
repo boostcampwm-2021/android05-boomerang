@@ -1,7 +1,6 @@
 package com.kotlinisgood.boomerang.ui.videodoodlelight
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -9,19 +8,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.net.toUri
-import android.widget.SeekBar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 
@@ -39,8 +36,7 @@ class VideoDoodleLightFragment : Fragment() {
 
     private var doodleColor = 0xFFFF0000
 
-    private lateinit var seekBar: SeekBar
-    private lateinit var job : Job
+    private lateinit var player : SimpleExoPlayer
 
     private var drawView: DrawView? = null
 
@@ -67,30 +63,10 @@ class VideoDoodleLightFragment : Fragment() {
     }
 
     private fun setVideoView(){
-        val file = File(path)
-        binding.videoView.setVideoPath(file.absolutePath)
-        seekBar = binding.sbVideoTimeline
-        binding.videoView.setOnPreparedListener {
-            seekBar.max = binding.videoView.duration/1000
-            job = CoroutineScope(Dispatchers.Default).launch {
-                while(true) {
-                    seekBar.progress = binding.videoView.currentPosition/1000
-                }
-            }
-        }
-        seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-            }
-
-        })
+        player = SimpleExoPlayer.Builder(requireContext()).build()
+        binding.exoplayer.player = player
+        val mediaItem = MediaItem.fromUri(uri)
+        player.setMediaItem(mediaItem)
     }
 
 
@@ -99,25 +75,30 @@ class VideoDoodleLightFragment : Fragment() {
         with(binding){
             canvas.isEnabled = false
             btnMemoStart.setOnClickListener {
+                val currentTime = player.currentPosition
+                var canMemo = true
+                subVideos.forEach{
+                    if (it.startingTime<currentTime&&currentTime<it.endingTime){
+                        canMemo = false
+                    }
+                }
                 if(recording){
                     stopRecord()
                     binding.canvas.isEnabled = false
                 } else {
-                    startRecord()
-                    binding.canvas.isEnabled = true
+                    if (canMemo) {
+                        startRecord()
+                        binding.canvas.isEnabled = true
+                    } else {
+                        Toast.makeText(context, "이미 메모가 있습니다", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             btnMoveToResult.setOnClickListener {
                 binding.canvas.isEnabled = false
                 stopRecord()
-                val action = VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(subVideos.toTypedArray())
+                val action = VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(subVideos.toTypedArray(),path)
                 findNavController().navigate(action)
-            }
-            btnVideoPlay.setOnClickListener {
-                videoView.start()
-            }
-            btnVideoPause.setOnClickListener {
-                videoView.pause()
             }
             rbRed.isChecked = true
             rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
@@ -151,7 +132,7 @@ class VideoDoodleLightFragment : Fragment() {
         try {
             viewRecorder.prepare()
             viewRecorder.start()
-            subVideos.add(SubVideo(Uri.fromFile(File(context?.cacheDir, "$fileName.mp4")),binding.videoView.currentPosition,binding.videoView.currentPosition))
+            subVideos.add(SubVideo(Uri.fromFile(File(context?.cacheDir, "$fileName.mp4")),player.currentPosition.toInt(),player.currentPosition.toInt()))
         } catch (e: IOException) {
             Log.e("MainActivity", "startRecord failed", e)
             return
@@ -166,7 +147,7 @@ class VideoDoodleLightFragment : Fragment() {
             viewRecorder.reset()
             viewRecorder.release()
             binding.canvas.removeAllViews()
-            subVideos.last().endingTime = binding.videoView.currentPosition
+            subVideos.last().endingTime = player.currentPosition.toInt()
             Log.d("MainActivity", "stopRecord successfully!")
             recording = false
             println(subVideos)
@@ -177,10 +158,5 @@ class VideoDoodleLightFragment : Fragment() {
         Log.e("MainActivity", "MediaRecorder error: type = $what, code = $extra")
         viewRecorder.reset()
         viewRecorder.release()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        job.cancel()
     }
 }

@@ -62,6 +62,9 @@
         <argument
             android:name="subVideos"
             app:argType="com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo[]" />
+        <argument
+            android:name="baseVideo"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/videoSelectionFragment"
