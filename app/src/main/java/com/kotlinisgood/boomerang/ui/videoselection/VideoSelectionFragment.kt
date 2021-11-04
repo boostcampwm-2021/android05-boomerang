@@ -1,6 +1,8 @@
 package com.kotlinisgood.boomerang.ui.videoselection
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -93,20 +95,54 @@ class VideoSelectionFragment : Fragment() {
 
     private fun setOnMenuItemClickListener() {
         dataBinding.tbVideoSelection.setOnMenuItemClickListener {
+            println("here completion button")
             when (it.itemId) {
                 R.id.menu_video_selection_completion -> {
                     if (videoSelectionAdapter.selectedIndex == -1) {
-                        Toast.makeText(requireContext(), "동영상이 선택되지 않았습니다", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "동영상이 선택되지 않았습니다", Toast.LENGTH_SHORT)
+                            .show()
                         false
                     } else {
-                        val uri = videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri
-                        val path = UriUtil.getPathFromUri(requireActivity().contentResolver, uri)
-                        val action =
-                            VideoSelectionFragmentDirections
-                                .actionVideoSelectionFragmentToVideoDoodleLightFragment(path)
-                        findNavController().navigate(action)
+                        val alertDialog: AlertDialog? = activity?.let {
+                            val builder = AlertDialog.Builder(it)
+                            builder.apply {
+                                setTitle("어떤 메모할래")
+                                setPositiveButton("메모1", DialogInterface.OnClickListener { _, _ ->
+                                    val uri =
+                                        videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri
+                                    val path = UriUtil.getPathFromUri(
+                                        requireActivity().contentResolver,
+                                        uri
+                                    )
+                                    val action =
+                                        VideoSelectionFragmentDirections
+                                            .actionVideoSelectionFragmentToVideoDoodleLightFragment(
+                                                path
+                                            )
+                                    findNavController().navigate(action)
+
+                                })
+                                setNegativeButton("메모2", DialogInterface.OnClickListener { _, _ ->
+                                    val uri =
+                                        videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri
+                                    val path = UriUtil.getPathFromUri(
+                                        requireActivity().contentResolver,
+                                        uri
+                                    )
+                                    val action =
+                                        VideoSelectionFragmentDirections
+                                            .actionVideoSelectionFragmentToVideoDoodleFragment(
+                                                path
+                                            )
+                                    findNavController().navigate(action)
+                                })
+                            }
+                            builder.create()
+                        }
+                        alertDialog!!.show()
                         true
                     }
+
                 }
                 else -> false
             }

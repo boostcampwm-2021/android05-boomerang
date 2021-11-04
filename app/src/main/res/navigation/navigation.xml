@@ -37,7 +37,13 @@
         android:id="@+id/videoDoodleFragment"
         android:name="com.kotlinisgood.boomerang.ui.videodoodle.VideoDoodleFragment"
         android:label="fragment_video_doodle"
-        tools:layout="@layout/fragment_video_doodle" />
+        tools:layout="@layout/fragment_video_doodle" >
+
+        <argument
+            android:name="videoPath"
+            app:argType="string" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/videoEditFragment"
@@ -73,6 +79,13 @@
         <action
             android:id="@+id/action_videoSelectionFragment_to_videoDoodleLightFragment"
             app:destination="@id/videoDoodleLightFragment" >
+            <argument
+                android:name="videoPath"
+                app:argType="string" />
+        </action>
+        <action
+            android:id="@+id/action_videoSelectionFragment_to_videoDoodleFragment"
+            app:destination="@id/videoDoodleFragment" >
             <argument
                 android:name="videoPath"
                 app:argType="string" />
