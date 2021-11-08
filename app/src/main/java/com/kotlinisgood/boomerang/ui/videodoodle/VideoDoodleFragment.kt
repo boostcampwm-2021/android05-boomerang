@@ -136,7 +136,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                     drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
+//                    drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
+                    fillSpace(motionEvent.x.toInt(), motionEvent.y.toInt())
                 }
                 MotionEvent.ACTION_UP -> {
                 }
@@ -148,6 +149,13 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     private fun drawLine(x: Int, y: Int) {
         currentPoint.add(Pair(x, y))
+    }
+
+    private fun fillSpace(x: Int, y: Int) {
+        val last = currentPoint.last()
+        for (i in 1..100) {
+            currentPoint.add(Pair(last.first + (x - last.first)*i/100, last.second + (y - last.second)*i/100))
+        }
     }
 
     override fun surfaceCreated(p0: SurfaceHolder) {
@@ -247,11 +255,11 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         currentPoint.forEach {
             GLES20.glClearColor(1f, 1f, 0f, 1f)
             GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
-            GLES20.glScissor(it.first, height - it.second, 20, 20)
+            GLES20.glScissor(it.first, height - it.second, 15, 15)
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
             GLES20.glDisable(GLES20.GL_SCISSOR_TEST)
         }
-
+        println(currentPoint)
 //        점 이어서 선 그리기
 //        GLES20.glClearColor(1f, 1f, 0f, 1f)
 //        val vertices = ByteBuffer.allocateDirect(touchPoints.size * 4).run {
