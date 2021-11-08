@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
+import com.kotlinisgood.boomerang.model.OrderState
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -68,6 +69,24 @@ class HomeFragment : Fragment() {
             requireContext().getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val cn = ComponentName(PACKAGE_NAME, MAIN_ACTIVITY)
         searchView.setSearchableInfo(searchManager.getSearchableInfo(cn))
+
+        val orderMenu = menu.findItem(R.id.menu_home_order).setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_home_order_create -> {
+                    if (viewModel.orderSetting.value != OrderState.CREATE) {
+                        viewModel.setOrderState(OrderState.CREATE)
+                    }
+                    true
+                }
+                R.id.menu_home_order_modify -> {
+                    if (viewModel.orderSetting.value != OrderState.MODIFY) {
+                        viewModel.setOrderState(OrderState.MODIFY)
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun handleIntent(intent: Intent) {
