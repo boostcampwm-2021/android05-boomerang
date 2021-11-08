@@ -6,21 +6,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
+import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.kotlinisgood.boomerang.R
+import com.kotlinisgood.boomerang.database.entity.VideoMemo
 import com.kotlinisgood.boomerang.databinding.FragmentVideoEditLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 
+@AndroidEntryPoint
 class VideoEditLightFragment : Fragment() {
 
     private lateinit var binding: FragmentVideoEditLightBinding
+    private val viewModel: VideoEditViewModel by viewModels()
 
     private val args: VideoEditLightFragmentArgs by navArgs()
     private lateinit var subVideos: MutableList<SubVideo>
@@ -28,6 +35,8 @@ class VideoEditLightFragment : Fragment() {
 
     private lateinit var player: SimpleExoPlayer
     private lateinit var baseUri: Uri
+
+    private var title = ""
 
     lateinit var jobScanner: Job
     lateinit var jobTimer: Job
@@ -57,6 +66,19 @@ class VideoEditLightFragment : Fragment() {
         setVideoView()
         setScanner()
         setPlayer()
+        setListener()
+    }
+
+    private fun setListener() {
+        binding.etMemoTitle.doOnTextChanged { text, start, before, count ->
+            title = text.toString()
+        }
+
+        binding.btnSaveMemo.setOnClickListener {
+            val memo = VideoMemo(title = title, videoUri = baseUri.toString(),memos= subVideos, createTime = System.currentTimeMillis(), editTime = System.currentTimeMillis())
+            viewModel.saveMemo(memo)
+            findNavController().navigate(R.id.action_videoEditLightFragment_to_homeFragment)
+        }
     }
 
     private fun setVideoView() {

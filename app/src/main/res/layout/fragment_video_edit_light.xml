@@ -38,13 +38,30 @@
             app:layout_constraintBottom_toBottomOf="@id/frame_video"
             app:layout_constraintTop_toTopOf="@id/frame_video" />
 
+        <EditText
+            android:hint="제목을 입력해주세요"
+            android:id="@+id/et_memo_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            app:layout_constraintTop_toBottomOf="@id/frame_video" />
+
         <TextView
             android:id="@+id/tv_subvideos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/frame_video" />
+            app:layout_constraintTop_toBottomOf="@id/et_memo_title" />
+
+        <Button
+            android:id="@+id/btn_save_memo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="저장하기"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

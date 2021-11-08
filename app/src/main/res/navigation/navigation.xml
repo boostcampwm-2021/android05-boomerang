@@ -42,6 +42,16 @@
         <argument
             android:name="videoPath"
             app:argType="string" />
+        <action
+            android:id="@+id/action_videoDoodleFragment_to_videoEditLightFragment"
+            app:destination="@id/videoEditLightFragment">
+            <argument
+                android:name="baseVideo"
+                app:argType="string" />
+            <argument
+                android:name="subVideos"
+                app:argType="com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo[]" />
+        </action>
 
     </fragment>
 
@@ -56,7 +66,14 @@
         android:label="VideoDoodleLightFragment" >
         <action
             android:id="@+id/action_videoDoodleLightFragment_to_videoEditLightFragment"
-            app:destination="@id/videoEditLightFragment" />
+            app:destination="@id/videoEditLightFragment">
+            <argument
+                android:name="baseVideo"
+                app:argType="string" />
+            <argument
+                android:name="subVideos"
+                app:argType="com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo[]" />
+        </action>
         <argument
             android:name="videoPath"
             app:argType="string" />
@@ -71,6 +88,11 @@
         <argument
             android:name="baseVideo"
             app:argType="string" />
+        <action
+            android:id="@+id/action_videoEditLightFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/videoSelectionFragment"
