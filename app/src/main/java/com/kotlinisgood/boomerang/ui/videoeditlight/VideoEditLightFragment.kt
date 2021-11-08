@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -76,6 +77,7 @@ class VideoEditLightFragment : Fragment() {
         binding.btnSaveMemo.setOnClickListener {
             val memo = VideoMemo(title = title, videoUri = baseUri.toString(),memos= subVideos, createTime = System.currentTimeMillis(), editTime = System.currentTimeMillis())
             viewModel.saveMemo(memo)
+            findNavController().navigate(R.id.action_videoEditLightFragment_to_homeFragment)
         }
     }
 
