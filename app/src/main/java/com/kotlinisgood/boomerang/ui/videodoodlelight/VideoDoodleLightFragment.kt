@@ -125,14 +125,14 @@ class VideoDoodleLightFragment : Fragment() {
             setVideoEncoder(MediaRecorder.VideoEncoder.H264)
             setVideoSize(width, height)
             setVideoEncodingBitRate(2000 * 1000)
-            setOutputFile(context?.cacheDir.toString() + "/$fileName.mp4")
+            setOutputFile(context?.filesDir.toString() + "/$fileName.mp4")
             setOnErrorListener(onErrorListener)
             setRecordedView(binding.canvas)
         }
         try {
             viewRecorder.prepare()
             viewRecorder.start()
-            subVideos.add(SubVideo(Uri.fromFile(File(context?.cacheDir, "$fileName.mp4")),player.currentPosition.toInt(),player.currentPosition.toInt()))
+            subVideos.add(SubVideo(Uri.fromFile(File(context?.filesDir, "$fileName.mp4")).toString(),player.currentPosition.toInt(),player.currentPosition.toInt()))
         } catch (e: IOException) {
             Log.e("MainActivity", "startRecord failed", e)
             return
