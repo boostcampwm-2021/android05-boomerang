@@ -10,7 +10,7 @@ assignees: ''
 ## Task 제목
 
 
-## Related Epic
+## Related Story
 
 
 ## Acceptance Condition
