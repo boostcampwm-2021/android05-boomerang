@@ -97,7 +97,7 @@ class VideoDoodleLightFragment : Fragment() {
             btnMoveToResult.setOnClickListener {
                 binding.canvas.isEnabled = false
                 stopRecord()
-                val action = VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(subVideos.toTypedArray(),path)
+                val action = VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(path, subVideos.toTypedArray())
                 findNavController().navigate(action)
             }
             rbRed.isChecked = true

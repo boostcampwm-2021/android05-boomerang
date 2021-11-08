@@ -13,9 +13,11 @@ import android.view.*
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleBinding
+import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import java.io.File
 import java.io.IOException
 import java.lang.RuntimeException
@@ -124,6 +126,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
         binding.btnCapture.setOnClickListener {
             circularEncoder.saveVideo(outputVideo)
+            val action = VideoDoodleFragmentDirections.actionVideoDoodleFragmentToVideoEditLightFragment(outputVideo!!.absolutePath, mutableListOf<SubVideo>().toTypedArray())
+            findNavController().navigate(action)
         }
 
         binding.svMovie.setOnTouchListener { _, motionEvent ->
