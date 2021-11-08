@@ -4,7 +4,6 @@ import android.app.SearchManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
@@ -40,7 +39,7 @@ class HomeFragment : Fragment() {
 
         setBinding()
         setAdapter()
-        setFabClickListener()
+        setSpeedDial()
         loadVideoMemo()
     }
 
@@ -65,7 +64,8 @@ class HomeFragment : Fragment() {
         searchView.queryHint = getString(R.string.searchable_hint)
         searchView.maxWidth = Int.MAX_VALUE
 
-        val searchManager = requireContext().getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager =
+            requireContext().getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val cn = ComponentName(PACKAGE_NAME, MAIN_ACTIVITY)
         searchView.setSearchableInfo(searchManager.getSearchableInfo(cn))
     }
@@ -82,14 +82,17 @@ class HomeFragment : Fragment() {
         _dataBinding = null
     }
 
-    private fun setFabClickListener() {
+    private fun setSpeedDial() {
         dataBinding.sdHomeShowItems.addAllActionItems(
             listOf(
                 SpeedDialActionItem.Builder(R.id.menu_home_sd_video, R.drawable.ic_video)
                     .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                     .setLabel(R.string.menu_home_sd_video)
                     .create(),
-                SpeedDialActionItem.Builder(R.id.menu_home_sd_video_light, R.drawable.ic_video_light)
+                SpeedDialActionItem.Builder(
+                    R.id.menu_home_sd_video_light,
+                    R.drawable.ic_video_light
+                )
                     .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                     .setLabel(R.string.menu_home_sd_video_light)
                     .create(),
@@ -100,13 +103,15 @@ class HomeFragment : Fragment() {
                 R.id.menu_home_sd_video -> {
                     findNavController().navigate(
                         HomeFragmentDirections.actionHomeFragmentToVideoSelectionFragment(
-                            VIDEO_MODE_FRAME)
+                            VIDEO_MODE_FRAME
+                        )
                     )
                 }
                 R.id.menu_home_sd_video_light -> {
                     findNavController().navigate(
                         HomeFragmentDirections.actionHomeFragmentToVideoSelectionFragment(
-                            VIDEO_MODE_SUB_VIDEO)
+                            VIDEO_MODE_SUB_VIDEO
+                        )
                     )
                 }
             }

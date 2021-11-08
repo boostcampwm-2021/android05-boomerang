@@ -1,8 +1,6 @@
 package com.kotlinisgood.boomerang.ui.videoselection
 
 import android.Manifest
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -102,7 +100,6 @@ class VideoSelectionFragment : Fragment() {
 
     private fun setOnMenuItemClickListener() {
         dataBinding.tbVideoSelection.setOnMenuItemClickListener {
-            println("here completion button")
             when (it.itemId) {
                 R.id.menu_video_selection_completion -> {
                     if (videoSelectionAdapter.selectedIndex == -1) {
