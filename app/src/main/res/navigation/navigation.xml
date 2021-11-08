@@ -12,7 +12,34 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_videoSelectionFragment"
-            app:destination="@id/videoSelectionFragment" />
+            app:destination="@id/videoSelectionFragment" >
+            <argument
+                android:name="memoType"
+                app:argType="integer" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/videoSelectionFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videoselection.VideoSelectionFragment"
+        android:label="VideoSelectionFragment" >
+        <action
+            android:id="@+id/action_videoSelectionFragment_to_videoDoodleLightFragment"
+            app:destination="@id/videoDoodleLightFragment" >
+            <argument
+                android:name="videoPath"
+                app:argType="string" />
+        </action>
+        <action
+            android:id="@+id/action_videoSelectionFragment_to_videoDoodleFragment"
+            app:destination="@id/videoDoodleFragment" >
+            <argument
+                android:name="videoPath"
+                app:argType="string" />
+        </action>
+        <argument
+            android:name="memoType"
+            app:argType="integer" />
     </fragment>
 
     <fragment
@@ -94,25 +121,7 @@
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="true"/>
     </fragment>
-    <fragment
-        android:id="@+id/videoSelectionFragment"
-        android:name="com.kotlinisgood.boomerang.ui.videoselection.VideoSelectionFragment"
-        android:label="VideoSelectionFragment" >
-        <action
-            android:id="@+id/action_videoSelectionFragment_to_videoDoodleLightFragment"
-            app:destination="@id/videoDoodleLightFragment" >
-            <argument
-                android:name="videoPath"
-                app:argType="string" />
-        </action>
-        <action
-            android:id="@+id/action_videoSelectionFragment_to_videoDoodleFragment"
-            app:destination="@id/videoDoodleFragment" >
-            <argument
-                android:name="videoPath"
-                app:argType="string" />
-        </action>
-    </fragment>
+
 
     <fragment
         android:id="@+id/trashBinFragment"

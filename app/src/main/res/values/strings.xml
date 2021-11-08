@@ -13,4 +13,10 @@
     <string name="fragment_video_selection_title">동영상 선택</string>
     <string name="menu_video_selection_completion">완료</string>
     <string name="menu_video_selection_completion_description">If user selects a video and then click the button, screen pass to video doodle</string>
+    <string name="menu_home_sd_close">Speed Dial Close</string>
+    <string name="menu_home_sd_close_description">Expanded Speed Dial is closed</string>
+    <string name="menu_home_sd_video_light">Sub Video 메모 작성</string>
+    <string name="menu_home_sd_video_light_description">Go to way to Write memo on sub video</string>
+    <string name="menu_home_sd_video">Frame 메모 작성</string>
+    <string name="menu_home_sd_video_description">Go to write video memo on video</string>
 </resources>

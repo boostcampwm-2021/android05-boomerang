@@ -4,14 +4,19 @@ import android.app.SearchManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
+import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -78,8 +83,34 @@ class HomeFragment : Fragment() {
     }
 
     private fun setFabClickListener() {
-        dataBinding.fabHomeMoveSelection.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_videoSelectionFragment)
+        dataBinding.sdHomeShowItems.addAllActionItems(
+            listOf(
+                SpeedDialActionItem.Builder(R.id.menu_home_sd_video, R.drawable.ic_video)
+                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setLabel(R.string.menu_home_sd_video)
+                    .create(),
+                SpeedDialActionItem.Builder(R.id.menu_home_sd_video_light, R.drawable.ic_video_light)
+                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setLabel(R.string.menu_home_sd_video_light)
+                    .create(),
+            )
+        )
+        dataBinding.sdHomeShowItems.setOnActionSelectedListener { actionItem ->
+            when (actionItem.id) {
+                R.id.menu_home_sd_video -> {
+                    findNavController().navigate(
+                        HomeFragmentDirections.actionHomeFragmentToVideoSelectionFragment(
+                            VIDEO_MODE_FRAME)
+                    )
+                }
+                R.id.menu_home_sd_video_light -> {
+                    findNavController().navigate(
+                        HomeFragmentDirections.actionHomeFragmentToVideoSelectionFragment(
+                            VIDEO_MODE_SUB_VIDEO)
+                    )
+                }
+            }
+            false
         }
     }
 

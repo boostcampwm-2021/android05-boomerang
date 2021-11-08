@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/menu_home_sd_video"
+        android:title="@string/menu_home_sd_video"
+        android:icon="@drawable/ic_video"
+        android:contentDescription="@string/menu_home_sd_video_description" />
+
+    <item
+        android:id="@+id/menu_home_sd_video_light"
+        android:title="@string/menu_home_sd_video_light"
+        android:icon="@drawable/ic_video_light"
+        android:contentDescription="@string/menu_home_sd_video_light_description" />
+
+</menu>

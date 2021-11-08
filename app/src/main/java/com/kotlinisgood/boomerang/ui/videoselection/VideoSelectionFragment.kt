@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,15 +15,20 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoSelectionBinding
 import com.kotlinisgood.boomerang.util.UriUtil
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class VideoSelectionFragment : Fragment() {
     private var _dataBinding: FragmentVideoSelectionBinding? = null
     private val dataBinding get() = _dataBinding!!
+    private val args : VideoSelectionFragmentArgs by navArgs()
+    private val videoMode by lazy { args.memoType }
     private val viewModel: VideoSelectionViewModel by viewModels()
     private val videoSelectionAdapter by lazy {
         VideoSelectionAdapter()
@@ -80,6 +86,7 @@ class VideoSelectionFragment : Fragment() {
         setTbNavigationIconClickListener()
         checkPermission()
         setOnMenuItemClickListener()
+        Log.i("VIDEO SELECTION MODE", "$videoMode")
     }
 
     override fun onDestroy() {
@@ -103,43 +110,27 @@ class VideoSelectionFragment : Fragment() {
                             .show()
                         false
                     } else {
-                        val alertDialog: AlertDialog? = activity?.let {
-                            val builder = AlertDialog.Builder(it)
-                            builder.apply {
-                                setTitle("어떤 메모할래")
-                                setPositiveButton("메모1", DialogInterface.OnClickListener { _, _ ->
-                                    val uri =
-                                        videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri
-                                    val path = UriUtil.getPathFromUri(
-                                        requireActivity().contentResolver,
-                                        uri
+                        val uri =
+                            videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri
+                        val path = UriUtil.getPathFromUri(
+                            requireActivity().contentResolver,
+                            uri
+                        )
+                        if (videoMode == VIDEO_MODE_FRAME) {
+                            val action =
+                                VideoSelectionFragmentDirections
+                                    .actionVideoSelectionFragmentToVideoDoodleFragment(
+                                        path
                                     )
-                                    val action =
-                                        VideoSelectionFragmentDirections
-                                            .actionVideoSelectionFragmentToVideoDoodleLightFragment(
-                                                path
-                                            )
-                                    findNavController().navigate(action)
-
-                                })
-                                setNegativeButton("메모2", DialogInterface.OnClickListener { _, _ ->
-                                    val uri =
-                                        videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri
-                                    val path = UriUtil.getPathFromUri(
-                                        requireActivity().contentResolver,
-                                        uri
+                            findNavController().navigate(action)
+                        } else if (videoMode == VIDEO_MODE_SUB_VIDEO) {
+                            val action =
+                                VideoSelectionFragmentDirections
+                                    .actionVideoSelectionFragmentToVideoDoodleLightFragment(
+                                        path
                                     )
-                                    val action =
-                                        VideoSelectionFragmentDirections
-                                            .actionVideoSelectionFragmentToVideoDoodleFragment(
-                                                path
-                                            )
-                                    findNavController().navigate(action)
-                                })
-                            }
-                            builder.create()
+                            findNavController().navigate(action)
                         }
-                        alertDialog!!.show()
                         true
                     }
 
