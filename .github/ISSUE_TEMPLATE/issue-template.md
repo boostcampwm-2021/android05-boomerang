@@ -13,4 +13,4 @@ assignees: ''
 ## Related Epic
 
 
-## Acceptance Condtion
+## Acceptance Condition
