@@ -69,12 +69,12 @@ class HomeFragment : Fragment() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                // TODO("Not yet implemented")
+                viewModel.searchVideos(query)
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                // TODO("Not yet implemented")
+                viewModel.searchVideos(newText)
                 return true
             }
         })

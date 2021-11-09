@@ -65,4 +65,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun searchVideos(query: String?) {
+        query?: return
+        viewModelScope.launch {
+            val videos = withContext(Dispatchers.IO) {
+                repository.searchVideoByKeyword(query).reversed()
+            }
+            _videoMemo.value = videos
+        }
+    }
+
 }
