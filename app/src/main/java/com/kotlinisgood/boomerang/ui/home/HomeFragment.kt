@@ -5,7 +5,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -13,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
+import com.kotlinisgood.boomerang.model.OrderState
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -35,12 +38,19 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        handleIntent(requireActivity().intent)
-
         setBinding()
         setAdapter()
-        setSpeedDial()
+        setMenusOnToolbar()
+
+        handleIntent(requireActivity().intent)
+
         loadVideoMemo()
+        setSpeedDial()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _dataBinding = null
     }
 
     private fun setBinding() {
@@ -56,20 +66,6 @@ class HomeFragment : Fragment() {
         viewModel.loadVideoMemo()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_fragment_home, menu)
-
-        val searchView = menu.findItem(R.id.menu_home_search).actionView as SearchView
-        searchView.queryHint = getString(R.string.searchable_hint)
-        searchView.maxWidth = Int.MAX_VALUE
-
-        val searchManager =
-            requireContext().getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        val cn = ComponentName(PACKAGE_NAME, MAIN_ACTIVITY)
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(cn))
-    }
-
     private fun handleIntent(intent: Intent) {
         if (intent.action == Intent.ACTION_SEARCH) {
             val query = intent.getStringExtra(SearchManager.QUERY)
@@ -77,9 +73,36 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _dataBinding = null
+    private fun setMenusOnToolbar() {
+        dataBinding.tbHome.inflateMenu(R.menu.menu_fragment_home)
+        dataBinding.tbHome.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.menu_home_order_create -> {
+                    if (viewModel.orderSetting.value != OrderState.CREATE) {
+                        viewModel.setOrderState(OrderState.CREATE)
+                    }
+                    true
+                }
+                R.id.menu_home_order_modify -> {
+                    if (viewModel.orderSetting.value != OrderState.MODIFY) {
+                        viewModel.setOrderState(OrderState.MODIFY)
+                    }
+                    true
+                }
+                R.id.menu_home_search -> {
+                    val searchView = it.actionView as SearchView
+                    searchView.queryHint = getString(R.string.searchable_hint)
+                    searchView.maxWidth = Int.MAX_VALUE
+
+                    val searchManager =
+                        requireContext().getSystemService(Context.SEARCH_SERVICE) as SearchManager
+                    val cn = ComponentName(PACKAGE_NAME, MAIN_ACTIVITY)
+                    searchView.setSearchableInfo(searchManager.getSearchableInfo(cn))
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun setSpeedDial() {
