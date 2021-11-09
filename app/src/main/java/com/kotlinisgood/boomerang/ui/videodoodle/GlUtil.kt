@@ -14,7 +14,7 @@ import java.nio.FloatBuffer
  * Some OpenGL utility functions.
  */
 object GlUtil {
-    const val TAG = "Grafika"
+    private const val TAG = "GlUtilTAG"
 
     /** Identity matrix for general use.  Don't modify or life will get weird.  */
     val IDENTITY_MATRIX: FloatArray
