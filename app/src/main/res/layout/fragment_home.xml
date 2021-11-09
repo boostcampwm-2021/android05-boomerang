@@ -26,8 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/boomerang_theme_color"
-                app:title="@string/app_name_kr"
-                app:menu="@menu/menu_fragment_home">
+                app:title="@string/app_name_kr" >
 
             </com.google.android.material.appbar.MaterialToolbar>
 

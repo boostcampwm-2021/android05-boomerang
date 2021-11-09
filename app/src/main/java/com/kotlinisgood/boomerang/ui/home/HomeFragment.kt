@@ -1,9 +1,5 @@
 package com.kotlinisgood.boomerang.ui.home
 
-import android.app.SearchManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -42,10 +38,9 @@ class HomeFragment : Fragment() {
         setAdapter()
         setMenusOnToolbar()
 
-        handleIntent(requireActivity().intent)
-
         loadVideoMemo()
         setSpeedDial()
+        setSearchMenu()
     }
 
     override fun onDestroy() {
@@ -66,17 +61,29 @@ class HomeFragment : Fragment() {
         viewModel.loadVideoMemo()
     }
 
-    private fun handleIntent(intent: Intent) {
-        if (intent.action == Intent.ACTION_SEARCH) {
-            val query = intent.getStringExtra(SearchManager.QUERY)
-            //ToDo Writer: Green / Use the query to search your data
-        }
+    private fun setSearchMenu() {
+        val searchView =
+            dataBinding.tbHome.menu.findItem(R.id.menu_home_search).actionView as SearchView
+        searchView.queryHint = getString(R.string.searchable_hint)
+        searchView.maxWidth = Int.MAX_VALUE
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // TODO("Not yet implemented")
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // TODO("Not yet implemented")
+                return true
+            }
+        })
     }
 
     private fun setMenusOnToolbar() {
         dataBinding.tbHome.inflateMenu(R.menu.menu_fragment_home)
         dataBinding.tbHome.setOnMenuItemClickListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.menu_home_order_create -> {
                     if (viewModel.orderSetting.value != OrderState.CREATE) {
                         viewModel.setOrderState(OrderState.CREATE)
@@ -89,17 +96,24 @@ class HomeFragment : Fragment() {
                     }
                     true
                 }
-                R.id.menu_home_search -> {
-                    val searchView = it.actionView as SearchView
-                    searchView.queryHint = getString(R.string.searchable_hint)
-                    searchView.maxWidth = Int.MAX_VALUE
-
-                    val searchManager =
-                        requireContext().getSystemService(Context.SEARCH_SERVICE) as SearchManager
-                    val cn = ComponentName(PACKAGE_NAME, MAIN_ACTIVITY)
-                    searchView.setSearchableInfo(searchManager.getSearchableInfo(cn))
-                    true
-                }
+//                R.id.menu_home_search -> {
+//                    val searchView = it.actionView as SearchView
+//                    searchView.queryHint = getString(R.string.searchable_hint)
+//                    searchView.maxWidth = Int.MAX_VALUE
+//                    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//                        override fun onQueryTextSubmit(query: String?): Boolean {
+//                            // TODO("Not yet implemented")
+//                            return true
+//                        }
+//
+//                        override fun onQueryTextChange(newText: String?): Boolean {
+//                            // TODO("Not yet implemented")
+//                            return true
+//                        }
+//
+//                    })
+//                    true
+//                }
                 else -> false
             }
         }
