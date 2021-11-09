@@ -425,7 +425,7 @@ class CircularEncoder(
     }
 
     companion object {
-        private val TAG: String = "CircularEncoderTAG"
+        private const val TAG: String = "CircularEncoderTAG"
         private val VERBOSE = false
         private val MIME_TYPE = "video/avc" // H.264 Advanced Video Coding
         private val IFRAME_INTERVAL = 1 // sync frame every second

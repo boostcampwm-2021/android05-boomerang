@@ -263,7 +263,7 @@ class CircularEncoderBuffer(bitRate: Int, frameRate: Int, desiredSpanSec: Int) {
     }
 
     companion object {
-        private val TAG: String = "CircularEncoderBufTAG"
+        private const val TAG: String = "CircularEncoderBufTAG"
         private val EXTRA_DEBUG = true
         private val VERBOSE = false
     }

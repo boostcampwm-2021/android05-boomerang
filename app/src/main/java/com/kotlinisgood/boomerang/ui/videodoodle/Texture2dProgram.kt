@@ -193,7 +193,7 @@ class Texture2dProgram(
     }
 
     companion object {
-        private val TAG = GlUtil.TAG
+        private const val TAG = "Texture2dProgramTAG"
 
         // Simple vertex shader, used for all programs.
         private val VERTEX_SHADER = ("uniform mat4 uMVPMatrix;\n" +

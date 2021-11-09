@@ -87,6 +87,6 @@ class AspectFrameLayout : FrameLayout {
     }
 
     companion object {
-        private val TAG: String = "AspectFrameLayoutTAG"
+        private const val TAG: String = "AspectFrameLayoutTAG"
     }
 }

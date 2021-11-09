@@ -173,6 +173,6 @@ open class EglSurfaceBase protected constructor(  // EglCore object we're associ
     }
 
     companion object {
-        protected val TAG: String = GlUtil.TAG
+        private const val TAG: String = "EglSurfaceBaseTAG"
     }
 }
