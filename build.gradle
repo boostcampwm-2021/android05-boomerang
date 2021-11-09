@@ -7,6 +7,8 @@ ext {
     exoplayer_version = "2.15.1"
     glide_version = "4.12.0"
     speed_dial_version = "3.2.0"
+    rx_java = "3.0.3"
+    rx_android = "3.0.0"
 }
 
 buildscript {
