@@ -8,6 +8,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
@@ -16,6 +17,12 @@ import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.flow
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -61,23 +68,52 @@ class HomeFragment : Fragment() {
         viewModel.loadVideoMemo()
     }
 
+    private fun <T> debounce(
+        waitMs: Long,
+        scope: CoroutineScope,
+        destinationFuntion: (T) -> Unit
+    ): (T) -> Unit {
+        var debounceJob: Job? = null
+        return { param: T ->
+            debounceJob?.cancel()
+            debounceJob = scope.launch {
+                delay(waitMs)
+                destinationFuntion(param)
+            }
+        }
+    }
+
     private fun setSearchMenu() {
         val searchView =
             dataBinding.tbHome.menu.findItem(R.id.menu_home_search).actionView as SearchView
         searchView.queryHint = getString(R.string.searchable_hint)
         searchView.maxWidth = Int.MAX_VALUE
 
+        val searchText: PublishSubject<String> = PublishSubject.create()
+        val kotlinDebounceText = debounce(1000L, lifecycleScope, viewModel::searchVideos)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.searchVideos(query)
+                query?.let { viewModel.searchVideos(it) } ?: run {
+                    viewModel.loadVideoMemo()
+                }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.searchVideos(newText)
+                newText?: return true
+//                searchText.onNext(newText)
+//                kotlinDebounceText(newText)
                 return true
             }
         })
+//        searchText
+//            .debounce(1, TimeUnit.SECONDS)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .doOnNext{
+//                viewModel.searchVideos(it)
+//            }
+//            .subscribe()
     }
 
     private fun setMenusOnToolbar() {
@@ -96,24 +132,6 @@ class HomeFragment : Fragment() {
                     }
                     true
                 }
-//                R.id.menu_home_search -> {
-//                    val searchView = it.actionView as SearchView
-//                    searchView.queryHint = getString(R.string.searchable_hint)
-//                    searchView.maxWidth = Int.MAX_VALUE
-//                    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//                        override fun onQueryTextSubmit(query: String?): Boolean {
-//                            // TODO("Not yet implemented")
-//                            return true
-//                        }
-//
-//                        override fun onQueryTextChange(newText: String?): Boolean {
-//                            // TODO("Not yet implemented")
-//                            return true
-//                        }
-//
-//                    })
-//                    true
-//                }
                 else -> false
             }
         }
