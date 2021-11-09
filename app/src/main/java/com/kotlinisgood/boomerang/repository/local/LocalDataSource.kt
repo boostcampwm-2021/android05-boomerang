@@ -14,4 +14,8 @@ class LocalDataSource @Inject constructor(
     suspend fun saveVideoMemo(memo: VideoMemo){
         db.videoMemoDao().insertAll(memo)
     }
+
+    suspend fun searchVideo(query: String): List<VideoMemo> {
+        return db.videoMemoDao().search(query)
+    }
 }

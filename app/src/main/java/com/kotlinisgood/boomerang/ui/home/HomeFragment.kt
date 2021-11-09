@@ -1,9 +1,5 @@
 package com.kotlinisgood.boomerang.ui.home
 
-import android.app.SearchManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +16,10 @@ import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -42,10 +42,9 @@ class HomeFragment : Fragment() {
         setAdapter()
         setMenusOnToolbar()
 
-        handleIntent(requireActivity().intent)
-
         loadVideoMemo()
         setSpeedDial()
+        setSearchMenu()
     }
 
     override fun onDestroy() {
@@ -65,18 +64,62 @@ class HomeFragment : Fragment() {
     private fun loadVideoMemo() {
         viewModel.loadVideoMemo()
     }
-
-    private fun handleIntent(intent: Intent) {
-        if (intent.action == Intent.ACTION_SEARCH) {
-            val query = intent.getStringExtra(SearchManager.QUERY)
-            //ToDo Writer: Green / Use the query to search your data
+    // 코틀린 코루틴 debounce 공부
+/*    private fun <T> debounce(
+        waitMs: Long,
+        scope: CoroutineScope,
+        destinationFunction: (T) -> Unit
+    ): (T) -> Unit {
+        var debounceJob: Job? = null
+        return { param: T ->
+            debounceJob?.cancel()
+            debounceJob = scope.launch {
+                delay(waitMs)
+                destinationFunction(param)
+            }
         }
+    }*/
+
+    private fun setSearchMenu() {
+        val searchView =
+            dataBinding.tbHome.menu.findItem(R.id.menu_home_search).actionView as SearchView
+        searchView.queryHint = getString(R.string.searchable_hint)
+        searchView.maxWidth = Int.MAX_VALUE
+
+        val searchText: PublishSubject<String> = PublishSubject.create()
+//        val kotlinDebounceText = debounce(1000L, lifecycleScope, viewModel::searchVideos)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { viewModel.searchVideos(it) } ?: run {
+                    viewModel.loadVideoMemo()
+                }
+                return true
+            }
+            // newText를 값을 flow로 받는다 계속 받는다  searchVideos(query)
+            // newText 의 값을 BroadcastChannel queue -> 값을 보내요
+            // channel이 flow가 되는 거에요
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?: return true
+//                viewModel.sendQueryToChannel(newText)
+                searchText.onNext(newText)
+//                kotlinDebounceText(newText)
+                return true
+            }
+        })
+        searchText
+            .debounce(1, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext{
+                viewModel.searchVideos(it)
+            }
+            .subscribe()
     }
 
     private fun setMenusOnToolbar() {
         dataBinding.tbHome.inflateMenu(R.menu.menu_fragment_home)
         dataBinding.tbHome.setOnMenuItemClickListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.menu_home_order_create -> {
                     if (viewModel.orderSetting.value != OrderState.CREATE) {
                         viewModel.setOrderState(OrderState.CREATE)
@@ -87,17 +130,6 @@ class HomeFragment : Fragment() {
                     if (viewModel.orderSetting.value != OrderState.MODIFY) {
                         viewModel.setOrderState(OrderState.MODIFY)
                     }
-                    true
-                }
-                R.id.menu_home_search -> {
-                    val searchView = it.actionView as SearchView
-                    searchView.queryHint = getString(R.string.searchable_hint)
-                    searchView.maxWidth = Int.MAX_VALUE
-
-                    val searchManager =
-                        requireContext().getSystemService(Context.SEARCH_SERVICE) as SearchManager
-                    val cn = ComponentName(PACKAGE_NAME, MAIN_ACTIVITY)
-                    searchView.setSearchableInfo(searchManager.getSearchableInfo(cn))
                     true
                 }
                 else -> false

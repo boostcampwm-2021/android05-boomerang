@@ -14,4 +14,8 @@ class AppRepository @Inject constructor(
     suspend fun saveVideoMemo(memo: VideoMemo){
         localDataSource.saveVideoMemo(memo)
     }
+
+    suspend fun searchVideoByKeyword(query: String): List<VideoMemo> {
+        return localDataSource.searchVideo(query)
+    }
 }

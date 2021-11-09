@@ -2,7 +2,6 @@ package com.kotlinisgood.boomerang.database.converter
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
-import com.kotlinisgood.boomerang.model.Video
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 
 class Converter {

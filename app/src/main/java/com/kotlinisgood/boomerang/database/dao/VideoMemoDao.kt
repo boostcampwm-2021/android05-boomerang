@@ -16,4 +16,7 @@ interface VideoMemoDao {
 
     @Delete
     suspend fun delete(videoMemo: VideoMemo)
+
+    @Query("SELECT * FROM video_memo WHERE title LIKE '%' || :query || '%'")
+    suspend fun search(query: String): List<VideoMemo>
 }
