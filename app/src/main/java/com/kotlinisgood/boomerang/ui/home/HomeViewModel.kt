@@ -20,6 +20,8 @@ class HomeViewModel @Inject constructor(
     private val sharedPref: SharedPrefDataSource,
 ) : ViewModel() {
 
+//    private val queryChannel = BroadcastChannel<String>(Channel.CONFLATED)
+
     private var _videoMemo = MutableLiveData<List<VideoMemo>>()
     val videoMemo: LiveData<List<VideoMemo>> = _videoMemo
 
@@ -28,7 +30,41 @@ class HomeViewModel @Inject constructor(
 
     init {
         getOrderState()
+//        setSearchResult()
     }
+
+   /* @FlowPreview
+    @ExperimentalCoroutinesApi
+    fun setSearchResult() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                queryChannel
+                    .asFlow()
+                    .debounce(1000)
+                    .filter {
+                        return@filter it.isNotEmpty()
+                    }
+                    .distinctUntilChanged()
+                    .mapLatest { query ->
+                        try {
+                            repository.searchVideoByKeyword(query)
+                        } catch (e: CancellationException) {
+                            throw e
+                        }
+                    }
+            }.collect {
+                _videoMemo.value = it
+            }
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    fun sendQueryToChannel(query: String?) {
+        query?: return
+        viewModelScope.launch {
+            queryChannel.send(query)
+        }
+    }*/
 
     fun loadVideoMemo() {
         viewModelScope.launch {
