@@ -3,6 +3,7 @@ package com.kotlinisgood.boomerang.ui.videoedit
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alphamovie.lib.AlphaMovieView
 import com.kotlinisgood.boomerang.database.entity.VideoMemo
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
@@ -18,9 +19,10 @@ class VideoEditViewModel @Inject constructor(
     private var memoTitle = ""
     private var videoUri: Uri = Uri.EMPTY
     private var subVideos = mutableListOf<SubVideo>()
+    var alphaMovieViews: MutableList<AlphaMovieView> = mutableListOf<AlphaMovieView>()
+    private var subVideosStates = mutableListOf<Boolean>()
 
     fun saveMemo() {
-        println(subVideos)
         val memo: VideoMemo = if (subVideos.size == 0) {
             VideoMemo(
                 memoTitle,
@@ -63,9 +65,22 @@ class VideoEditViewModel @Inject constructor(
 
     fun setSubVideo(subVideos: MutableList<SubVideo>) {
         this.subVideos = subVideos
+        repeat(subVideos.size) { subVideosStates.add(false) }
     }
 
     fun getSubVideo(): MutableList<SubVideo> {
         return subVideos
     }
+
+    fun getSubVideoStates(): MutableList<Boolean> {
+        return subVideosStates
+    }
+
+    fun addAlphaMovieView(alphaMovieView: AlphaMovieView){
+        alphaMovieViews.add(alphaMovieView)
+    }
+
+//    fun getAlphaMovieViews(): MutableList<AlphaMovieView> {
+//        return alphaMovieViews
+//    }
 }
