@@ -128,6 +128,7 @@ class VideoSelectionFragment : Fragment() {
                                     )
                             findNavController().navigate(action)
                         }
+                        videoSelectionAdapter.setSelectionComplete()
                         true
                     }
 

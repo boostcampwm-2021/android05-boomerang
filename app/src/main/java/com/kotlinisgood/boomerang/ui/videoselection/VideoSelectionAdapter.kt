@@ -16,6 +16,12 @@ class VideoSelectionAdapter(
 
     var selectedIndex = -1
 
+    fun setSelectionComplete() {
+        currentList[selectedIndex].isChecked = false
+        notifyItemChanged(selectedIndex)
+        selectedIndex = -1
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoSelectionViewHolder {
         return VideoSelectionViewHolder(
             ItemRvVideoSelectionShowVideosBinding
