@@ -63,7 +63,6 @@ class HomeViewModel @Inject constructor(
             _orderSetting.value = orderState
             changeVideosOrder()
         }
-
     }
 
 }
