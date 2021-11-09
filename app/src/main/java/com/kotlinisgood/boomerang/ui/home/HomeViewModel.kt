@@ -41,7 +41,17 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getOrderState() {
+    private fun changeVideosOrder() {
+        val tmpVideos = videoMemo.value?.toMutableList() ?: return
+        val order = orderSetting.value?.order ?: return
+        _videoMemo.value =  if (order == "modify") {
+            tmpVideos.sortedBy { it.editTime }.reversed()
+        } else {
+            tmpVideos.sortedBy { it.createTime }.reversed()
+        }
+    }
+
+    private fun getOrderState() {
         _orderSetting.value = sharedPref.getOrderState()
     }
 
@@ -49,9 +59,11 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 sharedPref.saveOrderState(orderState)
-                _orderSetting.value = orderState
             }
+            _orderSetting.value = orderState
+            changeVideosOrder()
         }
+
     }
 
 }
