@@ -23,39 +23,36 @@ import java.io.IOException
 import java.lang.RuntimeException
 import java.lang.ref.WeakReference
 
-private const val TAG = "VideoDoodleFragment"
 
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     SurfaceTexture.OnFrameAvailableListener {
 
+    private lateinit var binding: FragmentVideoDoodleBinding
+
     private val args: VideoDoodleFragmentArgs by navArgs()
     private val path by lazy { args.videoPath }
+
     private var eglCore: EglCore? = null
     private var displaySurface: WindowSurface? = null
     private var encoderSurface: WindowSurface? = null
     private var surfaceTexture: SurfaceTexture? = null
+    private lateinit var surfaceView: SurfaceView
     private var textureId = 0
     private var fullFrameBlit: FullFrameRect? = null
+    private val mTmpMatrix = FloatArray(16)
+    private lateinit var circularEncoder: CircularEncoder
 
     private lateinit var mediaPlayer: MediaPlayer
-
-    private val mTmpMatrix = FloatArray(16)
     private var videoWidth = 0
     private var videoHeight = 0
-    private lateinit var circularEncoder: CircularEncoder
+    private var outputVideo: File? = null
+    private var secondsVideo = 0f
 
     private lateinit var handler: MainHandler
 
-    private var frameNum = 0
-    private var outputVideo: File? = null
-
-    private var secondsVideo = 0f
-
-    private lateinit var binding: FragmentVideoDoodleBinding
-
-    private lateinit var surfaceView: SurfaceView
-
     var currentPoint: MutableList<Pair<Int, Int>> = mutableListOf()
+
+    var isSurfaceDestroyed = false
 
     private class MainHandler(fragment: VideoDoodleFragment) :
         Handler(Looper.getMainLooper()), CircularEncoder.Callback {
@@ -63,6 +60,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             WeakReference<VideoDoodleFragment>(fragment)
 
         override fun fileSaveComplete(status: Int) {
+            sendMessage(obtainMessage(MSG_SAVE_COMPLETE, status, 0, null))
         }
 
         override fun bufferStatus(totalTimeMsec: Long) {
@@ -92,6 +90,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                             (msg.arg2.toLong() and 0xffffffffL)
                     fragment.updateBufferStatus(duration)
                 }
+                MSG_SAVE_COMPLETE -> {
+                    fragment.saveCompleted(msg.arg1)
+                }
                 else -> throw RuntimeException("Unknown message " + msg.what)
             }
         }
@@ -99,6 +100,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         companion object {
             const val MSG_FRAME_AVAILABLE = 0
             const val MSG_BUFFER_STATUS = 1
+            const val MSG_SAVE_COMPLETE = 2
         }
 
     }
@@ -126,8 +128,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
         binding.btnCapture.setOnClickListener {
             circularEncoder.saveVideo(outputVideo)
-            val action = VideoDoodleFragmentDirections.actionVideoDoodleFragmentToVideoEditLightFragment(outputVideo!!.absolutePath, mutableListOf<SubVideo>().toTypedArray())
-            findNavController().navigate(action)
         }
 
         binding.svMovie.setOnTouchListener { _, motionEvent ->
@@ -136,7 +136,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                     drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
                 }
                 MotionEvent.ACTION_MOVE -> {
-//                    drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
                     fillSpace(motionEvent.x.toInt(), motionEvent.y.toInt())
                 }
                 MotionEvent.ACTION_UP -> {
@@ -154,8 +153,44 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private fun fillSpace(x: Int, y: Int) {
         val last = currentPoint.last()
         for (i in 1..100) {
-            currentPoint.add(Pair(last.first + (x - last.first)*i/100, last.second + (y - last.second)*i/100))
+            currentPoint.add(
+                Pair(
+                    last.first + (x - last.first) * i / 100,
+                    last.second + (y - last.second) * i / 100
+                )
+            )
         }
+    }
+
+    private fun saveCompleted(status: Int) {
+        if (status == 0) {
+            Log.d(TAG, "Save Completed")
+            val action =
+                VideoDoodleFragmentDirections.actionVideoDoodleFragmentToVideoEditLightFragment(
+                    outputVideo!!.absolutePath,
+                    mutableListOf<SubVideo>().toTypedArray()
+                )
+            findNavController().navigate(action)
+        } else {
+            Log.d(TAG, "Save Failed")
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mediaPlayer.stop()
+        mediaPlayer.release()
+        circularEncoder.shutdown()
+        encoderSurface?.release()
+        encoderSurface = null
+        surfaceTexture?.release()
+        surfaceTexture = null
+        displaySurface?.release()
+        displaySurface = null
+        fullFrameBlit?.release(false)
+        fullFrameBlit = null
+        eglCore?.release()
+        eglCore = null
     }
 
     override fun surfaceCreated(p0: SurfaceHolder) {
@@ -171,7 +206,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture!!.setOnFrameAvailableListener(this)
 
         try {
-            circularEncoder = CircularEncoder(1080, 1080, 6000000, 60, 2, handler)
+            circularEncoder = CircularEncoder(1080, 1080, 6000000, 60, 60, handler)
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
@@ -181,11 +216,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private fun playVideoAlt() {
         val surface = Surface(surfaceTexture)
 
-//        현재 앱별 저장소에서 대상 비디오 파일 가져옴
-        mediaPlayer = MediaPlayer.create(
-            context,
-            path.toUri()
-        )
+        mediaPlayer = MediaPlayer.create(context, path.toUri())
         mediaPlayer.setSurface(surface)
         videoWidth = mediaPlayer.videoWidth
         videoHeight = mediaPlayer.videoHeight
@@ -203,11 +234,12 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun surfaceDestroyed(p0: SurfaceHolder) {
         Log.d(TAG, "surfaceDestroyed: holder=$p0")
+        isSurfaceDestroyed = true
     }
 
     override fun onFrameAvailable(p0: SurfaceTexture?) {
         Log.d(TAG, "onFrameAvailable: surfaceTexture=$p0")
-        drawFrame()
+        if (!isSurfaceDestroyed) drawFrame()
     }
 
     private fun drawFrame() {
@@ -245,13 +277,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         circularEncoder.frameAvailableSoon()
         encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
         encoderSurface?.swapBuffers()
-
-
-        frameNum++
     }
 
     private fun drawExtra(currentPoint: List<Pair<Int, Int>>, height: Int) {
-//        점으로 그려짐
         currentPoint.forEach {
             GLES20.glClearColor(1f, 1f, 0f, 1f)
             GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
@@ -259,18 +287,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
             GLES20.glDisable(GLES20.GL_SCISSOR_TEST)
         }
-        println(currentPoint)
-//        점 이어서 선 그리기
-//        GLES20.glClearColor(1f, 1f, 0f, 1f)
-//        val vertices = ByteBuffer.allocateDirect(touchPoints.size * 4).run {
-//            order(ByteOrder.nativeOrder())
-//            asFloatBuffer().apply {
-//                put(touchPoints.toFloatArray())
-//                position(0)
-//            }
-//        }
-//        GLES20.glVertexAttribPointer(0, 3, GLES20.GL_FLOAT, false, 0, vertices)
-//        GLES20.glEnableVertexAttribArray(1)
-//        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, touchPoints.size / 3)
+    }
+
+    companion object {
+        private const val TAG = "VideoDoodleFragmentTAG"
     }
 }
