@@ -13,6 +13,7 @@ import androidx.activity.addCallback
 import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.exoplayer2.MediaItem
@@ -21,20 +22,22 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
 
+@AndroidEntryPoint
 class VideoDoodleLightFragment : Fragment() {
 
     private lateinit var binding: FragmentVideoDoodleLightBinding
     private val args: VideoDoodleLightFragmentArgs by navArgs()
+    private val viewModel: VideoDoodleLightViewModel by viewModels()
 
     private lateinit var viewRecorder: ViewRecorder
     private var recording = false
 
     private lateinit var uri: Uri
     private lateinit var path: String
-    private val subVideos: MutableList<SubVideo> = mutableListOf()
 
     private var doodleColor = 0xFFFF0000
 
@@ -62,6 +65,17 @@ class VideoDoodleLightFragment : Fragment() {
         setVideoView()
         setListener()
         setBackPressed()
+        setViewModel()
+        setAdapter()
+    }
+
+    private fun setViewModel(){
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
+    }
+
+    private fun setAdapter(){
+        binding.rvSubVideos.adapter = SubVideoAdapter()
     }
 
     private fun setDrawingView() {
@@ -85,7 +99,7 @@ class VideoDoodleLightFragment : Fragment() {
                 if (isChecked) {
                     val currentTime = player.currentPosition
                     var canMemo = true
-                    subVideos.forEach {
+                    viewModel!!.subVideos.value!!.forEach {
                         if (it.startingTime < currentTime && currentTime < it.endingTime) {
                             canMemo = false
                         }
@@ -121,7 +135,7 @@ class VideoDoodleLightFragment : Fragment() {
                 val action =
                     VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(
                         path,
-                        subVideos.toTypedArray()
+                        viewModel!!.subVideos.value!!.toTypedArray()
                     )
                 findNavController().navigate(action)
             }
@@ -141,13 +155,11 @@ class VideoDoodleLightFragment : Fragment() {
         try {
             viewRecorder.prepare()
             viewRecorder.start()
-            subVideos.add(
-                SubVideo(
-                    Uri.fromFile(File(context?.filesDir, "$fileName.mp4")).toString(),
-                    player.currentPosition.toInt(),
-                    player.currentPosition.toInt()
-                )
-            )
+            viewModel.setCurrentSubVideo(SubVideo(
+                Uri.fromFile(File(context?.filesDir, "$fileName.mp4")).toString(),
+                player.currentPosition.toInt(),
+                player.currentPosition.toInt()
+            ))
         } catch (e: IOException) {
             Log.e("MainActivity", "startRecord failed", e)
             return
@@ -161,7 +173,7 @@ class VideoDoodleLightFragment : Fragment() {
             viewRecorder.reset()
             viewRecorder.release()
             binding.canvas.removeAllViews()
-            subVideos.last().endingTime = player.currentPosition.toInt()
+            viewModel.setEndTime(player.currentPosition.toInt())
             recording = false
         }
     }
@@ -195,7 +207,7 @@ class VideoDoodleLightFragment : Fragment() {
                 dialog.dismiss()
             }
             .setPositiveButton("삭제") { dialog, which ->
-                subVideos.forEach{
+                viewModel.subVideos.value!!.forEach{
                     val file = File(it.uri.toUri().path)
                     file.delete()
                 }
