@@ -120,19 +120,8 @@ class VideoDoodleLightFragment : Fragment() {
     private fun startRecord() {
         setDrawingView()
         val fileName = System.currentTimeMillis()
-        viewRecorder = ViewRecorder().apply {
-            val width = Math.round(binding.canvas.width.toFloat()/10)*10
-            val height = Math.round(binding.canvas.height.toFloat()/10)*10
-            setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            setVideoFrameRate(50)
-            setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            setVideoSize(width, height)
-            setVideoEncodingBitRate(2000 * 1000)
-            setOutputFile(context?.filesDir.toString() + "/$fileName.mp4")
-            setOnErrorListener(onErrorListener)
-            setRecordedView(binding.canvas)
-        }
+        setViewRecorder()
+        viewRecorder.setOutputFile(context?.filesDir.toString() + "/$fileName.mp4")
         try {
             viewRecorder.prepare()
             viewRecorder.start()
@@ -159,5 +148,20 @@ class VideoDoodleLightFragment : Fragment() {
         Log.e("MainActivity", "MediaRecorder error: type = $what, code = $extra")
         viewRecorder.reset()
         viewRecorder.release()
+    }
+
+    private fun setViewRecorder(){
+        viewRecorder = ViewRecorder().apply {
+            val width = Math.round(binding.canvas.width.toFloat()/10)*10
+            val height = Math.round(binding.canvas.height.toFloat()/10)*10
+            setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setVideoFrameRate(50)
+            setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+            setVideoSize(width, height)
+            setVideoEncodingBitRate(2000 * 1000)
+            setOnErrorListener(onErrorListener)
+            setRecordedView(binding.canvas)
+        }
     }
 }
