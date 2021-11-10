@@ -67,7 +67,7 @@ class CircularEncoder(
          *
          * @param totalTimeMsec Total length, in milliseconds, of buffered video.
          */
-        fun bufferStatus(totalTimeMsec: Long)
+//        fun bufferStatus(totalTimeMsec: Long)
     }
 
     /**
@@ -162,7 +162,7 @@ class CircularEncoder(
         private var mHandler: EncoderHandler? = null
         private val mEncBuffer: CircularEncoderBuffer
         private val mCallback: Callback
-        private var mFrameNum = 0
+//        private var mFrameNum = 0
         private val mLock = ReentrantLock()
         private val condition = mLock.newCondition()
 
@@ -300,10 +300,10 @@ class CircularEncoder(
         fun frameAvailableSoon() {
             if (VERBOSE) Log.d(TAG, "frameAvailableSoon")
             drainEncoder()
-            mFrameNum++
-            if (mFrameNum % 10 == 0) {        // should base off frame rate or clock?
-                mCallback.bufferStatus(mEncBuffer.computeTimeSpanUsec())
-            }
+//            mFrameNum++
+//            if (mFrameNum % 10 == 0) {        // should base off frame rate or clock?
+//                mCallback.bufferStatus(mEncBuffer.computeTimeSpanUsec())
+//            }
         }
 
         /**
