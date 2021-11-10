@@ -22,6 +22,7 @@ import java.io.File
 import java.io.IOException
 import java.lang.RuntimeException
 import java.lang.ref.WeakReference
+import kotlin.system.measureNanoTime
 
 
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
@@ -46,7 +47,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var videoWidth = 0
     private var videoHeight = 0
     private var outputVideo: File? = null
-    private var secondsVideo = 0f
+//    private var secondsVideo = 0f
 
     private lateinit var handler: MainHandler
 
@@ -63,14 +64,14 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             sendMessage(obtainMessage(MSG_SAVE_COMPLETE, status, 0, null))
         }
 
-        override fun bufferStatus(totalTimeMsec: Long) {
-            sendMessage(
-                obtainMessage(
-                    MSG_BUFFER_STATUS,
-                    (totalTimeMsec shr 32).toInt(), totalTimeMsec.toInt()
-                )
-            )
-        }
+//        override fun bufferStatus(totalTimeMsec: Long) {
+//            sendMessage(
+//                obtainMessage(
+//                    MSG_BUFFER_STATUS,
+//                    (totalTimeMsec shr 32).toInt(), totalTimeMsec.toInt()
+//                )
+//            )
+//        }
 
         override fun handleMessage(msg: Message) {
             val fragment: VideoDoodleFragment? = weakReference.get()
@@ -86,9 +87,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                     fragment.drawFrame()
                 }
                 MSG_BUFFER_STATUS -> {
-                    val duration = msg.arg1.toLong() shl 32 or
-                            (msg.arg2.toLong() and 0xffffffffL)
-                    fragment.updateBufferStatus(duration)
+//                    val duration = msg.arg1.toLong() shl 32 or
+//                            (msg.arg2.toLong() and 0xffffffffL)
+//                    fragment.updateBufferStatus(duration)
                 }
                 MSG_SAVE_COMPLETE -> {
                     fragment.saveCompleted(msg.arg1)
@@ -137,6 +138,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                 }
                 MotionEvent.ACTION_MOVE -> {
                     fillSpace(motionEvent.x.toInt(), motionEvent.y.toInt())
+//                    drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
                 }
                 MotionEvent.ACTION_UP -> {
                 }
@@ -152,7 +154,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     private fun fillSpace(x: Int, y: Int) {
         val last = currentPoint.last()
-        for (i in 1..100) {
+        for (i in 1..50) {
             currentPoint.add(
                 Pair(
                     last.first + (x - last.first) * i / 100,
@@ -205,8 +207,10 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture = SurfaceTexture(textureId)
         surfaceTexture!!.setOnFrameAvailableListener(this)
 
+        val width = binding.svMovie.width
+
         try {
-            circularEncoder = CircularEncoder(1080, 1080, 6000000, 60, 60, handler)
+            circularEncoder = CircularEncoder(width, width, 6000000, 30, 60, handler)
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
@@ -224,10 +228,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surface.release()
     }
 
-    private fun updateBufferStatus(durationUsec: Long) {
-        secondsVideo = durationUsec / 1000000.0f
-    }
-
     override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
         Log.d(TAG, "surfaceChanged: format=$p1, width=$p2, height=$p3")
     }
@@ -239,7 +239,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun onFrameAvailable(p0: SurfaceTexture?) {
         Log.d(TAG, "onFrameAvailable: surfaceTexture=$p0")
-        if (!isSurfaceDestroyed) drawFrame()
+//        if (!isSurfaceDestroyed) drawFrame()
+        if (!isSurfaceDestroyed) handler.sendEmptyMessage(MainHandler.MSG_FRAME_AVAILABLE)
     }
 
     private fun drawFrame() {
@@ -249,6 +250,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         displaySurface?.makeCurrent()
         surfaceTexture?.updateTexImage()
         surfaceTexture?.getTransformMatrix(mTmpMatrix)
+
+//        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, )
 
 //        width, height가 videoWidth, VideoHeight보다 더 크다는 가정하에 함. 그 외의 경우도 만들어야 함!
 //        SurfaceView에 그리기
@@ -264,6 +267,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         displaySurface?.swapBuffers()
 
 //        저장하기
+        circularEncoder.frameAvailableSoon()
         encoderSurface?.makeCurrent()
         if (videoWidth > videoHeight) {
             val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
@@ -274,19 +278,21 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
         fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
         drawExtra(currentPoint, height)
-        circularEncoder.frameAvailableSoon()
         encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
         encoderSurface?.swapBuffers()
     }
 
     private fun drawExtra(currentPoint: List<Pair<Int, Int>>, height: Int) {
-        currentPoint.forEach {
-            GLES20.glClearColor(1f, 1f, 0f, 1f)
-            GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
-            GLES20.glScissor(it.first, height - it.second, 15, 15)
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-            GLES20.glDisable(GLES20.GL_SCISSOR_TEST)
+        val time = measureNanoTime {
+            currentPoint.forEach {
+                GLES20.glClearColor(1f, 1f, 0f, 1f)
+                GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
+                GLES20.glScissor(it.first, height - it.second, 15, 15)
+                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+                GLES20.glDisable(GLES20.GL_SCISSOR_TEST)
+            }
         }
+        println(time)
     }
 
     companion object {
