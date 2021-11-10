@@ -9,9 +9,11 @@ import com.kotlinisgood.boomerang.model.OrderState
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.repository.SharedPrefDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +23,8 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
 //    private val queryChannel = BroadcastChannel<String>(Channel.CONFLATED)
-
+    private val searchText: PublishSubject<String> = PublishSubject.create()
+//    private val kotlinDebounceText = debounce(500L, viewModelScope, ::searchVideos)
     private var _videoMemo = MutableLiveData<List<VideoMemo>>()
     val videoMemo: LiveData<List<VideoMemo>> = _videoMemo
 
@@ -30,8 +33,45 @@ class HomeViewModel @Inject constructor(
 
     init {
         getOrderState()
-//        setSearchResult()
+        setQueryDebounceRxJava(searchText)
+
     }
+
+    private fun setQueryDebounceRxJava(searchText: PublishSubject<String>) {
+        searchText
+            .debounce(500, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext{
+                searchVideos(it)
+            }
+            .subscribe()
+    }
+
+    fun sendQueryRxjava(query: String) {
+        searchText.onNext(query)
+    }
+
+/*    fun sendQueryCoroutine(query: String) {
+        kotlinDebounceText(query)
+    }*/
+
+/*
+    private fun <T> debounce(
+        waitMs: Long,
+        scope: CoroutineScope,
+        destinationFunction: (T) -> Unit
+    ): (T) -> Unit {
+        var debounceJob: Job? = null
+        return { param: T ->
+            debounceJob?.cancel()
+            debounceJob = scope.launch {
+                delay(waitMs)
+                destinationFunction(param)
+            }
+        }
+    }
+*/
 
    /* @FlowPreview
     @ExperimentalCoroutinesApi
@@ -40,7 +80,7 @@ class HomeViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 queryChannel
                     .asFlow()
-                    .debounce(1000)
+                    .debounce(500)
                     .filter {
                         return@filter it.isNotEmpty()
                     }
