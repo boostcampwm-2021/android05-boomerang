@@ -74,32 +74,36 @@ class VideoDoodleLightFragment : Fragment() {
     private fun setListener() {
         with(binding){
             canvas.isEnabled = false
-            btnMemoStart.setOnClickListener {
-                val currentTime = player.currentPosition
-                var canMemo = true
-                subVideos.forEach{
-                    if (it.startingTime<currentTime&&currentTime<it.endingTime){
-                        canMemo = false
+            toggleBtnDoodle.addOnButtonCheckedListener { group, checkedId, isChecked ->
+                if (isChecked){
+                    val currentTime = player.currentPosition
+                    var canMemo = true
+                    subVideos.forEach{
+                        if (it.startingTime<currentTime&&currentTime<it.endingTime){
+                            canMemo = false
+                        }
                     }
-                }
-                if(recording){
-                    stopRecord()
-                    binding.canvas.isEnabled = false
-                } else {
                     if (canMemo) {
                         startRecord()
                         binding.canvas.isEnabled = true
                     } else {
+                        toggleBtnDoodle.uncheck(R.id.btn_doodle)
                         Toast.makeText(context, "이미 메모가 있습니다", Toast.LENGTH_SHORT).show()
                     }
+
+                } else {
+                    stopRecord()
+                    binding.canvas.isEnabled = false
                 }
             }
+
             btnMoveToResult.setOnClickListener {
                 binding.canvas.isEnabled = false
                 stopRecord()
                 val action = VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(path, subVideos.toTypedArray())
                 findNavController().navigate(action)
             }
+
             rbRed.isChecked = true
             rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
                 when(checkedId){
@@ -137,7 +141,6 @@ class VideoDoodleLightFragment : Fragment() {
             Log.e("MainActivity", "startRecord failed", e)
             return
         }
-        Log.d("MainActivity", "startRecord successfully!")
         recording = true
     }
 
@@ -148,9 +151,7 @@ class VideoDoodleLightFragment : Fragment() {
             viewRecorder.release()
             binding.canvas.removeAllViews()
             subVideos.last().endingTime = player.currentPosition.toInt()
-            Log.d("MainActivity", "stopRecord successfully!")
             recording = false
-            println(subVideos)
         }
     }
 
