@@ -53,7 +53,7 @@
 
             <Button
                 android:id="@+id/btn_doodle"
-                style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                style="@style/Widget.App.Button.OutlinedButton.IconOnly.Toggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_baseline_edit_24" />
