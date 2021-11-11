@@ -108,13 +108,13 @@ class HomeFragment : Fragment() {
     private fun setSpeedDial() {
         dataBinding.sdHomeShowItems.addAllActionItems(
             listOf(
-                SpeedDialActionItem.Builder(R.id.menu_home_sd_video, R.drawable.ic_video)
+                SpeedDialActionItem.Builder(R.id.menu_home_sd_video, R.drawable.image_our_memo)
                     .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                     .setLabel(R.string.menu_home_sd_video)
                     .create(),
                 SpeedDialActionItem.Builder(
                     R.id.menu_home_sd_video_light,
-                    R.drawable.ic_video_light
+                    R.drawable.image_my_memo
                 )
                     .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                     .setLabel(R.string.menu_home_sd_video_light)
