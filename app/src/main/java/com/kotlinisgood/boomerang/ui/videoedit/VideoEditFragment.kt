@@ -93,12 +93,6 @@ class VideoEditFragment : Fragment() {
         player = SimpleExoPlayer.Builder(requireContext()).build()
         player.setMediaItem(mediaItem)
         binding.exoplayer.player = player
-
-        var string = ""
-        viewModel.getSubVideo().forEach {
-            string += "$it\n"
-        }
-        binding.tvSubvideos.text = string
     }
 
     private fun setPlayer() {
