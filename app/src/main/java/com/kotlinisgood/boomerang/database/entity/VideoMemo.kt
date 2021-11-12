@@ -12,7 +12,7 @@ data class VideoMemo(
     @ColumnInfo(name = "memos") val memos: List<SubVideo>,
     @ColumnInfo(name = "create_date") val createTime: Long,
     @ColumnInfo(name = "edit_date") val editTime: Long,
-    @ColumnInfo(name = "memo_type") val memoType: Int
+    @ColumnInfo(name = "memo_type") val memoType: Int?
 ){
     @PrimaryKey(autoGenerate = true) var id: Int=0
 }

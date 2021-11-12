@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 
 class VideoDoodleLightViewModel : ViewModel() {
 
-    private val _subVideos: MutableLiveData<MutableList<SubVideo>> =
-        MutableLiveData(mutableListOf())
-    val subVideos: LiveData<MutableList<SubVideo>> get() = _subVideos
+    private val _subVideos: MutableLiveData<List<SubVideo>> =
+        MutableLiveData(listOf())
+    val subVideos: LiveData<List<SubVideo>> get() = _subVideos
 
     private var currentSubVideo: SubVideo? = null
 
