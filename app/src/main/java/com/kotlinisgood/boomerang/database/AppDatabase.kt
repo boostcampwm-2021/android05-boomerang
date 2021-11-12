@@ -7,7 +7,7 @@ import com.kotlinisgood.boomerang.database.converter.Converter
 import com.kotlinisgood.boomerang.database.dao.VideoMemoDao
 import com.kotlinisgood.boomerang.database.entity.VideoMemo
 
-@Database(entities = [VideoMemo::class], version = 1, exportSchema = false)
+@Database(entities = [VideoMemo::class], version = 2, exportSchema = false)
 @TypeConverters(Converter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun videoMemoDao(): VideoMemoDao
