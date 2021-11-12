@@ -21,9 +21,10 @@ jobs:
           cache: gradle
 
       - name: Set up secret Key
+        shell: bash
         env:
           GOOGLE_SERVICES_JSON: ${{secrets.GOOGLE_SERVICES_JSON}}
-        run:
+        run: |
           touch app/google-services.json
           echo $GOOGLE_SERVICES_JSON > app/google-services.json
 
