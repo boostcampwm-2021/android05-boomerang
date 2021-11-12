@@ -5,6 +5,8 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs")
+    id('com.google.firebase.crashlytics')
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -68,4 +70,14 @@ dependencies {
     //ExoPlayer
     implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
     implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
+
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:29.0.0')
+
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    implementation 'com.google.firebase:firebase-core:20.0.0'
 }
