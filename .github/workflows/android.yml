@@ -20,14 +20,16 @@ jobs:
           distribution: 'adopt'
           cache: gradle
 
+
+      - name: Set up secret Key
+        env:
+          GOOGLE_SERVICES_JSON: ${{secrets.GOOGLE_SERVICES_JSON}}
+        run:
+          touch app/google-services.json
+          echo $GOOGLE_SERVICES_JSON > app/google-services.json
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Set up secret Key
-        env:
-          GOOGLE_SERVICES_JSON: ${{secrets.GOOGLE_SERVICES_JSON}}
-        run: |
-          touch app/google-services.json
-          echo $GOOGLE_SERVICES_JSON > app/google-services.json
