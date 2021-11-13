@@ -2,7 +2,6 @@ package com.kotlinisgood.boomerang.ui.videodoodle
 
 import android.graphics.SurfaceTexture
 import android.media.MediaPlayer
-import android.net.Uri
 import android.opengl.GLES20
 import android.os.Bundle
 import android.os.Handler
@@ -34,8 +33,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private val path by lazy { args.videoPath }
 
     private var eglCore: EglCore? = null
-    private var displaySurface: WindowSurface? = null
-    private var encoderSurface: WindowSurface? = null
+    private var displaySurface: EglWindowSurface? = null
+    private var encoderSurface: EglWindowSurface? = null
     private var surfaceTexture: SurfaceTexture? = null
     private lateinit var surfaceView: SurfaceView
     private var textureId = 0
@@ -198,8 +197,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     override fun surfaceCreated(p0: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated: surfaceHolder=$p0")
 
+//        EGL 설정
         eglCore = EglCore()
-        displaySurface = WindowSurface(eglCore!!, p0.surface, false)
+        displaySurface = EglWindowSurface(eglCore!!, p0.surface, false)
         displaySurface!!.makeCurrent()
 
         fullFrameBlit = FullFrameRect(Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT))
@@ -214,7 +214,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
-        encoderSurface = WindowSurface(eglCore!!, circularEncoder.inputSurface, true)
+        encoderSurface = EglWindowSurface(eglCore!!, circularEncoder.inputSurface, true)
     }
 
     private fun playVideoAlt() {
