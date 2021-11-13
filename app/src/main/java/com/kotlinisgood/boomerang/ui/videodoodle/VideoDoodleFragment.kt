@@ -198,7 +198,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     override fun surfaceCreated(p0: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated: surfaceHolder=$p0")
 
-        eglCore = EglCore(null, EglCore.FLAG_RECORDABLE)
+        eglCore = EglCore()
         displaySurface = WindowSurface(eglCore!!, p0.surface, false)
         displaySurface!!.makeCurrent()
 
