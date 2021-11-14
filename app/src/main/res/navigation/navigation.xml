@@ -17,6 +17,9 @@
                 android:name="memoType"
                 app:argType="integer" />
         </action>
+        <action
+            android:id="@+id/action_homeFragment_to_memoFragment"
+            app:destination="@id/memoFragment" />
     </fragment>
 
     <fragment
@@ -52,7 +55,11 @@
         android:id="@+id/memoFragment"
         android:name="com.kotlinisgood.boomerang.ui.memo.MemoFragment"
         android:label="fragment_memo"
-        tools:layout="@layout/fragment_memo" />
+        tools:layout="@layout/fragment_memo" >
+        <argument
+            android:name="id"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingFragment"
