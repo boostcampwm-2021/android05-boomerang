@@ -11,6 +11,9 @@ interface VideoMemoDao {
     @Query("SELECT * FROM video_memo")
     suspend fun getAll(): List<VideoMemo>
 
+    @Query("SELECT * FROM video_memo WHERE id = :id")
+    suspend fun getVideoMemo(id: Int): VideoMemo
+
     @Insert
     suspend fun insertAll(vararg videoMemos: VideoMemo)
 

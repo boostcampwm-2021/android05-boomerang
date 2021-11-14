@@ -11,6 +11,10 @@ class AppRepository @Inject constructor(
         return localDataSource.getVideoMemos()
     }
 
+    suspend fun getVideoMemo(id: Int): VideoMemo {
+        return localDataSource.getVideoMemo(id)
+    }
+
     suspend fun saveVideoMemo(memo: VideoMemo){
         localDataSource.saveVideoMemo(memo)
     }
