@@ -43,8 +43,4 @@ object DatabaseModule {
         return database.videoMemoDao()
     }
 
-    @Provides
-    fun provideContentResolver(@ApplicationContext appContext: Context): ContentResolver {
-        return appContext.contentResolver
-    }
 }
