@@ -59,6 +59,9 @@
         <argument
             android:name="id"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_memoFragment_to_videoModifyLightFragment"
+            app:destination="@id/videoModifyLightFragment" />
     </fragment>
 
     <fragment
@@ -130,5 +133,17 @@
         android:name="com.kotlinisgood.boomerang.ui.trashbin.TrashBinFragment"
         android:label="TrashBinFragment"
         tools:layout="@layout/fragment_trash_bin" />
+    <fragment
+        android:id="@+id/videoModifyLightFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videomodifylight.VideoModifyLightFragment"
+        android:label="VideoModifyLightFragment" >
+        <argument
+            android:name="id"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_videoModifyLightFragment_to_memoFragment"
+            app:destination="@id/memoFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
 
 </navigation>
