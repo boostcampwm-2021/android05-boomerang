@@ -54,7 +54,15 @@ class HomeFragment : Fragment() {
     }
 
     private fun setAdapter() {
-        dataBinding.rvHomeShowVideos.adapter = HomeAdapter()
+        val adapter = HomeAdapter()
+        adapter.setOnItemClickListener(object: HomeAdapter.OnItemClickListener{
+            override fun onItemClick(view: View, position: Int) {
+                val id = adapter.currentList[position].id
+                val action = HomeFragmentDirections.actionHomeFragmentToMemoFragment(id)
+                findNavController().navigate(action)
+            }
+        })
+        dataBinding.rvHomeShowVideos.adapter = adapter
     }
 
     private fun loadVideoMemo() {
