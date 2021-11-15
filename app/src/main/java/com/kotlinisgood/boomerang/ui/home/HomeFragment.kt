@@ -96,16 +96,8 @@ class HomeFragment : Fragment() {
         dataBinding.tbHome.inflateMenu(R.menu.menu_fragment_home)
         dataBinding.tbHome.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.menu_home_order_create -> {
-                    if (viewModel.orderSetting.value != OrderState.CREATE) {
-                        viewModel.setOrderState(OrderState.CREATE)
-                    }
-                    true
-                }
-                R.id.menu_home_order_modify -> {
-                    if (viewModel.orderSetting.value != OrderState.MODIFY) {
-                        viewModel.setOrderState(OrderState.MODIFY)
-                    }
+                R.id.menu_home_order -> {
+                    findNavController().navigate(R.id.action_homeFragment_to_bottomSheetFragment)
                     true
                 }
                 else -> false

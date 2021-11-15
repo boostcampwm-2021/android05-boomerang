@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_homeFragment_to_memoFragment"
             app:destination="@id/memoFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_bottomSheetFragment"
+            app:destination="@id/bottomSheetFragment" />
     </fragment>
 
     <fragment
@@ -141,5 +144,15 @@
             app:popUpTo="@id/memoFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <dialog
+        android:id="@+id/bottomSheetFragment"
+        android:name="com.kotlinisgood.boomerang.ui.home.bottomsheet.BottomSheetFragment"
+        android:label="BottomSheetFragment" >
+        <action
+            android:id="@+id/action_bottomSheetFragment_to_homeFragment"
+            app:destination="@id/navigation"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="false" />
+    </dialog>
 
 </navigation>

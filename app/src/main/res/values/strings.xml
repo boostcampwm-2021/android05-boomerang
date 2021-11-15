@@ -22,4 +22,9 @@
     <string name="menu_home_order_create_title">생성일 기준</string>
     <string name="menu_home_order_modify_title">수정일 기준</string>
     <string name="menu_memo_modify">메모 수정</string>
+    <string name="bottom_sheet_title">정렬 기준</string>
+    <string name="bottom_sheet_create_recent">생성일 최신 순</string>
+    <string name="bottom_sheet_create_old">생성일 오래된 순</string>
+    <string name="bottom_sheet_modify_recent">수정일 최신 순</string>
+    <string name="bottom_sheet_modify_old">수정일 오래된 순</string>
 </resources>

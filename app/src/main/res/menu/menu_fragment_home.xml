@@ -7,21 +7,7 @@
         android:title="@string/menu_home_order_title"
         android:icon="@drawable/ic_filter_list"
         android:contentDescription="@string/menu_home_order_description"
-        app:showAsAction="ifRoom" >
-
-        <menu>
-            <item
-                android:id="@+id/menu_home_order_create"
-                android:title="@string/menu_home_order_create_title"
-                app:showAsAction="never" />
-
-            <item
-                android:id="@+id/menu_home_order_modify"
-                android:title="@string/menu_home_order_modify_title"
-                app:showAsAction="never" />
-        </menu>
-
-    </item>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_home_setting"
