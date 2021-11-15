@@ -21,18 +21,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/btTest"
+            android:id="@+id/bt_voice_record_start_stt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="음성인식"
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <Button
-            android:id="@+id/btStop"
+            android:id="@+id/bt_voice_record_make_file"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="음성중지"
-            app:layout_constraintBottom_toTopOf="@id/btTest" />
+            android:text="음성 저장"
+            app:layout_constraintBottom_toTopOf="@id/bt_voice_record_start_stt" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -39,7 +39,6 @@ class VoiceRecordSecondFragment : Fragment() {
     val dataBinding get() = _dataBinding!!
 
     private val recognizerIntent by lazy { Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH) }
-    private var recordingState = false
 
     private val viewModel by viewModels<VoiceRecordViewModel>()
 
@@ -60,12 +59,14 @@ class VoiceRecordSecondFragment : Fragment() {
                 if (result.resultCode == AppCompatActivity.RESULT_OK) {
                     val intent = result.data
                     intent ?: return@ActivityResultCallback
-                    val speechList = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                    dataBinding.tvTest.text = speechList?.get(0) ?: "Null"
-                    val audioUri = intent.data as Uri
-                    lifecycleScope.launch {
-                        withContext(Dispatchers.IO) {
-                            saveAudio(audioUri)
+                    val recognizedText: String? = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0)
+                    recognizedText?.let {
+                        dataBinding.tvTest.text
+                        val audioUri = intent.data as Uri
+                        lifecycleScope.launch {
+                            withContext(Dispatchers.IO) {
+                                saveAudio(audioUri, it)
+                            }
                         }
                     }
                     self.launch(recognizerIntent)
@@ -124,20 +125,23 @@ class VoiceRecordSecondFragment : Fragment() {
     }
 
     private fun setOnClickListener() {
-        dataBinding.btTest.setOnClickListener {
+        dataBinding.btVoiceRecordStartStt.setOnClickListener {
             checkPermissions()
         }
-        dataBinding.btStop.setOnClickListener {
-            recordingState = false
+        dataBinding.btVoiceRecordMakeFile.setOnClickListener {
+            // FileInputStream
+            val voiceList = viewModel.voiceList
+            // SequenceInputStream
+
+            // https://stackoverflow.com/questions/35340025/how-to-merge-two-or-more-mp3-audio-file-in-android
         }
     }
 
     private fun speak() {
-        recordingState = true
         activityCallback.launch(recognizerIntent)
     }
 
-    private fun saveAudio(audioUri: Uri) {
+    private fun saveAudio(audioUri: Uri, recognizedText: String) {
         var input: InputStream? = null
         var output: FileOutputStream? = null
         try {
@@ -159,7 +163,7 @@ class VoiceRecordSecondFragment : Fragment() {
                 setDataSource(file.absolutePath)
             }.also {
                 val durationStr = it.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                durationStr?.let { viewModel.addSubAudio(file.absolutePath, durationStr.toInt()) }
+                durationStr?.let { viewModel.addSubAudio(file.absolutePath, durationStr.toInt(), recognizedText) }
             }
         } catch (e: IOException) {
             e.printStackTrace()

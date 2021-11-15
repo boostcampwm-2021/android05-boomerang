@@ -1,7 +1,5 @@
 package com.kotlinisgood.boomerang.ui.voicerecord
 
-import java.time.Duration
-
-data class Voice(val uri: String, val duration: Int)
+data class Voice(val uri: String, val duration: Int, val recognizedText: String)
 
 
