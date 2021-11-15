@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -23,7 +22,6 @@ import com.kotlinisgood.boomerang.databinding.FragmentVideoModifyLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.DrawView
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideoAdapter
-import com.kotlinisgood.boomerang.ui.videodoodlelight.VideoDoodleLightFragmentDirections
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -227,6 +225,14 @@ class VideoModifyLightFragment : Fragment() {
     private fun setBackPressed() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
             showDialog()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        player.run {
+            stop()
+            release()
         }
     }
 }

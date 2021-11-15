@@ -242,4 +242,12 @@ class VideoDoodleLightFragment : Fragment() {
             showDialog()
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        player.run {
+            stop()
+            release()
+        }
+    }
 }
