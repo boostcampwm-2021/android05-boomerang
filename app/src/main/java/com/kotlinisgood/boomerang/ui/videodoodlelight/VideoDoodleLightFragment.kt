@@ -69,13 +69,19 @@ class VideoDoodleLightFragment : Fragment() {
         setAdapter()
     }
 
-    private fun setViewModel(){
+    private fun setViewModel() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
     }
 
-    private fun setAdapter(){
-        binding.rvSubVideos.adapter = SubVideoAdapter()
+    private fun setAdapter() {
+        val subVideoAdapter = SubVideoAdapter()
+        subVideoAdapter.setOnItemClickListener(object : SubVideoAdapter.OnSubVideoClickListener {
+            override fun onItemClick(v: View, position: Int) {
+                showSubVideoDialog(position)
+            }
+        })
+        binding.rvSubVideos.adapter = subVideoAdapter
     }
 
     private fun setDrawingView() {
@@ -155,11 +161,13 @@ class VideoDoodleLightFragment : Fragment() {
         try {
             viewRecorder.prepare()
             viewRecorder.start()
-            viewModel.setCurrentSubVideo(SubVideo(
-                Uri.fromFile(File(context?.filesDir, "$fileName.mp4")).toString(),
-                player.currentPosition.toInt(),
-                player.currentPosition.toInt()
-            ))
+            viewModel.setCurrentSubVideo(
+                SubVideo(
+                    Uri.fromFile(File(context?.filesDir, "$fileName.mp4")).toString(),
+                    player.currentPosition.toInt(),
+                    player.currentPosition.toInt()
+                )
+            )
         } catch (e: IOException) {
             Log.e("MainActivity", "startRecord failed", e)
             return
@@ -207,7 +215,7 @@ class VideoDoodleLightFragment : Fragment() {
                 dialog.dismiss()
             }
             .setPositiveButton("삭제") { dialog, which ->
-                viewModel.subVideos.value!!.forEach{
+                viewModel.subVideos.value!!.forEach {
                     val file = File(it.uri.toUri().path)
                     file.delete()
                 }
@@ -216,8 +224,21 @@ class VideoDoodleLightFragment : Fragment() {
             .show()
     }
 
+    private fun showSubVideoDialog(position: Int) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("해당 메모를 삭제하시겠습니까?")
+            .setMessage("삭제한 메모는 되돌릴 수 없습니다.")
+            .setNegativeButton("취소") { dialog, which ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("삭제") { dialog, which ->
+                viewModel.deleteSubVideo(position)
+            }
+            .show()
+    }
+
     private fun setBackPressed() {
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             showDialog()
         }
     }

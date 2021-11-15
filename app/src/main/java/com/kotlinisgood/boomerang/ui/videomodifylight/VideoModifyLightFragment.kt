@@ -75,7 +75,13 @@ class VideoModifyLightFragment : Fragment() {
     }
 
     private fun setAdapter(){
-        binding.rvSubVideos.adapter = SubVideoAdapter()
+        val subVideoAdapter = SubVideoAdapter()
+        subVideoAdapter.setOnItemClickListener(object : SubVideoAdapter.OnSubVideoClickListener {
+            override fun onItemClick(v: View, position: Int) {
+                showSubVideoDialog(position)
+            }
+        })
+        binding.rvSubVideos.adapter = subVideoAdapter
     }
 
     private fun setDrawingView() {
@@ -201,6 +207,19 @@ class VideoModifyLightFragment : Fragment() {
             }
             .setPositiveButton("나가기") { dialog, which ->
                 findNavController().popBackStack()
+            }
+            .show()
+    }
+
+    private fun showSubVideoDialog(position: Int) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("해당 메모를 삭제하시겠습니까?")
+            .setMessage("삭제한 메모는 되돌릴 수 없습니다.")
+            .setNegativeButton("취소") { dialog, which ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("삭제") { dialog, which ->
+                viewModel.deleteSubVideo(position)
             }
             .show()
     }
