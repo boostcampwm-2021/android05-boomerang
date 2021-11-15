@@ -190,4 +190,13 @@ class MemoFragment : Fragment() {
         val index = viewModel.getSubVideo().indexOf(currentSubVideo)
         viewModel.alphaMovieViews[index] = alphaView
     }
+
+    override fun onPause() {
+        super.onPause()
+        player.run {
+            removeListener(onPlayStateChangeListener)
+            stop()
+            release()
+        }
+    }
 }

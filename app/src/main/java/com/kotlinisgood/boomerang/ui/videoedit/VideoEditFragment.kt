@@ -192,6 +192,15 @@ class VideoEditFragment : Fragment() {
         viewModel.alphaMovieViews[index] = alphaView
     }
 
+    override fun onPause() {
+        super.onPause()
+        player.run {
+            player.removeListener(onPlayStateChangeListener)
+            stop()
+            release()
+        }
+    }
+
     companion object {
         const val VIDEO_MODE_FRAME = 10000000
         const val VIDEO_MODE_SUB_VIDEO = 10000001
