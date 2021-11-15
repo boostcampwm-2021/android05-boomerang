@@ -22,19 +22,19 @@ class HomeViewModel @Inject constructor(
     private val sharedPref: SharedPrefDataSource,
 ) : ViewModel() {
 
-//    private val queryChannel = BroadcastChannel<String>(Channel.CONFLATED)
+    //    private val queryChannel = BroadcastChannel<String>(Channel.CONFLATED)
     private val searchText: PublishSubject<String> = PublishSubject.create()
-//    private val kotlinDebounceText = debounce(500L, viewModelScope, ::searchVideos)
+
+    //    private val kotlinDebounceText = debounce(500L, viewModelScope, ::searchVideos)
     private var _videoMemo = MutableLiveData<List<VideoMemo>>()
     val videoMemo: LiveData<List<VideoMemo>> = _videoMemo
 
     private var _orderSetting = MutableLiveData<OrderState>()
-    val orderSetting: LiveData<OrderState> get() = _orderSetting
+    private val orderSetting: LiveData<OrderState> get() = _orderSetting
 
     init {
         getOrderState()
         setQueryDebounceRxJava(searchText)
-
     }
 
     private fun setQueryDebounceRxJava(searchText: PublishSubject<String>) {
@@ -42,7 +42,7 @@ class HomeViewModel @Inject constructor(
             .debounce(500, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext{
+            .doOnNext {
                 searchVideos(it)
             }
             .subscribe()
@@ -73,57 +73,51 @@ class HomeViewModel @Inject constructor(
     }
 */
 
-   /* @FlowPreview
-    @ExperimentalCoroutinesApi
-    fun setSearchResult() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                queryChannel
-                    .asFlow()
-                    .debounce(500)
-                    .filter {
-                        return@filter it.isNotEmpty()
-                    }
-                    .distinctUntilChanged()
-                    .mapLatest { query ->
-                        try {
-                            repository.searchVideoByKeyword(query)
-                        } catch (e: CancellationException) {
-                            throw e
-                        }
-                    }
-            }.collect {
-                _videoMemo.value = it
-            }
-        }
-    }
+    /* @FlowPreview
+     @ExperimentalCoroutinesApi
+     fun setSearchResult() {
+         viewModelScope.launch {
+             withContext(Dispatchers.IO) {
+                 queryChannel
+                     .asFlow()
+                     .debounce(500)
+                     .filter {
+                         return@filter it.isNotEmpty()
+                     }
+                     .distinctUntilChanged()
+                     .mapLatest { query ->
+                         try {
+                             repository.searchVideoByKeyword(query)
+                         } catch (e: CancellationException) {
+                             throw e
+                         }
+                     }
+             }.collect {
+                 _videoMemo.value = it
+             }
+         }
+     }
 
-    @ExperimentalCoroutinesApi
-    fun sendQueryToChannel(query: String?) {
-        query?: return
-        viewModelScope.launch {
-            queryChannel.send(query)
-        }
-    }*/
+     @ExperimentalCoroutinesApi
+     fun sendQueryToChannel(query: String?) {
+         query?: return
+         viewModelScope.launch {
+             queryChannel.send(query)
+         }
+     }*/
 
     fun loadVideoMemo() {
         viewModelScope.launch {
             val videos = repository.getVideoMemos()
-            _videoMemo.value = if (orderSetting.value == OrderState.MODIFY) {
+            _videoMemo.value = if (orderSetting.value == OrderState.MODIFY_RECENT) {
                 videos.sortedBy { it.editTime }.reversed()
+            } else if (orderSetting.value == OrderState.MODIFY_OLD) {
+                videos.sortedBy { it.editTime }
+            } else if (orderSetting.value == OrderState.CREATE_OLD) {
+                videos.sortedBy { it.createTime }
             } else {
                 videos.sortedBy { it.createTime }.reversed()
             }
-        }
-    }
-
-    private fun changeVideosOrder() {
-        val tmpVideos = videoMemo.value?.toMutableList() ?: return
-        val order = orderSetting.value?.order ?: return
-        _videoMemo.value =  if (order == "modify") {
-            tmpVideos.sortedBy { it.editTime }.reversed()
-        } else {
-            tmpVideos.sortedBy { it.createTime }.reversed()
         }
     }
 
@@ -131,18 +125,8 @@ class HomeViewModel @Inject constructor(
         _orderSetting.value = sharedPref.getOrderState()
     }
 
-    fun setOrderState(orderState: OrderState) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                sharedPref.saveOrderState(orderState)
-            }
-            _orderSetting.value = orderState
-            changeVideosOrder()
-        }
-    }
-
     fun searchVideos(query: String?) {
-        query?: return
+        query ?: return
         viewModelScope.launch {
             val videos = withContext(Dispatchers.IO) {
                 repository.searchVideoByKeyword(query).reversed()

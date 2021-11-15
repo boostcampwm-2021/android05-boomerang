@@ -21,8 +21,10 @@ class SharedPrefDataSource @Inject constructor(context: Context) {
 
     fun getOrderState(): OrderState {
         return when (sharedPref.getString(ORDER_STATE, "X") ?: "X") {
-            "create" -> { OrderState.CREATE }
-            "modify" -> { OrderState.MODIFY }
+            "create_recent" -> { OrderState.CREATE_RECENT }
+            "create_old" -> {OrderState.CREATE_OLD}
+            "modify_recent" -> { OrderState.MODIFY_RECENT }
+            "modify_old" -> {OrderState.MODIFY_OLD}
             else -> { OrderState.NONE }
         }
     }
