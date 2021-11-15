@@ -196,6 +196,8 @@ class Texture2dProgram(
         private const val TAG = "Texture2dProgramTAG"
 
         // Simple vertex shader, used for all programs.
+//        attribute로 들어간 aPostition과 aTextureCoord는 위에서 순서대로 넣어준 것이다
+//        varying은 fragment shader로 연결된다
         private val VERTEX_SHADER = ("uniform mat4 uMVPMatrix;\n" +
                 "uniform mat4 uTexMatrix;\n" +
                 "attribute vec4 aPosition;\n" +

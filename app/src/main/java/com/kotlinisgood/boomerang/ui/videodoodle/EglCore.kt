@@ -134,9 +134,7 @@ class EglCore {
             // called makeCurrent() before create?
             Log.d(TAG, "NOTE: makeCurrent w/o display")
         }
-        if (!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {
-            throw Exception("eglMakeCurrent failed")
-        }
+        if (!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) throw Exception("EGL Current 설정 실패")
     }
 
     /**
