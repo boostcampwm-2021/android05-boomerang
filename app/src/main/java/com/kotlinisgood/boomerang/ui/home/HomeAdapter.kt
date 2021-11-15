@@ -1,6 +1,7 @@
 package com.kotlinisgood.boomerang.ui.home
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,32 +12,42 @@ import com.kotlinisgood.boomerang.ui.trashbin.VideoMemoDiffCallback
 class HomeAdapter :
     ListAdapter<VideoMemo, HomeAdapter.MemoViewHolder>(VideoMemoDiffCallback()) {
 
+    private var itemClickListener: OnItemClickListener? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoViewHolder {
-        return MemoViewHolder.from(parent)
+        return MemoViewHolder(
+            ItemRvHomeShowVideosBinding.inflate(
+                LayoutInflater.from(
+                    parent.context
+                ), parent, false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: MemoViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class MemoViewHolder(
+    inner class MemoViewHolder(
         private val binding: ItemRvHomeShowVideosBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            itemView.setOnClickListener {
+                itemClickListener?.onItemClick(itemView, adapterPosition)
+            }
+        }
 
         fun bind(item: VideoMemo) {
             binding.videoMemo = item
         }
+    }
 
-        companion object {
-            fun from(parent: ViewGroup): MemoViewHolder {
-                return MemoViewHolder(
-                    ItemRvHomeShowVideosBinding.inflate(
-                        LayoutInflater.from(
-                            parent.context
-                        ), parent, false
-                    ),
-                )
-            }
-        }
+    interface OnItemClickListener {
+        fun onItemClick(view: View, position: Int)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        itemClickListener = listener
     }
 }
