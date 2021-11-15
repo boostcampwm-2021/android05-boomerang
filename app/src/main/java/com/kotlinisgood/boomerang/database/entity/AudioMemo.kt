@@ -5,12 +5,13 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "audio_memo")
-class AudioMemo (
+class AudioMemo(
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "audio_path") val path: String,
     @ColumnInfo(name = "create_date") val createTime: Long,
     @ColumnInfo(name = "text_list") val textList: List<String>,
     @ColumnInfo(name = "time_list") val timeList: List<Int>,
 ) {
-    @PrimaryKey(autoGenerate = true) var id: Int = 0
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
 }

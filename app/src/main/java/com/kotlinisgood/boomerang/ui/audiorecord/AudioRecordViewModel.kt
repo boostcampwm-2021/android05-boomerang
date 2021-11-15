@@ -1,8 +1,13 @@
 package com.kotlinisgood.boomerang.ui.audiorecord
 
 import androidx.lifecycle.ViewModel
+import com.kotlinisgood.boomerang.repository.AppRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class AudioRecordViewModel : ViewModel() {
+@HiltViewModel
+class AudioRecordViewModel @Inject constructor(repository: AppRepository): ViewModel() {
+
     val voiceList = mutableListOf<Audio>()
 
     fun addSubAudio(path: String, duration: Int, recognizedText: String) {
