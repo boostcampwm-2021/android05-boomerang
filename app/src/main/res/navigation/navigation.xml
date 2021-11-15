@@ -129,11 +129,6 @@
 
 
     <fragment
-        android:id="@+id/trashBinFragment"
-        android:name="com.kotlinisgood.boomerang.ui.trashbin.TrashBinFragment"
-        android:label="TrashBinFragment"
-        tools:layout="@layout/fragment_trash_bin" />
-    <fragment
         android:id="@+id/videoModifyLightFragment"
         android:name="com.kotlinisgood.boomerang.ui.videomodifylight.VideoModifyLightFragment"
         android:label="VideoModifyLightFragment" >
@@ -143,7 +138,8 @@
         <action
             android:id="@+id/action_videoModifyLightFragment_to_memoFragment"
             app:destination="@id/memoFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpTo="@id/memoFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>
