@@ -1,11 +1,11 @@
 package com.kotlinisgood.boomerang.di
 
-import android.content.ContentResolver
 import android.content.Context
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kotlinisgood.boomerang.database.AppDatabase
+import com.kotlinisgood.boomerang.database.dao.AudioMemoDao
 import com.kotlinisgood.boomerang.database.dao.VideoMemoDao
 import dagger.Module
 import dagger.Provides
@@ -41,6 +41,11 @@ object DatabaseModule {
     @Provides
     fun provideVideoMemoDao(database: AppDatabase): VideoMemoDao {
         return database.videoMemoDao()
+    }
+
+    @Provides
+    fun provideAudioMemoDao(database: AppDatabase): AudioMemoDao {
+        return database.audioMemoDao()
     }
 
 }
