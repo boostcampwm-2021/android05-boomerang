@@ -29,12 +29,19 @@ object DatabaseModule {
             }
         }
 
+        val migration_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `audio_memo` (`title` TEXT NOT NULL, `audio_path` TEXT NOT NULL, `create_date` LONG NOT NULL, `text_List` TEXT NOT NULL, `time_list` TEXT NOT NULL )")
+            }
+        }
+
         return Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
             "memo.db"
         )
             .addMigrations(migration_1_2)
+            .addMigrations(migration_2_3)
             .build()
     }
 
