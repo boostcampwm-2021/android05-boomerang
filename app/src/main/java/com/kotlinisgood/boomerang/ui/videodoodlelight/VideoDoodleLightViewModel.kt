@@ -26,4 +26,10 @@ class VideoDoodleLightViewModel : ViewModel() {
         currentSubVideo = null
         _subVideos.value = subs
     }
+
+    fun deleteSubVideo(position: Int) {
+        val subs = subVideos.value!!.toMutableList()
+        subs.removeAt(position)
+        _subVideos.value = subs
+    }
 }

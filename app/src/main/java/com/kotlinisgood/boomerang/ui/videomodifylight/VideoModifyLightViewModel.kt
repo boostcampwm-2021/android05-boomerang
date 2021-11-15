@@ -53,4 +53,10 @@ class VideoModifyLightViewModel @Inject constructor(private val repository: AppR
             }
         }
     }
+
+    fun deleteSubVideo(position: Int) {
+        val subs = subVideos.value!!.toMutableList()
+        subs.removeAt(position)
+        _subVideos.value = subs
+    }
 }
