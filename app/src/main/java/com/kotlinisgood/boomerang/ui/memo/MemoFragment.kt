@@ -11,11 +11,13 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.alphamovie.lib.AlphaMovieView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentMemoBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.ui.videoedit.AlphaViewFactory
@@ -50,6 +52,28 @@ class MemoFragment : Fragment() {
         alphaViewFactory = AlphaViewFactory(requireContext())
         setViewModel()
         setPlayer()
+        setMenuOnToolBar()
+    }
+
+    private fun setMenuOnToolBar() {
+        binding.tbMemo.inflateMenu(R.menu.menu_fragment_memo)
+        binding.tbMemo.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_memo_modify -> {
+                    println(viewModel.videoMemo.value)
+                    val action = viewModel.videoMemo.value?.id?.let { it ->
+                        MemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(
+                            it
+                        )
+                    }
+                    if (action != null) {
+                        findNavController().navigate(action)
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     fun setViewModel() {

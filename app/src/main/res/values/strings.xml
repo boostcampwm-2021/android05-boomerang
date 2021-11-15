@@ -21,4 +21,5 @@
     <string name="menu_home_sd_video_description">Go to write video memo on video</string>
     <string name="menu_home_order_create_title">생성일 기준</string>
     <string name="menu_home_order_modify_title">수정일 기준</string>
+    <string name="menu_memo_modify">메모 수정</string>
 </resources>

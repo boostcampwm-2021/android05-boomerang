@@ -9,7 +9,7 @@ import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 data class VideoMemo(
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "video_uri") val videoUri: String,
-    @ColumnInfo(name = "memos") val memos: List<SubVideo>,
+    @ColumnInfo(name = "memos") var memos: List<SubVideo>,
     @ColumnInfo(name = "create_date") val createTime: Long,
     @ColumnInfo(name = "edit_date") val editTime: Long,
     @ColumnInfo(name = "memo_type") val memoType: Int?

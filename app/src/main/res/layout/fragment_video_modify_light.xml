@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.kotlinisgood.boomerang.ui.videomodifylight.VideoModifyLightViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+            android:id="@+id/frame_video"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_margin="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:resize_mode="fixed_height">
+
+            <com.google.android.exoplayer2.ui.PlayerView
+                android:id="@+id/exoplayer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:resize_mode="fixed_height" />
+        </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
+
+        <FrameLayout
+            android:id="@+id/canvas"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="@id/frame_video"
+            app:layout_constraintEnd_toEndOf="@id/frame_video"
+            app:layout_constraintStart_toStartOf="@id/frame_video"
+            app:layout_constraintTop_toTopOf="@id/frame_video" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggle_btn_doodle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/rg_doodle_color"
+            app:layout_constraintEnd_toStartOf="@id/rg_doodle_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/rg_doodle_color">
+
+            <Button
+                android:id="@+id/btn_doodle"
+                style="@style/Widget.App.Button.OutlinedButton.IconOnly.Toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_baseline_edit_24" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <RadioGroup
+            android:id="@+id/rg_doodle_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/toggle_btn_doodle"
+            app:layout_constraintTop_toBottomOf="@id/frame_video">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rb_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_rb_red"
+                android:button="@null" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rb_green"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_rb_green"
+                android:button="@null" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rb_blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_rb_blue"
+                android:button="@null" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rb_yellow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_rb_yellow"
+                android:button="@null" />
+        </RadioGroup>
+
+        <androidx.recyclerview.widget.RecyclerView
+            submitList="@{viewModel.subVideos}"
+            android:id="@+id/rv_subVideos"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rg_doodle_color"
+            tools:listitem="@layout/item_rv_doodle_light_subvideos" />
+
+        <Button
+            android:id="@+id/btn_go_back"
+            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:icon="@drawable/ic_baseline_close_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btn_move_to_result"
+            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:icon="@drawable/ic_baseline_done_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

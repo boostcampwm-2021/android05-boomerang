@@ -1,9 +1,6 @@
 package com.kotlinisgood.boomerang.database.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.kotlinisgood.boomerang.database.entity.VideoMemo
 
 @Dao
@@ -13,6 +10,9 @@ interface VideoMemoDao {
 
     @Query("SELECT * FROM video_memo WHERE id = :id")
     suspend fun getVideoMemo(id: Int): VideoMemo
+
+    @Update
+    suspend fun updateVideoMemo(vararg videoMemos:VideoMemo)
 
     @Insert
     suspend fun insertAll(vararg videoMemos: VideoMemo)
