@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
-import android.media.MediaMuxer
 import android.net.Uri
 import android.os.Bundle
 import android.speech.RecognizerIntent
@@ -22,14 +21,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.kotlinisgood.boomerang.databinding.FragmentVoiceRecordSecondBinding
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class VoiceRecordSecondFragment : Fragment() {
+class AudioRecordSecondFragment : Fragment() {
     private val TAG = "VideoRecordSecond"
     private val permissionRejected = "Permission Not Granted By the User"
     private val VOICE = 1000
@@ -39,7 +37,7 @@ class VoiceRecordSecondFragment : Fragment() {
 
     private val recognizerIntent by lazy { Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH) }
 
-    private val viewModel by viewModels<VoiceRecordViewModel>()
+    private val viewModel by viewModels<AudioRecordViewModel>()
 
     private val permissionsResultCallback = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -129,6 +127,7 @@ class VoiceRecordSecondFragment : Fragment() {
             checkPermissions()
         }
         dataBinding.btVoiceRecordMakeFile.setOnClickListener {
+            // https://stackoverflow.com/questions/35340025/how-to-merge-two-or-more-mp3-audio-file-in-android
             val voiceList = viewModel.voiceList
             var mergedText = ""
             var firstVoice = voiceList[0]
@@ -184,7 +183,6 @@ class VoiceRecordSecondFragment : Fragment() {
             } else {
 
             }
-            // https://stackoverflow.com/questions/35340025/how-to-merge-two-or-more-mp3-audio-file-in-android
         }
     }
 

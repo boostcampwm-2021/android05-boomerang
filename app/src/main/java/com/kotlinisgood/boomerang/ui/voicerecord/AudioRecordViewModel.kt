@@ -2,11 +2,11 @@ package com.kotlinisgood.boomerang.ui.voicerecord
 
 import androidx.lifecycle.ViewModel
 
-class VoiceRecordViewModel : ViewModel() {
-    val voiceList = mutableListOf<Voice>()
+class AudioRecordViewModel : ViewModel() {
+    val voiceList = mutableListOf<Audio>()
 
     fun addSubAudio(path: String, duration: Int, recognizedText: String) {
-        voiceList.add(Voice(path, duration, recognizedText))
+        voiceList.add(Audio(path, duration, recognizedText))
     }
 
 }
