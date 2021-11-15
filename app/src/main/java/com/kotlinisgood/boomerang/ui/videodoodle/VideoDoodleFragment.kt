@@ -209,6 +209,12 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture = SurfaceTexture(textureId)
         surfaceTexture!!.setOnFrameAvailableListener(this)
 
+        val surface = Surface(surfaceTexture)
+        mediaPlayer = MediaPlayer.create(context, path.toUri())
+        mediaPlayer.setSurface(surface)
+        videoWidth = mediaPlayer.videoWidth
+        videoHeight = mediaPlayer.videoHeight
+
         width = binding.svMovie.width
         height = binding.svMovie.height
 
@@ -221,14 +227,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     }
 
     private fun playVideoAlt() {
-        val surface = Surface(surfaceTexture)
-
-        mediaPlayer = MediaPlayer.create(context, path.toUri())
-        mediaPlayer.setSurface(surface)
-        videoWidth = mediaPlayer.videoWidth
-        videoHeight = mediaPlayer.videoHeight
         mediaPlayer.start()
-        surface.release()
     }
 
     override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
