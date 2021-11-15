@@ -5,12 +5,12 @@ import android.view.Surface
 import java.lang.RuntimeException
 
 /**
- * Recordable EGL window surface.
+ * EGLSurface 중 WindowSurface (Pixmap, Pbuffer는 offscreen을 위한 surface)
  *
  *
  * It's good practice to explicitly release() the surface, preferably from a "finally" block.
  */
-class WindowSurface : EglSurfaceBase {
+class EglWindowSurface : EglSurfaceBase {
     private var mSurface: Surface? = null
     private var mReleaseSurface = false
 

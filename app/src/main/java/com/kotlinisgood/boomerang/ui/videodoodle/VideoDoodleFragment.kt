@@ -2,8 +2,8 @@ package com.kotlinisgood.boomerang.ui.videodoodle
 
 import android.graphics.SurfaceTexture
 import android.media.MediaPlayer
-import android.net.Uri
 import android.opengl.GLES20
+import android.opengl.GLES30
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,7 +22,6 @@ import java.io.File
 import java.io.IOException
 import java.lang.RuntimeException
 import java.lang.ref.WeakReference
-import kotlin.system.measureNanoTime
 
 
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
@@ -34,8 +33,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private val path by lazy { args.videoPath }
 
     private var eglCore: EglCore? = null
-    private var displaySurface: WindowSurface? = null
-    private var encoderSurface: WindowSurface? = null
+    private var displaySurface: EglWindowSurface? = null
+    private var encoderSurface: EglWindowSurface? = null
     private var surfaceTexture: SurfaceTexture? = null
     private lateinit var surfaceView: SurfaceView
     private var textureId = 0
@@ -46,6 +45,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private lateinit var mediaPlayer: MediaPlayer
     private var videoWidth = 0
     private var videoHeight = 0
+    private var width = 0
+    private var height = 0
     private var outputVideo: File? = null
 //    private var secondsVideo = 0f
 
@@ -198,8 +199,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     override fun surfaceCreated(p0: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated: surfaceHolder=$p0")
 
-        eglCore = EglCore(null, EglCore.FLAG_RECORDABLE)
-        displaySurface = WindowSurface(eglCore!!, p0.surface, false)
+//        EGL 설정
+        eglCore = EglCore()
+        displaySurface = EglWindowSurface(eglCore!!, p0.surface, false)
         displaySurface!!.makeCurrent()
 
         fullFrameBlit = FullFrameRect(Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT))
@@ -207,14 +209,15 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture = SurfaceTexture(textureId)
         surfaceTexture!!.setOnFrameAvailableListener(this)
 
-        val width = binding.svMovie.width
+        width = binding.svMovie.width
+        height = binding.svMovie.height
 
         try {
             circularEncoder = CircularEncoder(width, width, 6000000, 30, 60, handler)
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
-        encoderSurface = WindowSurface(eglCore!!, circularEncoder.inputSurface, true)
+        encoderSurface = EglWindowSurface(eglCore!!, circularEncoder.inputSurface, true)
     }
 
     private fun playVideoAlt() {
@@ -244,14 +247,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     }
 
     private fun drawFrame() {
-        val width = binding.svMovie.width
-        val height = binding.svMovie.height
-
         displaySurface?.makeCurrent()
         surfaceTexture?.updateTexImage()
         surfaceTexture?.getTransformMatrix(mTmpMatrix)
-
-//        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, )
 
 //        width, height가 videoWidth, VideoHeight보다 더 크다는 가정하에 함. 그 외의 경우도 만들어야 함!
 //        SurfaceView에 그리기
@@ -264,26 +262,29 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
         fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
         drawExtra(currentPoint, height)
-        displaySurface?.swapBuffers()
+//        displaySurface?.swapBuffers()
 
 //        저장하기
         circularEncoder.frameAvailableSoon()
-        encoderSurface?.makeCurrent()
-        if (videoWidth > videoHeight) {
-            val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
-            GLES20.glViewport(0, (height - adjustedHeight) / 2, width, adjustedHeight)
-        } else {
-            val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
-            GLES20.glViewport((width - adjustedWidth) / 2, 0, adjustedWidth, height)
-        }
-        fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
-        drawExtra(currentPoint, height)
+        encoderSurface?.makeCurrentReadFrom(displaySurface!!)
+//        if (videoWidth > videoHeight) {
+//            val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
+//            GLES20.glViewport(0, (height - adjustedHeight) / 2, width, adjustedHeight)
+//        } else {
+//            val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
+//            GLES20.glViewport((width - adjustedWidth) / 2, 0, adjustedWidth, height)
+//        }
+//        fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
+//        drawExtra(currentPoint, height)
+        GLES30.glBlitFramebuffer(0, 0, displaySurface!!.width, displaySurface!!.height, 0, 0, displaySurface!!.width, displaySurface!!.height, GLES30.GL_COLOR_BUFFER_BIT, GLES30.GL_NEAREST)
         encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
         encoderSurface?.swapBuffers()
+
+        displaySurface?.makeCurrent()
+        displaySurface?.swapBuffers()
     }
 
     private fun drawExtra(currentPoint: List<Pair<Int, Int>>, height: Int) {
-        val time = measureNanoTime {
             currentPoint.forEach {
                 GLES20.glClearColor(1f, 1f, 0f, 1f)
                 GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
@@ -291,8 +292,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                 GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
                 GLES20.glDisable(GLES20.GL_SCISSOR_TEST)
             }
-        }
-        println(time)
     }
 
     companion object {
