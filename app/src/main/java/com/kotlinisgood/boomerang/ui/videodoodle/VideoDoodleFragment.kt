@@ -127,7 +127,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceView.holder.addCallback(this)
 
         handler = MainHandler(this)
-        outputVideo = File(requireContext().filesDir, "outputVideo.mp4")
+        val currentUnixTime = System.currentTimeMillis()
+        outputVideo = File(requireContext().filesDir, "${currentUnixTime}.mp4")
 
         binding.btnPlay.setOnClickListener {
             playVideoAlt()
