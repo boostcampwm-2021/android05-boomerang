@@ -194,8 +194,8 @@ class VideoModifyLightFragment : Fragment() {
 
     private fun showDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("메모 작성을 중단하시겠습니까?")
-            .setMessage("작성 중인 메모는 삭제됩니다.")
+            .setTitle("메모 수정을 중단하시겠습니까?")
+            .setMessage("수정 내역은 삭제됩니다.")
             .setNegativeButton("취소") { dialog, which ->
                 dialog.dismiss()
             }
