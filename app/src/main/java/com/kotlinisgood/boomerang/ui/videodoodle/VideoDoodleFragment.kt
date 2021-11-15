@@ -48,7 +48,12 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var width = 0
     private var height = 0
     private var outputVideo: File? = null
-//    private var secondsVideo = 0f
+
+    //    private var secondsVideo = 0f
+    private var viewportX = 0
+    private var viewportY = 0
+    private var viewportWidth = 0
+    private var viewportHeight = 0
 
     private lateinit var handler: MainHandler
 
@@ -122,7 +127,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceView.holder.addCallback(this)
 
         handler = MainHandler(this)
-        outputVideo = File(requireContext().filesDir, "outputVideo.mp4")
+        val currentUnixTime = System.currentTimeMillis()
+        outputVideo = File(requireContext().filesDir, "${currentUnixTime}.mp4")
 
         binding.btnPlay.setOnClickListener {
             playVideoAlt()
@@ -209,26 +215,40 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture = SurfaceTexture(textureId)
         surfaceTexture!!.setOnFrameAvailableListener(this)
 
+        val surface = Surface(surfaceTexture)
+        mediaPlayer = MediaPlayer.create(context, path.toUri())
+        mediaPlayer.setSurface(surface)
+        videoWidth = mediaPlayer.videoWidth
+        videoHeight = mediaPlayer.videoHeight
+
         width = binding.svMovie.width
         height = binding.svMovie.height
+
+        //        width, height가 videoWidth, VideoHeight보다 더 크다는 가정하에 함. 그 외의 경우도 만들어야 함!
+        if (videoWidth > videoHeight) {
+            val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
+            viewportX = 0
+            viewportY = (height - adjustedHeight) / 2
+            viewportWidth = width
+            viewportHeight = adjustedHeight
+        } else {
+            val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
+            viewportX = (width - adjustedWidth) / 2
+            viewportY = 0
+            viewportWidth = adjustedWidth
+            viewportHeight = height
+        }
 
         try {
             circularEncoder = CircularEncoder(width, width, 6000000, 30, 60, handler)
         } catch (e: IOException) {
-            throw RuntimeException(e)
+            throw Exception(e)
         }
         encoderSurface = EglWindowSurface(eglCore!!, circularEncoder.inputSurface, true)
     }
 
     private fun playVideoAlt() {
-        val surface = Surface(surfaceTexture)
-
-        mediaPlayer = MediaPlayer.create(context, path.toUri())
-        mediaPlayer.setSurface(surface)
-        videoWidth = mediaPlayer.videoWidth
-        videoHeight = mediaPlayer.videoHeight
         mediaPlayer.start()
-        surface.release()
     }
 
     override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
@@ -247,51 +267,58 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     }
 
     private fun drawFrame() {
-        displaySurface?.makeCurrent()
         surfaceTexture?.updateTexImage()
         surfaceTexture?.getTransformMatrix(mTmpMatrix)
 
-//        width, height가 videoWidth, VideoHeight보다 더 크다는 가정하에 함. 그 외의 경우도 만들어야 함!
 //        SurfaceView에 그리기
-        if (videoWidth > videoHeight) {
-            val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
-            GLES20.glViewport(0, (height - adjustedHeight) / 2, width, adjustedHeight)
-        } else {
-            val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
-            GLES20.glViewport((width - adjustedWidth) / 2, 0, adjustedWidth, height)
-        }
+        GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
         fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
-        drawExtra(currentPoint, height)
-//        displaySurface?.swapBuffers()
+        drawLine(currentPoint, height)
 
-//        저장하기
-        circularEncoder.frameAvailableSoon()
-        encoderSurface?.makeCurrentReadFrom(displaySurface!!)
-//        if (videoWidth > videoHeight) {
-//            val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
-//            GLES20.glViewport(0, (height - adjustedHeight) / 2, width, adjustedHeight)
-//        } else {
-//            val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
-//            GLES20.glViewport((width - adjustedWidth) / 2, 0, adjustedWidth, height)
-//        }
-//        fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
-//        drawExtra(currentPoint, height)
-        GLES30.glBlitFramebuffer(0, 0, displaySurface!!.width, displaySurface!!.height, 0, 0, displaySurface!!.width, displaySurface!!.height, GLES30.GL_COLOR_BUFFER_BIT, GLES30.GL_NEAREST)
-        encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
-        encoderSurface?.swapBuffers()
+        if (eglCore?.glVersion == 3) {
+//        SurfaceView에 그릴 Framebuffer를 아직 swap하지 말고 인코딩 버퍼에 복사하고 둘 다 swap
+            encoderSurface?.makeCurrentReadFrom(displaySurface!!)
+            GLES30.glBlitFramebuffer(
+                0,
+                0,
+                displaySurface!!.width,
+                displaySurface!!.height,
+                0,
+                0,
+                displaySurface!!.width,
+                displaySurface!!.height,
+                GLES30.GL_COLOR_BUFFER_BIT,
+                GLES30.GL_NEAREST
+            )
+            circularEncoder.frameAvailableSoon()
+            encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
+            encoderSurface?.swapBuffers()
 
-        displaySurface?.makeCurrent()
-        displaySurface?.swapBuffers()
+            displaySurface?.makeCurrent()
+            displaySurface?.swapBuffers()
+        } else {
+//            OpenGL ES 2.0일 경우. glBlitFramebuffer를 지원하지 않기에 그냥 두 번 그린다.
+            displaySurface?.swapBuffers()
+
+            encoderSurface?.makeCurrent()
+            GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
+            fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
+            drawLine(currentPoint, height)
+            circularEncoder.frameAvailableSoon()
+            encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
+            encoderSurface?.swapBuffers()
+            displaySurface?.makeCurrent()
+        }
     }
 
-    private fun drawExtra(currentPoint: List<Pair<Int, Int>>, height: Int) {
-            currentPoint.forEach {
-                GLES20.glClearColor(1f, 1f, 0f, 1f)
-                GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
-                GLES20.glScissor(it.first, height - it.second, 15, 15)
-                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-                GLES20.glDisable(GLES20.GL_SCISSOR_TEST)
-            }
+    private fun drawLine(currentPoint: List<Pair<Int, Int>>, height: Int) {
+        currentPoint.forEach {
+            GLES20.glClearColor(1f, 1f, 0f, 1f)
+            GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
+            GLES20.glScissor(it.first, height - it.second, 15, 15)
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+            GLES20.glDisable(GLES20.GL_SCISSOR_TEST)
+        }
     }
 
     companion object {
