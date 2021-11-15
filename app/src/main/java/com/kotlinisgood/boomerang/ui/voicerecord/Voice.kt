@@ -1,5 +1,5 @@
 package com.kotlinisgood.boomerang.ui.voicerecord
 
-data class Voice(val uri: String, val duration: Int, val recognizedText: String)
+data class Voice(val path: String, val duration: Int, val recognizedText: String)
 
 
