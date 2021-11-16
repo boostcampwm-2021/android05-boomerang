@@ -1,9 +1,7 @@
 package com.kotlinisgood.boomerang.repository.local
 
 import com.kotlinisgood.boomerang.database.AppDatabase
-import com.kotlinisgood.boomerang.database.entity.AudioMemo
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
-import com.kotlinisgood.boomerang.database.entity.VideoMemo
 import javax.inject.Inject
 
 class LocalDataSource @Inject constructor(
