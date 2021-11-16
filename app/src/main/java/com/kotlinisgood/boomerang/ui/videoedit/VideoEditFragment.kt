@@ -92,7 +92,7 @@ class VideoEditFragment : Fragment() {
 
         binding.btnSaveMemo.setOnClickListener {
             viewModel.saveMemo()
-            findNavController().navigate(R.id.action_videoEditLightFragment_to_homeFragment)
+            findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
         }
 
         binding.btnShareMemo.setOnClickListener {

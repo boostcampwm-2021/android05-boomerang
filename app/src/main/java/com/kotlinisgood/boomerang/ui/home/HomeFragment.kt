@@ -61,7 +61,7 @@ class HomeFragment : Fragment() {
         adapter.setOnItemClickListener(object: HomeAdapter.OnItemClickListener{
             override fun onItemClick(view: View, position: Int) {
                 val id = adapter.currentList[position].id
-                val action = HomeFragmentDirections.actionHomeFragmentToMemoFragment(id)
+                val action = HomeFragmentDirections.actionHomeFragmentToBoomerangCatchAnimation(id)
                 findNavController().navigate(action)
             }
         })
