@@ -7,6 +7,7 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,18 +20,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.kotlinisgood.boomerang.database.entity.AudioMemo
 import com.kotlinisgood.boomerang.databinding.FragmentVoiceRecordSecondBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 @AndroidEntryPoint
 class AudioRecordSecondFragment : Fragment() {
-    private val TAG = "VideoRecordSecond"
+    private val TAG = "AudioRecordSecond"
     private val permissionRejected = "Permission Not Granted By the User"
     private val titleWarning = "타이틀을 입력해주세요"
     private val VOICE = 1000
@@ -62,7 +63,7 @@ class AudioRecordSecondFragment : Fragment() {
                     val recognizedText: String? =
                         intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0)
                     recognizedText?.let {
-                        dataBinding.tvTest.text
+                        dataBinding.tvTest.text = dataBinding.tvTest.text.toString() + "\r" + it
                         val audioUri = intent.data as Uri
                         lifecycleScope.launch {
                             saveAudio(audioUri, it)
@@ -114,6 +115,10 @@ class AudioRecordSecondFragment : Fragment() {
         }
     }
 
+    private fun speak() {
+        activityCallback.launch(recognizerIntent)
+    }
+
     private fun setRecognizerListener() {
         recognizerIntent.apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
@@ -128,103 +133,107 @@ class AudioRecordSecondFragment : Fragment() {
             checkPermissions()
         }
         dataBinding.btVoiceRecordMakeFile.setOnClickListener {
-            // Warning title 입력, audio file exists? 유뮤 판단 후에 실행되도록 ToDo
+            // Warning title 입력, audio file exists 유뮤 판단 후에 실행되도록 ToDo
             if (dataBinding.etAudioRecordEnterTitle.text.toString() == "") {
                 Toast.makeText(it.context, titleWarning, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             // https://stackoverflow.com/questions/35340025/how-to-merge-two-or-more-mp3-audio-file-in-android
-            val voiceList = viewModel.voiceList
-            val timeList = mutableListOf(0)
-            var mergedText = ""
-            var firstVoice = voiceList[0]
-            var firstFile = File(firstVoice.path)
-            timeList.add(firstVoice.duration)
-            mergedText += firstVoice.recognizedText + "\n\r"
-            lateinit var secondFile: File
-            if (voiceList.size > 1) {
-                val mmr = MediaMetadataRetriever()
-                for (i in 1 until voiceList.size) {
-                    var secondVoice = voiceList[i]
+        }
+    }
 
-                    timeList.add(secondVoice.duration)
-                    secondFile = File(secondVoice.path)
-                    mergedText += secondVoice.recognizedText + "\n\r"
-
-                    lateinit var fis1: FileInputStream
-                    lateinit var fis2: FileInputStream
-                    lateinit var sis: SequenceInputStream
-                    lateinit var fos: FileOutputStream
-                    lateinit var file: File
-                    try {
-                        fis1 = FileInputStream(firstFile)
-                        fis2 = FileInputStream(secondFile)
-                        sis = SequenceInputStream(fis1, fis2)
-
-                        val fileName = System.currentTimeMillis().toString() +".amr"
-                        file = File(requireActivity().filesDir, fileName)
-                        fos = FileOutputStream(file)
-
-                        var read = sis.read()
-                        while (read != -1) {
-                            fos.write(read)
-                            read = sis.read()
-                        }
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    } finally {
-                        try {
-                            fis1.close()
-                            fis2.close()
-                            sis.close()
-                            fos.close()
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
-                        mmr.setDataSource(file.absolutePath)
-                        mmr.also {
-                            val durationStr = it.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                            durationStr?.let {
-                                viewModel.addSubAudio(file.absolutePath, durationStr.toInt(), mergedText)
-                            }
-                        }
-                        firstFile = File(file.absolutePath)
-                    }
+    private fun saveAudio(audioUri: Uri, recognizedText: String) {
+        Log.i(TAG, "save audio is called")
+        val currentAudio = viewModel.currentAudio
+        Log.i(TAG, "$currentAudio")
+        currentAudio?.let {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    saveSequentialAudio(it, audioUri, recognizedText)
                 }
-            } else {
-
+            }
+        } ?: run {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    saveFirstAudio(recognizedText, audioUri)
+                }
             }
         }
     }
 
-    private fun speak() {
-        activityCallback.launch(recognizerIntent)
+    private suspend fun saveSequentialAudio(currentAudio: AudioMemo, audioUri: Uri, recognizedText: String) {
+        Log.i(TAG, "save sequential audio is called")
+        val originalFile = File(currentAudio.path)
+        val timeList = currentAudio.timeList.toMutableList()
+        val textList = currentAudio.textList.plus(recognizedText)
+
+        lateinit var fis1: FileInputStream
+        var is2: InputStream? = null
+        lateinit var sis: SequenceInputStream
+        lateinit var fos: FileOutputStream
+        lateinit var file: File
+        try {
+            fis1 = FileInputStream(originalFile)
+            is2 = requireActivity().contentResolver.openInputStream(audioUri)
+            sis = SequenceInputStream(fis1, is2)
+
+            val createTime = System.currentTimeMillis()
+            val fileName = "$createTime.amr"
+            file = File(requireActivity().filesDir, fileName)
+            fos = FileOutputStream(file)
+
+            var read = sis.read()
+            while (read != -1) {
+                fos.write(read)
+                read = sis.read()
+            }
+
+            getDuration(file)?.let {
+                timeList.add(it.toInt())
+                withContext(Dispatchers.Main) {
+                    viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            try {
+                fis1.close()
+                is2?.close()
+                sis.close()
+                fos.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
-    private fun saveAudio(audioUri: Uri, recognizedText: String) {
+    private suspend fun saveFirstAudio(recognizedText: String, audioUri: Uri) {
+        Log.i(TAG, "save first audio is called")
         var input: InputStream? = null
         var output: FileOutputStream? = null
         try {
+            val timeList = mutableListOf(0)
+            val textList = mutableListOf(recognizedText)
             input = requireActivity().contentResolver.openInputStream(audioUri)
 
-            val fileName = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()) + ".amr"
+            val createTime = System.currentTimeMillis()
+            val fileName = "$createTime.amr"
             val file = File(requireActivity().filesDir, fileName)
             output = FileOutputStream(file)
 
             var read = 0
             val bytes = ByteArray(1024)
-
             read = input?.read(bytes)!!
             while (read != -1) {
                 output.write(bytes, 0, read) ?: break
                 read = input.read(bytes)
             }
-            MediaMetadataRetriever().apply {
-                setDataSource(file.absolutePath)
-            }.also {
-                val durationStr = it.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                durationStr?.let {
-                    viewModel.addSubAudio(file.absolutePath, durationStr.toInt(), recognizedText)
+
+            getDuration(file)?.let {
+                timeList.add(it.toInt())
+                withContext(Dispatchers.Main) {
+                    viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
                 }
             }
         } catch (e: IOException) {
@@ -236,6 +245,14 @@ class AudioRecordSecondFragment : Fragment() {
             } catch (e: IOException) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    private fun getDuration(file: File): String? {
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(file.absolutePath)
+        return mmr.run {
+            extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         }
     }
 
