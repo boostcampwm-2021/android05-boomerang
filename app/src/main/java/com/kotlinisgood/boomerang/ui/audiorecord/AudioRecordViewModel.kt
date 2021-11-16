@@ -26,22 +26,16 @@ class AudioRecordViewModel
         textList: List<String>,
         timeList: List<Int>
     ) {
-        _currentAudio?.let { audioList.add(it) }
-        val accTimeList = convertAccTimeList(timeList)
-        _currentAudio = AudioMemo(title, path, createTime, textList, accTimeList)
+        val tmpAudio = _currentAudio
+        _currentAudio = AudioMemo(title, path, createTime, textList, timeList)
+        if (tmpAudio != _currentAudio) {
+            tmpAudio?.let { audioList.add(it) }
+        }
         println(currentAudio)
     }
 
-    private fun convertAccTimeList(timeList: List<Int>): List<Int> {
-        val tmpList = mutableListOf(0)
-        var now = 0
-        return tmpList.plus(timeList.map {
-            now += it
-            now
-        }).toList()
-    }
-
-    fun saveAudioMemo() {
+    fun saveAudioMemo(title: String) {
+        _currentAudio = copyCurrentAudio(title)
         currentAudio?.let {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
@@ -54,8 +48,21 @@ class AudioRecordViewModel
 
     private fun deleteAudios() {
         audioList.forEach {
-            File(it.path).deleteOnExit()
+            val file = File(it.path)
+            file.delete()
         }
+        audioList.clear()
+    }
+
+    private fun copyCurrentAudio(title: String): AudioMemo? {
+        val tmpAudio = _currentAudio ?: return null
+        return AudioMemo(
+            title,
+            tmpAudio.path,
+            tmpAudio.createTime,
+            tmpAudio.textList,
+            tmpAudio.timeList
+        )
     }
 
 }
