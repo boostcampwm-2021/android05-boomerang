@@ -20,9 +20,9 @@ class Encoder(
     private var encoder: MediaCodec
     private val bufferInfo: MediaCodec.BufferInfo
     private var encodedFormat: MediaFormat? = null
-    val encoderBuffer: CircularEncoderBuffer =
+    private val encoderBuffer: CircularEncoderBuffer =
         CircularEncoderBuffer(bitrate, frameRate, desiredSpanSec)
-    lateinit var scope: CoroutineScope
+    private var scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
 
     init {
         val format = MediaFormat.createVideoFormat("video/avc", width, height)

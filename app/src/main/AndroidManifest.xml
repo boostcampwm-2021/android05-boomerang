@@ -6,7 +6,10 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application
         android:name=".MemoApplication"
@@ -16,23 +19,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Boomerang">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.kotlinisgood.boomerang.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable"
+            <meta-data
+                android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
     </application>
 
     <queries>
         <intent>
-            <action
-                android:name="android.speech.RecognitionService" />
+            <action android:name="android.speech.RecognitionService" />
         </intent>
     </queries>
 </manifest>

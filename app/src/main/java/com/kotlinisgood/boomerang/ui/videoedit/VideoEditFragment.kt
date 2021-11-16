@@ -1,12 +1,15 @@
 package com.kotlinisgood.boomerang.ui.videoedit
 
+import android.content.Intent
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
@@ -24,6 +27,7 @@ import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.io.File
 
 @AndroidEntryPoint
 class VideoEditFragment : Fragment() {
@@ -60,6 +64,7 @@ class VideoEditFragment : Fragment() {
         setViewModel()
         setVideoView()
         setPlayer()
+        setShareButton()
         setListener()
     }
 
@@ -77,6 +82,10 @@ class VideoEditFragment : Fragment() {
         }
     }
 
+    private fun setShareButton() {
+        if(args.subVideos.toList().isNotEmpty()) binding.btnShareMemo.visibility = View.GONE
+    }
+
     private fun setListener() {
         binding.etMemoTitle.doOnTextChanged { text, start, before, count ->
             viewModel.setTitle(text.toString())
@@ -85,6 +94,21 @@ class VideoEditFragment : Fragment() {
         binding.btnSaveMemo.setOnClickListener {
             viewModel.saveMemo()
             findNavController().navigate(R.id.action_videoEditLightFragment_to_homeFragment)
+        }
+
+        binding.btnShareMemo.setOnClickListener {
+            val fileName = args.baseVideo.split('/').last()
+            println(fileName)
+            val file = File(requireContext().filesDir, fileName)
+            val uri = FileProvider.getUriForFile(requireContext(), "com.kotlinisgood.boomerang.fileprovider", file)
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_STREAM, uri)
+                type = "video/mp4"
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
         }
     }
 
