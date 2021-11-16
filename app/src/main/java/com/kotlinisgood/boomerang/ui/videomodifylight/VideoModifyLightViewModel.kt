@@ -48,6 +48,7 @@ class VideoModifyLightViewModel @Inject constructor(private val repository: AppR
         val newVideoMemo = videoMemo.value
         if (newVideoMemo != null) {
             newVideoMemo.memos = subVideos.value!!
+            newVideoMemo.editTime = System.currentTimeMillis()
             viewModelScope.launch {
                 repository.updateVideoMemo(newVideoMemo)
             }
