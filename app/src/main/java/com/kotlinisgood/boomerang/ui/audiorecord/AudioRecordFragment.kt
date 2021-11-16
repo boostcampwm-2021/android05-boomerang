@@ -192,7 +192,8 @@ class AudioRecordFragment : Fragment() {
                 Log.i(TAG, "save sequential audio's duration: $it")
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
-                    dataBinding.tvTest.text = dataBinding.tvTest.text.toString() + "\n$recognizedText"
+                    dataBinding.tvAudioRecordShowRecognizedText.text =
+                        dataBinding.tvAudioRecordShowRecognizedText.text.toString() + "\n$recognizedText"
                     viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
                 }
             }
@@ -236,7 +237,7 @@ class AudioRecordFragment : Fragment() {
                 Log.i(TAG, "save first audio's duration $it")
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
-                    dataBinding.tvTest.text = recognizedText
+                    dataBinding.tvAudioRecordShowRecognizedText.text = recognizedText
                     viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
                 }
             }
