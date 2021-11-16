@@ -31,7 +31,13 @@ object DatabaseModule {
 
         val migration_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE IF NOT EXISTS `audio_memo` (`title` TEXT NOT NULL, `audio_path` TEXT NOT NULL, `create_date` LONG NOT NULL, `text_List` TEXT NOT NULL, `time_list` TEXT NOT NULL )")
+                database.execSQL("CREATE TABLE IF NOT EXISTS `audio_memo` (`id` INTEGER NOT NULL, `title` TEXT NOT NULL, `audio_path` TEXT NOT NULL, `create_date` INTEGER NOT NULL, `text_list` TEXT NOT NULL, `time_list` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            }
+        }
+
+        val migration_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE video_memo RENAME COLUMN edit_date TO edit_date")
             }
         }
 
@@ -42,6 +48,7 @@ object DatabaseModule {
         )
             .addMigrations(migration_1_2)
             .addMigrations(migration_2_3)
+            .addMigrations(migration_3_4)
             .build()
     }
 
