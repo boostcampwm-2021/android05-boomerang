@@ -80,5 +80,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-core:20.0.0'
 
+    //Lottie
+    implementation "com.airbnb.android:lottie:$lottieVersion"
+
 }
 apply plugin: "com.google.gms.google-services"
