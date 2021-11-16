@@ -21,7 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.kotlinisgood.boomerang.database.entity.AudioMemo
-import com.kotlinisgood.boomerang.databinding.FragmentVoiceRecordSecondBinding
+import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,13 +30,13 @@ import java.io.*
 import java.util.*
 
 @AndroidEntryPoint
-class AudioRecordSecondFragment : Fragment() {
+class AudioRecordFragment : Fragment() {
     private val TAG = "AudioRecordSecond"
     private val permissionRejected = "Permission Not Granted By the User"
     private val titleWarning = "타이틀을 입력해주세요"
     private val VOICE = 1000
 
-    private var _dataBinding: FragmentVoiceRecordSecondBinding? = null
+    private var _dataBinding: FragmentAudioRecordBinding? = null
     val dataBinding get() = _dataBinding!!
 
     private val recognizerIntent by lazy { Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH) }
@@ -79,7 +79,7 @@ class AudioRecordSecondFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _dataBinding = FragmentVoiceRecordSecondBinding.inflate(inflater, container, false)
+        _dataBinding = FragmentAudioRecordBinding.inflate(inflater, container, false)
         return dataBinding.root
     }
 
