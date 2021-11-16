@@ -5,9 +5,7 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kotlinisgood.boomerang.database.AppDatabase
-import com.kotlinisgood.boomerang.database.dao.AudioMemoDao
 import com.kotlinisgood.boomerang.database.dao.MediaMemoDao
-import com.kotlinisgood.boomerang.database.dao.VideoMemoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

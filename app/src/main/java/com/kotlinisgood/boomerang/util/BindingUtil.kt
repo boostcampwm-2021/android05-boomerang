@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
-import com.kotlinisgood.boomerang.database.entity.VideoMemo
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import java.text.SimpleDateFormat
 
