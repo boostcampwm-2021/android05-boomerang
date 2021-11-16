@@ -136,7 +136,8 @@ class AudioRecordFragment : Fragment() {
                 Toast.makeText(it.context, titleWarning, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            viewModel.saveAudioMemo()
+            val title = dataBinding.etAudioRecordEnterTitle.text.toString()
+            viewModel.saveAudioMemo(title)
             // https://stackoverflow.com/questions/35340025/how-to-merge-two-or-more-mp3-audio-file-in-android
         }
     }
@@ -188,6 +189,7 @@ class AudioRecordFragment : Fragment() {
             }
 
             getDuration(file)?.let {
+                Log.i(TAG, "save sequential audio's duration: $it")
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
                     dataBinding.tvTest.text = dataBinding.tvTest.text.toString() + "\n$recognizedText"
@@ -231,6 +233,7 @@ class AudioRecordFragment : Fragment() {
             }
 
             getDuration(file)?.let {
+                Log.i(TAG, "save first audio's duration $it")
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
                     dataBinding.tvTest.text = recognizedText
