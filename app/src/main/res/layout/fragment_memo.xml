@@ -23,7 +23,7 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/tb_memo"
-                app:title="@{viewModel.videoMemo.title}"
+                app:title="@{viewModel.mediaMemo.title}"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/boomerang_theme_color">

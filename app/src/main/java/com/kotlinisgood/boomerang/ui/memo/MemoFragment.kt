@@ -60,8 +60,8 @@ class MemoFragment : Fragment() {
         binding.tbMemo.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_memo_modify -> {
-                    println(viewModel.videoMemo.value)
-                    val action = viewModel.videoMemo.value?.id?.let { it ->
+                    println(viewModel.mediaMemo.value)
+                    val action = viewModel.mediaMemo.value?.id?.let { it ->
                         MemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(
                             it
                         )
@@ -79,19 +79,19 @@ class MemoFragment : Fragment() {
     fun setViewModel() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
-        viewModel.loadVideoMemo(args.id)
+        viewModel.loadMediaMemo(args.id)
     }
 
     fun setPlayer(){
-        viewModel.videoMemo.observe(viewLifecycleOwner){ videoMemo ->
-            val mediaItem = MediaItem.fromUri(videoMemo.videoUri)
+        viewModel.mediaMemo.observe(viewLifecycleOwner){ mediaMemo ->
+            val mediaItem = MediaItem.fromUri(mediaMemo.mediaUri)
             player = SimpleExoPlayer.Builder(requireContext()).build().apply {
                 setMediaItem(mediaItem)
                 addListener(onPlayStateChangeListener)
             }
             binding.exoplayer.player = player
 
-            videoMemo.memos.forEach {
+            mediaMemo.memoList.forEach {
                 viewModel.addAlphaMovieView(alphaViewFactory.create().apply {
                     setVideoFromUri(requireContext(), it.uri.toUri())
                 })

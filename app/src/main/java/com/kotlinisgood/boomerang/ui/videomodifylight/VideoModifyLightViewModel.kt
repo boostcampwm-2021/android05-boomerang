@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kotlinisgood.boomerang.database.entity.VideoMemo
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,8 +14,8 @@ import javax.inject.Inject
 @HiltViewModel
 class VideoModifyLightViewModel @Inject constructor(private val repository: AppRepository) : ViewModel(){
 
-    private var _videoMemo: MutableLiveData<VideoMemo> = MutableLiveData()
-    val videoMemo: LiveData<VideoMemo> get() = _videoMemo
+    private var _mediaMemo: MutableLiveData<MediaMemo> = MutableLiveData()
+    val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
 
     private val _subVideos: MutableLiveData<List<SubVideo>> =
         MutableLiveData(listOf())
@@ -29,8 +29,8 @@ class VideoModifyLightViewModel @Inject constructor(private val repository: AppR
 
     fun loadVideoMemo(id: Int) {
         viewModelScope.launch {
-            _videoMemo.value = repository.getVideoMemo(id)
-            _subVideos.value = videoMemo.value?.memos!!
+            _mediaMemo.value = repository.getMediaMemo(id)
+            _subVideos.value = mediaMemo.value?.memoList!!
         }
     }
 
@@ -45,12 +45,12 @@ class VideoModifyLightViewModel @Inject constructor(private val repository: AppR
     }
 
     fun updateVideoMemo() {
-        val newVideoMemo = videoMemo.value
+        val newVideoMemo = mediaMemo.value
         if (newVideoMemo != null) {
-            newVideoMemo.memos = subVideos.value!!
-            newVideoMemo.editTime = System.currentTimeMillis()
+            newVideoMemo.memoList = subVideos.value!!
+            newVideoMemo.modifyTime = System.currentTimeMillis()
             viewModelScope.launch {
-                repository.updateVideoMemo(newVideoMemo)
+                repository.updateMediaMemo(newVideoMemo)
             }
         }
     }

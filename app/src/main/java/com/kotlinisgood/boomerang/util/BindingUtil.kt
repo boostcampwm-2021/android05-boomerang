@@ -9,7 +9,7 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
-import com.kotlinisgood.boomerang.database.entity.VideoMemo
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import java.text.SimpleDateFormat
 
@@ -22,8 +22,8 @@ fun <T, VH : RecyclerView.ViewHolder> RecyclerView.submitList(list: List<T>?) {
 }
 
 @BindingAdapter("imageFromVideoMemo")
-fun ShapeableImageView.imageFromVideoMemo(videoMemo: VideoMemo) {
-    val uri = Uri.parse(videoMemo.videoUri)
+fun ShapeableImageView.imageFromVideoMemo(mediaMemo: MediaMemo) {
+    val uri = Uri.parse(mediaMemo.mediaUri)
     val mmr = MediaMetadataRetriever()
     mmr.setDataSource(context, uri)
     val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
@@ -34,10 +34,10 @@ fun ShapeableImageView.imageFromVideoMemo(videoMemo: VideoMemo) {
 
 @SuppressLint("SetTextI18n", "SimpleDateFormat")
 @BindingAdapter("dateFromVideoMemo")
-fun TextView.dateFromVideoMemo(videoMemo: VideoMemo) {
+fun TextView.dateFromVideoMemo(mediaMemo: MediaMemo) {
     val sdf = SimpleDateFormat("yyyy-MM-dd")
-    val createTimeStr = sdf.format(videoMemo.createTime)
-    val editTimeStr = sdf.format(videoMemo.editTime)
+    val createTimeStr = sdf.format(mediaMemo.createTime)
+    val editTimeStr = sdf.format(mediaMemo.modifyTime)
     text = "생성일: $createTimeStr\n수정일: $editTimeStr"
 }
 

@@ -20,7 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.kotlinisgood.boomerang.database.entity.AudioMemo
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -161,9 +161,9 @@ class AudioRecordFragment : Fragment() {
         }
     }
 
-    private suspend fun saveSequentialAudio(currentAudio: AudioMemo, audioUri: Uri, recognizedText: String) {
+    private suspend fun saveSequentialAudio(currentAudio: MediaMemo, audioUri: Uri, recognizedText: String) {
         Log.i(TAG, "save sequential audio is called")
-        val originalFile = File(currentAudio.path)
+        val originalFile = File(currentAudio.mediaUri)
         val timeList = currentAudio.timeList.toMutableList()
         val textList = currentAudio.textList.plus(recognizedText)
 

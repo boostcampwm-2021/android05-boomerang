@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alphamovie.lib.AlphaMovieView
-import com.kotlinisgood.boomerang.database.entity.VideoMemo
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,16 +15,16 @@ import javax.inject.Inject
 @HiltViewModel
 class MemoViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
 
-    private var _videoMemo: MutableLiveData<VideoMemo> = MutableLiveData()
-    val videoMemo: LiveData<VideoMemo> get() = _videoMemo
+    private var _mediaMemo: MutableLiveData<MediaMemo> = MutableLiveData()
+    val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
     private var subVideos = listOf<SubVideo>()
     var alphaMovieViews: MutableList<AlphaMovieView> = mutableListOf<AlphaMovieView>()
     private var subVideosStates = mutableListOf<Boolean>()
 
-    fun loadVideoMemo(id: Int) {
+    fun loadMediaMemo(id: Int) {
         viewModelScope.launch {
-            _videoMemo.value = repository.getVideoMemo(id)
-            subVideos = videoMemo.value?.memos!!
+            _mediaMemo.value = repository.getMediaMemo(id)
+            subVideos = mediaMemo.value?.memoList!!
             repeat(subVideos.size) { subVideosStates.add(false) }
         }
     }

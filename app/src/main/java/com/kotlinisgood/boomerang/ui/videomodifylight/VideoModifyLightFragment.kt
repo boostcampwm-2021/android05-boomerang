@@ -66,8 +66,8 @@ class VideoModifyLightFragment : Fragment() {
         viewModel.loadVideoMemo(args.id)
         player = SimpleExoPlayer.Builder(requireContext()).build()
         binding.exoplayer.player = player
-        viewModel.videoMemo.observe(viewLifecycleOwner){ videoMemo ->
-            val mediaItem = MediaItem.fromUri(videoMemo.videoUri)
+        viewModel.mediaMemo.observe(viewLifecycleOwner){ videoMemo ->
+            val mediaItem = MediaItem.fromUri(videoMemo.mediaUri)
             player.setMediaItem(mediaItem)
         }
     }
@@ -128,7 +128,7 @@ class VideoModifyLightFragment : Fragment() {
 
             btnMoveToResult.setOnClickListener {
                 viewModel!!.updateVideoMemo()
-                val action = viewModel!!.videoMemo.value?.let { it1 ->
+                val action = viewModel!!.mediaMemo.value?.let { it1 ->
                     VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(
                         it1.id)
                 }

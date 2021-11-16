@@ -2,7 +2,6 @@ package com.kotlinisgood.boomerang.ui.videoedit
 
 import android.content.Intent
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
