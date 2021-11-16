@@ -71,6 +71,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         outputVideo = File(requireContext().filesDir, "${currentUnixTime}.mp4")
 
         binding.btnPlay.setOnClickListener {
+            binding.btnPlay.isEnabled = false
             playVideoAlt()
         }
 
