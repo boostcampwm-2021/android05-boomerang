@@ -31,6 +31,7 @@ class HomeViewModel @Inject constructor(
 
     private var _orderSetting = MutableLiveData<OrderState>()
     private val orderSetting: LiveData<OrderState> get() = _orderSetting
+    private var currentQuery: String = ""
 
     init {
         getOrderState()
@@ -43,13 +44,16 @@ class HomeViewModel @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext {
-                searchVideos(it)
+                searchVideos(it.trim())
             }
             .subscribe()
     }
 
     fun sendQueryRxjava(query: String) {
-        searchText.onNext(query)
+        if(query.trim() != currentQuery) {
+            searchText.onNext(query)
+            currentQuery = query.trim()
+        }
     }
 
 /*    fun sendQueryCoroutine(query: String) {

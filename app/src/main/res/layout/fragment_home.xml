@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -26,34 +26,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/boomerang_theme_color"
-                app:title="@string/app_name_kr" >
+                app:title="@string/app_name_kr">
 
             </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_home_show_videos"
-            submitList="@{viewModel.videoMemo}"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:descendantFocusability="blocksDescendants"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/container_appbar"
-            app:layout_constraintVertical_bias="0.0"
-            tools:layout_editor_absoluteX="0dp"
-            tools:listitem="@layout/item_rv_home_show_videos" />
+            app:layout_constraintTop_toBottomOf="@id/container_appbar">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_home_show_videos"
+                submitList="@{viewModel.videoMemo}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintVertical_bias="0.0"
+                tools:layout_editor_absoluteX="0dp"
+                tools:listitem="@layout/item_rv_home_show_videos" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.leinardi.android.speeddial.SpeedDialView
             android:id="@+id/sd_home_show_items"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:sdMainFabClosedSrc="@drawable/ic_add"
-            app:sdMainFabOpenedBackgroundColor="@color/boomerang_theme_color_second"
-            app:sdMainFabClosedBackgroundColor="@color/boomerang_theme_color_second"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:sdMainFabClosedBackgroundColor="@color/boomerang_theme_color_second"
+            app:sdMainFabClosedSrc="@drawable/ic_add"
+            app:sdMainFabOpenedBackgroundColor="@color/boomerang_theme_color_second" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
