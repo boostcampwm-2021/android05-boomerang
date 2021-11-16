@@ -146,7 +146,7 @@ class AudioRecordFragment : Fragment() {
                 return@setOnClickListener
             }
             val title = dataBinding.etAudioRecordEnterTitle.text.toString()
-            viewModel.saveAudioMemo(title)
+            viewModel.saveAudioMemo(title, requireActivity().filesDir)
             // https://stackoverflow.com/questions/35340025/how-to-merge-two-or-more-mp3-audio-file-in-android
         }
     }
@@ -184,26 +184,28 @@ class AudioRecordFragment : Fragment() {
         try {
             fis1 = FileInputStream(originalFile)
             is2 = requireActivity().contentResolver.openInputStream(audioUri)
-            sis = SequenceInputStream(fis1, is2)
 
             val createTime = System.currentTimeMillis()
-            val fileName = "$createTime.amr"
+            val fileName = "$createTime.mp3"
             file = File(requireActivity().filesDir, fileName)
             output = FileOutputStream(file)
 
-            var read = sis.read()
+            var read = 0
+            read = is2?.read() ?: -1
             while (read != -1) {
                 output.write(read)
-                read = sis.read()
+                read = is2?.read() ?: -1
             }
 
             getDuration(file)?.let {
                 Log.i(TAG, "save sequential audio's duration: $it")
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
+                    viewModel.setTimeAndText(recognizedText, it.toInt())
+                    viewModel.addFileList(file)
                     dataBinding.tvAudioRecordShowRecognizedText.text =
                         dataBinding.tvAudioRecordShowRecognizedText.text.toString() + "\n$recognizedText"
-                    viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
+//                    viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
                 }
             }
         } catch (e: IOException) {
@@ -230,7 +232,7 @@ class AudioRecordFragment : Fragment() {
             input = requireActivity().contentResolver.openInputStream(audioUri)
 
             val createTime = System.currentTimeMillis()
-            val fileName = "$createTime.amr"
+            val fileName = "$createTime.mp3"
             val file = File(requireActivity().filesDir, fileName)
             output = FileOutputStream(file)
 
@@ -246,8 +248,10 @@ class AudioRecordFragment : Fragment() {
                 Log.i(TAG, "save first audio's duration $it")
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
+                    viewModel.setTimeAndText(recognizedText, it.toInt())
                     dataBinding.tvAudioRecordShowRecognizedText.text = recognizedText
-                    viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
+                    viewModel.addFileList(file)
+//                    viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
                 }
             }
         } catch (e: IOException) {
