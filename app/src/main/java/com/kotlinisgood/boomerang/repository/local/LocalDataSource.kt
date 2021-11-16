@@ -2,33 +2,31 @@ package com.kotlinisgood.boomerang.repository.local
 
 import com.kotlinisgood.boomerang.database.AppDatabase
 import com.kotlinisgood.boomerang.database.entity.AudioMemo
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.database.entity.VideoMemo
 import javax.inject.Inject
 
 class LocalDataSource @Inject constructor(
     private val db: AppDatabase,
 ) {
-    suspend fun getVideoMemos(): List<VideoMemo> {
-        return db.videoMemoDao().getAll()
+    suspend fun getMediaMemos(): List<MediaMemo> {
+        return db.mediaMemoDao().getAll()
     }
 
-    suspend fun saveVideoMemo(memo: VideoMemo) {
-        db.videoMemoDao().insertAll(memo)
+    suspend fun saveMediaMemo(memo: MediaMemo) {
+        db.mediaMemoDao().insertAll(memo)
     }
 
-    suspend fun updateVideoMemo(memo: VideoMemo) {
-        db.videoMemoDao().updateVideoMemo(memo)
+    suspend fun updateMediaMemo(memo: MediaMemo) {
+        db.mediaMemoDao().updateMediaMemo(memo)
     }
 
-    suspend fun searchVideo(query: String): List<VideoMemo> {
-        return db.videoMemoDao().search(query)
+    suspend fun searchMedia(query: String): List<MediaMemo> {
+        return db.mediaMemoDao().search(query)
     }
 
-    suspend fun getVideoMemo(id: Int): VideoMemo {
-        return db.videoMemoDao().getVideoMemo(id)
+    suspend fun getMediaMemo(id: Int): MediaMemo {
+        return db.mediaMemoDao().getMediaMemo(id)
     }
 
-    suspend fun saveAudioMemo(audioMemo: AudioMemo) {
-        db.audioMemoDao().insert(audioMemo)
-    }
 }

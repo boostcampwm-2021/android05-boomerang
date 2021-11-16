@@ -4,14 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.kotlinisgood.boomerang.database.converter.Converter
-import com.kotlinisgood.boomerang.database.dao.AudioMemoDao
-import com.kotlinisgood.boomerang.database.dao.VideoMemoDao
-import com.kotlinisgood.boomerang.database.entity.AudioMemo
-import com.kotlinisgood.boomerang.database.entity.VideoMemo
+import com.kotlinisgood.boomerang.database.dao.MediaMemoDao
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 
-@Database(entities = [VideoMemo::class, AudioMemo::class], version = 4, exportSchema = false)
+@Database(entities = [MediaMemo::class], version = 1, exportSchema = false)
 @TypeConverters(Converter::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun videoMemoDao(): VideoMemoDao
-    abstract fun audioMemoDao(): AudioMemoDao
+    abstract fun mediaMemoDao(): MediaMemoDao
 }

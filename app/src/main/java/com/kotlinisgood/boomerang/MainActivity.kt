@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 import com.kotlinisgood.boomerang.database.AppDatabase
+import com.kotlinisgood.boomerang.database.dao.MediaMemoDao
 import com.kotlinisgood.boomerang.database.dao.VideoMemoDao
 import com.kotlinisgood.boomerang.database.entity.VideoMemo
 import com.kotlinisgood.boomerang.model.Video
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject
-    lateinit var dao: VideoMemoDao
+    lateinit var dao: MediaMemoDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

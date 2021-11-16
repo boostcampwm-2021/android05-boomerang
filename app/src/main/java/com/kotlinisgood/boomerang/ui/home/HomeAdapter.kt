@@ -3,14 +3,14 @@ package com.kotlinisgood.boomerang.ui.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.kotlinisgood.boomerang.database.entity.VideoMemo
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.databinding.ItemRvHomeShowVideosBinding
-import com.kotlinisgood.boomerang.ui.trashbin.VideoMemoDiffCallback
 
 class HomeAdapter :
-    ListAdapter<VideoMemo, HomeAdapter.MemoViewHolder>(VideoMemoDiffCallback()) {
+    ListAdapter<MediaMemo, HomeAdapter.MemoViewHolder>(MediaMemoDiffCallback()) {
 
     private var itemClickListener: OnItemClickListener? = null
 
@@ -38,8 +38,8 @@ class HomeAdapter :
             }
         }
 
-        fun bind(item: VideoMemo) {
-            binding.videoMemo = item
+        fun bind(item: MediaMemo) {
+            binding.mediaMemo = item
         }
     }
 
@@ -49,5 +49,16 @@ class HomeAdapter :
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         itemClickListener = listener
+    }
+}
+
+
+class MediaMemoDiffCallback : DiffUtil.ItemCallback<MediaMemo>() {
+    override fun areItemsTheSame(oldItem: MediaMemo, newItem: MediaMemo): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: MediaMemo, newItem: MediaMemo): Boolean {
+        return oldItem == newItem
     }
 }

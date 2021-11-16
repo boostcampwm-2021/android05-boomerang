@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alphamovie.lib.AlphaMovieView
-import com.kotlinisgood.boomerang.database.entity.VideoMemo
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,27 +23,31 @@ class VideoEditViewModel @Inject constructor(
     private var subVideosStates = mutableListOf<Boolean>()
 
     fun saveMemo() {
-        val memo: VideoMemo = if (subVideos.size == 0) {
-            VideoMemo(
+        val memo: MediaMemo = if (subVideos.size == 0) {
+            MediaMemo(
                 memoTitle,
                 videoUri.toString(),
+                System.currentTimeMillis(),
+                System.currentTimeMillis(),
+                VideoEditFragment.VIDEO_MODE_FRAME,
                 subVideos,
-                System.currentTimeMillis(),
-                System.currentTimeMillis(),
-                VideoEditFragment.VIDEO_MODE_FRAME
+                emptyList(),
+                emptyList()
             )
         } else {
-            VideoMemo(
+            MediaMemo(
                 memoTitle,
                 videoUri.toString(),
+                System.currentTimeMillis(),
+                System.currentTimeMillis(),
+                VideoEditFragment.VIDEO_MODE_SUB_VIDEO,
                 subVideos,
-                System.currentTimeMillis(),
-                System.currentTimeMillis(),
-                VideoEditFragment.VIDEO_MODE_SUB_VIDEO
+                emptyList(),
+                emptyList()
             )
         }
         viewModelScope.launch {
-            repository.saveVideoMemo(memo)
+            repository.saveMediaMemo(memo)
         }
     }
 

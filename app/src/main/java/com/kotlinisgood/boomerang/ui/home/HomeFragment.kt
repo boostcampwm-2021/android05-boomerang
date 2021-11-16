@@ -40,7 +40,7 @@ class HomeFragment : Fragment() {
         setAdapter()
         setMenusOnToolbar()
 
-        loadVideoMemo()
+        loadMediaMemo()
         setSpeedDial()
         setSearchMenu()
     }
@@ -56,7 +56,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setAdapter() {
-        homeRecyclerView = dataBinding.rvHomeShowVideos
+        homeRecyclerView = dataBinding.rvHomeShowMedia
         val adapter = HomeAdapter()
         adapter.setOnItemClickListener(object: HomeAdapter.OnItemClickListener{
             override fun onItemClick(view: View, position: Int) {
@@ -79,8 +79,8 @@ class HomeFragment : Fragment() {
         homeRecyclerView.adapter = adapter
     }
 
-    private fun loadVideoMemo() {
-        viewModel.loadVideoMemo()
+    private fun loadMediaMemo() {
+        viewModel.loadMediaMemo()
     }
 
 
@@ -91,8 +91,8 @@ class HomeFragment : Fragment() {
         searchView.maxWidth = Int.MAX_VALUE
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { viewModel.searchVideos(it) } ?: run {
-                    viewModel.loadVideoMemo()
+                query?.let { viewModel.searchMedia(it) } ?: run {
+                    viewModel.loadMediaMemo()
                 }
                 return true
             }

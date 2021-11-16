@@ -2,8 +2,10 @@ package com.kotlinisgood.boomerang.ui.audiorecord
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kotlinisgood.boomerang.database.entity.AudioMemo
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.repository.AppRepository
+import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import com.kotlinisgood.boomerang.util.AUDIO_MODE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,10 +15,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AudioRecordViewModel
-    @Inject constructor(private val repository: AppRepository) : ViewModel() {
+@Inject constructor(private val repository: AppRepository) : ViewModel() {
 
-    private val audioList = mutableListOf<AudioMemo>()
-    private var _currentAudio: AudioMemo? = null
+    private val audioList = mutableListOf<MediaMemo>()
+    private var _currentAudio: MediaMemo? = null
     val currentAudio get() = _currentAudio
 
     fun setCurrentAudio(
@@ -27,7 +29,16 @@ class AudioRecordViewModel
         timeList: List<Int>
     ) {
         val tmpAudio = _currentAudio
-        _currentAudio = AudioMemo(title, path, createTime, textList, timeList)
+        _currentAudio = MediaMemo(
+            title,
+            path,
+            createTime,
+            createTime,
+            AUDIO_MODE,
+            emptyList<SubVideo>(),
+            textList,
+            timeList
+        )
         if (tmpAudio != _currentAudio) {
             tmpAudio?.let { audioList.add(it) }
         }
@@ -39,7 +50,7 @@ class AudioRecordViewModel
         currentAudio?.let {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
-                    repository.saveAudioMemo(it)
+                    repository.saveMediaMemo(it)
                 }
                 deleteAudios()
             }
@@ -48,18 +59,21 @@ class AudioRecordViewModel
 
     private fun deleteAudios() {
         audioList.forEach {
-            val file = File(it.path)
+            val file = File(it.mediaUri)
             file.delete()
         }
         audioList.clear()
     }
 
-    private fun copyCurrentAudio(title: String): AudioMemo? {
+    private fun copyCurrentAudio(title: String): MediaMemo? {
         val tmpAudio = _currentAudio ?: return null
-        return AudioMemo(
+        return MediaMemo(
             title,
-            tmpAudio.path,
+            tmpAudio.mediaUri,
             tmpAudio.createTime,
+            tmpAudio.createTime,
+            AUDIO_MODE,
+            emptyList<SubVideo>(),
             tmpAudio.textList,
             tmpAudio.timeList
         )

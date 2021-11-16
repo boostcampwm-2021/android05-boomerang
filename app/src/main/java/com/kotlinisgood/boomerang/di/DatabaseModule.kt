@@ -6,6 +6,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kotlinisgood.boomerang.database.AppDatabase
 import com.kotlinisgood.boomerang.database.dao.AudioMemoDao
+import com.kotlinisgood.boomerang.database.dao.MediaMemoDao
 import com.kotlinisgood.boomerang.database.dao.VideoMemoDao
 import dagger.Module
 import dagger.Provides
@@ -44,22 +45,14 @@ object DatabaseModule {
         return Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
-            "memo.db"
+            "media_memo.db"
         )
-            .addMigrations(migration_1_2)
-            .addMigrations(migration_2_3)
-            .addMigrations(migration_3_4)
             .build()
     }
 
     @Provides
-    fun provideVideoMemoDao(database: AppDatabase): VideoMemoDao {
-        return database.videoMemoDao()
-    }
-
-    @Provides
-    fun provideAudioMemoDao(database: AppDatabase): AudioMemoDao {
-        return database.audioMemoDao()
+    fun provideMediaMemoDao(database: AppDatabase): MediaMemoDao {
+        return database.mediaMemoDao()
     }
 
 }

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kotlinisgood.boomerang.database.entity.VideoMemo
+import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.model.OrderState
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.repository.SharedPrefDataSource
@@ -26,8 +26,8 @@ class HomeViewModel @Inject constructor(
     private val searchText: PublishSubject<String> = PublishSubject.create()
 
     //    private val kotlinDebounceText = debounce(500L, viewModelScope, ::searchVideos)
-    private var _videoMemo = MutableLiveData<List<VideoMemo>>()
-    val videoMemo: LiveData<List<VideoMemo>> = _videoMemo
+    private var _mediaMemo = MutableLiveData<List<MediaMemo>>()
+    val mediaMemo: LiveData<List<MediaMemo>> = _mediaMemo
 
     private var _orderSetting = MutableLiveData<OrderState>()
     private val orderSetting: LiveData<OrderState> get() = _orderSetting
@@ -44,7 +44,7 @@ class HomeViewModel @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext {
-                searchVideos(it.trim())
+                searchMedia(it.trim())
             }
             .subscribe()
     }
@@ -110,17 +110,17 @@ class HomeViewModel @Inject constructor(
          }
      }*/
 
-    fun loadVideoMemo() {
+    fun loadMediaMemo() {
         viewModelScope.launch {
-            val videos = repository.getVideoMemos()
-            _videoMemo.value = if (orderSetting.value == OrderState.MODIFY_RECENT) {
-                videos.sortedBy { it.editTime }.reversed()
+            val media = repository.getMediaMemos()
+            _mediaMemo.value = if (orderSetting.value == OrderState.MODIFY_RECENT) {
+                media.sortedBy { it.modifyTime }.reversed()
             } else if (orderSetting.value == OrderState.MODIFY_OLD) {
-                videos.sortedBy { it.editTime }
+                media.sortedBy { it.modifyTime }
             } else if (orderSetting.value == OrderState.CREATE_OLD) {
-                videos.sortedBy { it.createTime }
+                media.sortedBy { it.createTime }
             } else {
-                videos.sortedBy { it.createTime }.reversed()
+                media.sortedBy { it.createTime }.reversed()
             }
         }
     }
@@ -129,13 +129,13 @@ class HomeViewModel @Inject constructor(
         _orderSetting.value = sharedPref.getOrderState()
     }
 
-    fun searchVideos(query: String?) {
+    fun searchMedia(query: String?) {
         query ?: return
         viewModelScope.launch {
-            val videos = withContext(Dispatchers.IO) {
-                repository.searchVideoByKeyword(query).reversed()
+            val media = withContext(Dispatchers.IO) {
+                repository.searchMediaByKeyword(query).reversed()
             }
-            _videoMemo.value = videos
+            _mediaMemo.value = media
         }
     }
 
