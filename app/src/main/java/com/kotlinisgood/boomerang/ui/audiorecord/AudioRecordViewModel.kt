@@ -14,4 +14,10 @@ class AudioRecordViewModel @Inject constructor(repository: AppRepository): ViewM
         voiceList.add(Audio(path, duration, recognizedText))
     }
 
+    fun changeCurrentAudio(path: String, textList: List<String>, timeList: List<Int>) {
+        println("Path : $path")
+        println("TextList : $textList")
+        println("TImeList : $timeList")
+    }
+
 }
