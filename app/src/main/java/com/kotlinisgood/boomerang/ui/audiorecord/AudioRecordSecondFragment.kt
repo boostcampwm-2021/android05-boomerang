@@ -63,7 +63,6 @@ class AudioRecordSecondFragment : Fragment() {
                     val recognizedText: String? =
                         intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0)
                     recognizedText?.let {
-                        dataBinding.tvTest.text = dataBinding.tvTest.text.toString() + "\r" + it
                         val audioUri = intent.data as Uri
                         lifecycleScope.launch {
                             saveAudio(audioUri, it)
@@ -133,11 +132,11 @@ class AudioRecordSecondFragment : Fragment() {
             checkPermissions()
         }
         dataBinding.btVoiceRecordMakeFile.setOnClickListener {
-            // Warning title 입력, audio file exists 유뮤 판단 후에 실행되도록 ToDo
             if (dataBinding.etAudioRecordEnterTitle.text.toString() == "") {
                 Toast.makeText(it.context, titleWarning, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            viewModel.saveAudioMemo()
             // https://stackoverflow.com/questions/35340025/how-to-merge-two-or-more-mp3-audio-file-in-android
         }
     }
@@ -191,6 +190,7 @@ class AudioRecordSecondFragment : Fragment() {
             getDuration(file)?.let {
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
+                    dataBinding.tvTest.text = dataBinding.tvTest.text.toString() + "\n$recognizedText"
                     viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
                 }
             }
@@ -233,6 +233,7 @@ class AudioRecordSecondFragment : Fragment() {
             getDuration(file)?.let {
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
+                    dataBinding.tvTest.text = recognizedText
                     viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
                 }
             }

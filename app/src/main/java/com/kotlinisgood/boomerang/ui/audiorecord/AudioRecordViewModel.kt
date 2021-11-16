@@ -26,9 +26,12 @@ class AudioRecordViewModel
         textList: List<String>,
         timeList: List<Int>
     ) {
-        _currentAudio?.let { audioList.add(it) }
         val accTimeList = convertAccTimeList(timeList)
+        val tmpAudio = _currentAudio
         _currentAudio = AudioMemo(title, path, createTime, textList, accTimeList)
+        if (tmpAudio != _currentAudio) {
+            tmpAudio?.let { audioList.add(it) }
+        }
         println(currentAudio)
     }
 
@@ -54,8 +57,10 @@ class AudioRecordViewModel
 
     private fun deleteAudios() {
         audioList.forEach {
-            File(it.path).deleteOnExit()
+            val file = File(it.path)
+            file.delete()
         }
+        audioList.clear()
     }
 
 }
