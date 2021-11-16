@@ -9,9 +9,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
-import com.kotlinisgood.boomerang.model.OrderState
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -22,6 +22,8 @@ class HomeFragment : Fragment() {
     private var _dataBinding: FragmentHomeBinding? = null
     private val dataBinding get() = _dataBinding!!
     private val viewModel: HomeViewModel by viewModels()
+
+    private lateinit var homeRecyclerView : RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,6 +56,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setAdapter() {
+        homeRecyclerView = dataBinding.rvHomeShowVideos
         val adapter = HomeAdapter()
         adapter.setOnItemClickListener(object: HomeAdapter.OnItemClickListener{
             override fun onItemClick(view: View, position: Int) {
@@ -62,7 +65,18 @@ class HomeFragment : Fragment() {
                 findNavController().navigate(action)
             }
         })
-        dataBinding.rvHomeShowVideos.adapter = adapter
+        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                homeRecyclerView.layoutManager?.scrollToPosition(0)
+            }
+
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                super.onItemRangeRemoved(positionStart, itemCount)
+                homeRecyclerView.layoutManager?.scrollToPosition(0)
+            }
+        })
+        homeRecyclerView.adapter = adapter
     }
 
     private fun loadVideoMemo() {
