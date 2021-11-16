@@ -85,8 +85,17 @@ class AudioRecordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _dataBinding?.apply {
+            viewModel = viewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
         setRecognizerListener()
         setOnClickListener()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _dataBinding = null
     }
 
     private fun checkPermissions() {
@@ -170,7 +179,7 @@ class AudioRecordFragment : Fragment() {
         lateinit var fis1: FileInputStream
         var is2: InputStream? = null
         lateinit var sis: SequenceInputStream
-        lateinit var fos: FileOutputStream
+        lateinit var output: FileOutputStream
         lateinit var file: File
         try {
             fis1 = FileInputStream(originalFile)
@@ -180,11 +189,11 @@ class AudioRecordFragment : Fragment() {
             val createTime = System.currentTimeMillis()
             val fileName = "$createTime.amr"
             file = File(requireActivity().filesDir, fileName)
-            fos = FileOutputStream(file)
+            output = FileOutputStream(file)
 
             var read = sis.read()
             while (read != -1) {
-                fos.write(read)
+                output.write(read)
                 read = sis.read()
             }
 
@@ -192,7 +201,8 @@ class AudioRecordFragment : Fragment() {
                 Log.i(TAG, "save sequential audio's duration: $it")
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
-                    dataBinding.tvTest.text = dataBinding.tvTest.text.toString() + "\n$recognizedText"
+                    dataBinding.tvAudioRecordShowRecognizedText.text =
+                        dataBinding.tvAudioRecordShowRecognizedText.text.toString() + "\n$recognizedText"
                     viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
                 }
             }
@@ -203,7 +213,7 @@ class AudioRecordFragment : Fragment() {
                 fis1.close()
                 is2?.close()
                 sis.close()
-                fos.close()
+                output.close()
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -236,7 +246,7 @@ class AudioRecordFragment : Fragment() {
                 Log.i(TAG, "save first audio's duration $it")
                 timeList.add(it.toInt())
                 withContext(Dispatchers.Main) {
-                    dataBinding.tvTest.text = recognizedText
+                    dataBinding.tvAudioRecordShowRecognizedText.text = recognizedText
                     viewModel.setCurrentAudio(fileName, file.absolutePath, createTime, textList, timeList)
                 }
             }

@@ -1,5 +1,7 @@
 package com.kotlinisgood.boomerang.ui.audiorecord
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
@@ -17,6 +19,8 @@ import javax.inject.Inject
 class AudioRecordViewModel
 @Inject constructor(private val repository: AppRepository) : ViewModel() {
 
+    private var _loading = MutableLiveData(false)
+    val loading: LiveData<Boolean> get() = _loading
     private val audioList = mutableListOf<MediaMemo>()
     private var _currentAudio: MediaMemo? = null
     val currentAudio get() = _currentAudio
@@ -42,10 +46,10 @@ class AudioRecordViewModel
         if (tmpAudio != _currentAudio) {
             tmpAudio?.let { audioList.add(it) }
         }
-        println(currentAudio)
     }
 
     fun saveAudioMemo(title: String) {
+        _loading.value = true
         _currentAudio = copyCurrentAudio(title)
         currentAudio?.let {
             viewModelScope.launch {
@@ -53,6 +57,7 @@ class AudioRecordViewModel
                     repository.saveMediaMemo(it)
                 }
                 deleteAudios()
+                _loading.value = false
             }
         }
     }
@@ -60,9 +65,12 @@ class AudioRecordViewModel
     private fun deleteAudios() {
         audioList.forEach {
             val file = File(it.mediaUri)
-            file.delete()
+            if (it != _currentAudio) {
+                file.delete()
+            }
         }
         audioList.clear()
+        _currentAudio = null
     }
 
     private fun copyCurrentAudio(title: String): MediaMemo? {
@@ -72,7 +80,7 @@ class AudioRecordViewModel
             tmpAudio.mediaUri,
             tmpAudio.createTime,
             tmpAudio.createTime,
-            AUDIO_MODE,
+            tmpAudio.memoType,
             emptyList<SubVideo>(),
             tmpAudio.textList,
             tmpAudio.timeList
