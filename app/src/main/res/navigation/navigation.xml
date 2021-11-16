@@ -11,41 +11,26 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_homeFragment_to_videoSelectionFragment"
-            app:destination="@id/videoSelectionFragment" >
-            <argument
-                android:name="memoType"
-                app:argType="integer" />
-        </action>
-        <action
-            android:id="@+id/action_homeFragment_to_memoFragment"
-            app:destination="@id/memoFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_bottomSheetFragment"
             app:destination="@id/bottomSheetFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_boomerangCatchAnimation"
+            app:destination="@id/boomerangCatchAnimation" />
+        <action
+            android:id="@+id/action_homeFragment_to_videoSelectionFragment"
+            app:destination="@id/videoSelectionFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/videoSelectionFragment"
         android:name="com.kotlinisgood.boomerang.ui.videoselection.VideoSelectionFragment"
         android:label="VideoSelectionFragment" >
-        <action
-            android:id="@+id/action_videoSelectionFragment_to_videoDoodleLightFragment"
-            app:destination="@id/videoDoodleLightFragment" >
-            <argument
-                android:name="videoPath"
-                app:argType="string" />
-        </action>
-        <action
-            android:id="@+id/action_videoSelectionFragment_to_videoDoodleFragment"
-            app:destination="@id/videoDoodleFragment" >
-            <argument
-                android:name="videoPath"
-                app:argType="string" />
-        </action>
         <argument
             android:name="memoType"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_videoSelectionFragment_to_boomerangThrowAnimation"
+            app:destination="@id/boomerangThrowAnimation" />
     </fragment>
 
     <fragment
@@ -124,10 +109,8 @@
             android:name="baseVideo"
             app:argType="string" />
         <action
-            android:id="@+id/action_videoEditLightFragment_to_homeFragment"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="true"/>
+            android:id="@+id/action_videoEditFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 
 
@@ -158,5 +141,36 @@
         android:id="@+id/audioRecordFragment"
         android:name="com.kotlinisgood.boomerang.ui.audiorecord.AudioRecordFragment"
         android:label="AudioRecordFragment" />
+    <dialog
+        android:id="@+id/boomerangThrowAnimation"
+        android:name="com.kotlinisgood.boomerang.ui.BoomerangThrowAnimation"
+        android:label="BoomerangThrowAnimation" >
+        <argument
+            android:name="memoType"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_boomerangThrowAnimation_to_videoDoodleLightFragment"
+            app:destination="@id/videoDoodleLightFragment" />
+        <action
+            android:id="@+id/action_boomerangThrowAnimation_to_videoDoodleFragment"
+            app:destination="@id/videoDoodleFragment" />
+        <argument
+            android:name="videoPath"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/boomerangCatchAnimation"
+        android:name="com.kotlinisgood.boomerang.ui.BoomerangCatchAnimation"
+        android:label="BoomerangCatchAnimation" >
+        <action
+            android:id="@+id/action_boomerangCatchAnimation_to_memoFragment"
+            app:destination="@id/memoFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"/>
+        <argument
+            android:name="id"
+            app:argType="integer" />
+    </dialog>
+
 
 </navigation>
