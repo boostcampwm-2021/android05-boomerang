@@ -5,9 +5,6 @@ import android.media.MediaPlayer
 import android.opengl.GLES20
 import android.opengl.GLES30
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.util.Log
 import android.view.*
 import androidx.core.net.toUri
@@ -20,8 +17,6 @@ import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import java.io.File
 import java.io.IOException
-import java.lang.RuntimeException
-import java.lang.ref.WeakReference
 
 
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
@@ -40,7 +35,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var textureId = 0
     private var fullFrameBlit: FullFrameRect? = null
     private val mTmpMatrix = FloatArray(16)
-    private lateinit var circularEncoder: CircularEncoder
+    private lateinit var circularEncoder: Encoder
 
     private lateinit var mediaPlayer: MediaPlayer
     private var videoWidth = 0
@@ -49,68 +44,14 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var height = 0
     private var outputVideo: File? = null
 
-    //    private var secondsVideo = 0f
     private var viewportX = 0
     private var viewportY = 0
     private var viewportWidth = 0
     private var viewportHeight = 0
 
-    private lateinit var handler: MainHandler
-
     var currentPoint: MutableList<Pair<Int, Int>> = mutableListOf()
 
     var isSurfaceDestroyed = false
-
-    private class MainHandler(fragment: VideoDoodleFragment) :
-        Handler(Looper.getMainLooper()), CircularEncoder.Callback {
-        private val weakReference: WeakReference<VideoDoodleFragment> =
-            WeakReference<VideoDoodleFragment>(fragment)
-
-        override fun fileSaveComplete(status: Int) {
-            sendMessage(obtainMessage(MSG_SAVE_COMPLETE, status, 0, null))
-        }
-
-//        override fun bufferStatus(totalTimeMsec: Long) {
-//            sendMessage(
-//                obtainMessage(
-//                    MSG_BUFFER_STATUS,
-//                    (totalTimeMsec shr 32).toInt(), totalTimeMsec.toInt()
-//                )
-//            )
-//        }
-
-        override fun handleMessage(msg: Message) {
-            val fragment: VideoDoodleFragment? = weakReference.get()
-            if (fragment == null) {
-                Log.d(
-                    TAG,
-                    "Got message for dead fragment"
-                )
-                return
-            }
-            when (msg.what) {
-                MSG_FRAME_AVAILABLE -> {
-                    fragment.drawFrame()
-                }
-                MSG_BUFFER_STATUS -> {
-//                    val duration = msg.arg1.toLong() shl 32 or
-//                            (msg.arg2.toLong() and 0xffffffffL)
-//                    fragment.updateBufferStatus(duration)
-                }
-                MSG_SAVE_COMPLETE -> {
-                    fragment.saveCompleted(msg.arg1)
-                }
-                else -> throw RuntimeException("Unknown message " + msg.what)
-            }
-        }
-
-        companion object {
-            const val MSG_FRAME_AVAILABLE = 0
-            const val MSG_BUFFER_STATUS = 1
-            const val MSG_SAVE_COMPLETE = 2
-        }
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -126,7 +67,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceView = binding.svMovie
         surfaceView.holder.addCallback(this)
 
-        handler = MainHandler(this)
         val currentUnixTime = System.currentTimeMillis()
         outputVideo = File(requireContext().filesDir, "${currentUnixTime}.mp4")
 
@@ -135,7 +75,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
 
         binding.btnCapture.setOnClickListener {
-            circularEncoder.saveVideo(outputVideo)
+            saveCompleted(circularEncoder.saveVideo(outputVideo))
         }
 
         binding.svMovie.setOnTouchListener { _, motionEvent ->
@@ -240,7 +180,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
 
         try {
-            circularEncoder = CircularEncoder(width, width, 6000000, 30, 60, handler)
+            circularEncoder = Encoder(width, width, 500000, 30, 60)
         } catch (e: IOException) {
             throw Exception(e)
         }
@@ -262,8 +202,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun onFrameAvailable(p0: SurfaceTexture?) {
         Log.d(TAG, "onFrameAvailable: surfaceTexture=$p0")
-//        if (!isSurfaceDestroyed) drawFrame()
-        if (!isSurfaceDestroyed) handler.sendEmptyMessage(MainHandler.MSG_FRAME_AVAILABLE)
+        if (!isSurfaceDestroyed) drawFrame()
     }
 
     private fun drawFrame() {
@@ -290,7 +229,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                 GLES30.GL_COLOR_BUFFER_BIT,
                 GLES30.GL_NEAREST
             )
-            circularEncoder.frameAvailableSoon()
+            circularEncoder.transferBuffer()
             encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
             encoderSurface?.swapBuffers()
 
@@ -304,7 +243,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
             fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
             drawLine(currentPoint, height)
-            circularEncoder.frameAvailableSoon()
+            circularEncoder.transferBuffer()
             encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
             encoderSurface?.swapBuffers()
             displaySurface?.makeCurrent()
