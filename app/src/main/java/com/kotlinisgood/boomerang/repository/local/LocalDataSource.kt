@@ -1,6 +1,7 @@
 package com.kotlinisgood.boomerang.repository.local
 
 import com.kotlinisgood.boomerang.database.AppDatabase
+import com.kotlinisgood.boomerang.database.entity.AudioMemo
 import com.kotlinisgood.boomerang.database.entity.VideoMemo
 import javax.inject.Inject
 
@@ -11,11 +12,11 @@ class LocalDataSource @Inject constructor(
         return db.videoMemoDao().getAll()
     }
 
-    suspend fun saveVideoMemo(memo: VideoMemo){
+    suspend fun saveVideoMemo(memo: VideoMemo) {
         db.videoMemoDao().insertAll(memo)
     }
 
-    suspend fun updateVideoMemo(memo: VideoMemo){
+    suspend fun updateVideoMemo(memo: VideoMemo) {
         db.videoMemoDao().updateVideoMemo(memo)
     }
 
@@ -25,5 +26,9 @@ class LocalDataSource @Inject constructor(
 
     suspend fun getVideoMemo(id: Int): VideoMemo {
         return db.videoMemoDao().getVideoMemo(id)
+    }
+
+    suspend fun saveAudioMemo(audioMemo: AudioMemo) {
+        db.audioMemoDao().insert(audioMemo)
     }
 }

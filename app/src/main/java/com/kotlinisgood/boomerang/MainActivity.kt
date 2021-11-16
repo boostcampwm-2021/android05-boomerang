@@ -23,19 +23,5 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-//        lifecycleScope.launch {
-//            dao.insertAll(
-//                VideoMemo(
-//                    id=0,
-//                    title="hello world",
-//                    videoUri=File(cacheDir, "sample.mp4").toUri().toString(),
-//                    memos= emptyList(),
-//                    createTime= System.currentTimeMillis(),
-//                    editTime = System.currentTimeMillis(),
-//                    trashTime = System.currentTimeMillis(),
-//                )
-//            )
-//        }
     }
 }

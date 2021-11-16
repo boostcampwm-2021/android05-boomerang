@@ -1,4 +1,4 @@
-package com.kotlinisgood.boomerang.ui.voicerecord
+package com.kotlinisgood.boomerang.ui.audiorecord
 
 class SelfReference<T>(val initializer: SelfReference<T>.() -> T) {
     val self: T by lazy {

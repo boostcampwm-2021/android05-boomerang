@@ -1,4 +1,4 @@
-package com.kotlinisgood.boomerang.ui.voicerecord
+package com.kotlinisgood.boomerang.ui.audiorecord
 
 import android.Manifest
 import android.content.Intent
