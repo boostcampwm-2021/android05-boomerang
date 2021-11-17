@@ -1,6 +1,7 @@
 package com.kotlinisgood.boomerang.util
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.widget.TextView
@@ -16,7 +17,6 @@ import java.text.SimpleDateFormat
 @Suppress("UNCHECKED_CAST")
 @BindingAdapter("submitList")
 fun <T, VH : RecyclerView.ViewHolder> RecyclerView.submitList(list: List<T>?) {
-    println("=======List: $list")
     list?.let {
         (adapter as ListAdapter<T, VH>).submitList(list)
     }
@@ -63,4 +63,9 @@ fun TextView.timeFromSubVideo(subVideo: SubVideo){
     val startingTime = String.format("%02d:%02d", startMinute, startSecond)
     val endingTime = String.format("%02d:%02d", endMinute,endSecond)
     text = "$startingTime ~ $endingTime"
+}
+
+@BindingAdapter("isBold")
+fun setBold(view: TextView, focused: Boolean) {
+    if (focused) view.setTypeface(null, Typeface.BOLD) else view.setTypeface(null, Typeface.NORMAL)
 }
