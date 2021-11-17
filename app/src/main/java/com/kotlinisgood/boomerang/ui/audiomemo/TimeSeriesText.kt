@@ -4,4 +4,5 @@ data class TimeSeriesText(
     val id: Int,
     val time: Int,
     val text: String,
+    val focused: Boolean = false
 )

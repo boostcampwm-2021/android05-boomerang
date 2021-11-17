@@ -9,8 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
 import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -24,13 +23,13 @@ class AudioMemoFragment : Fragment() {
     private val viewModel: AudioMemoViewModel by viewModels()
     private val args: AudioMemoFragmentArgs by navArgs()
     private val audioMemoAdapter = AudioMemoAdapter()
-    private lateinit var player: SimpleExoPlayer
+    private lateinit var player: ExoPlayer
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _dataBinding = FragmentAudioMemoBinding.inflate(inflater, container, false)
         return dataBinding.root
     }
@@ -43,13 +42,26 @@ class AudioMemoFragment : Fragment() {
         viewModel.getMediaMemo(args.mediaMemoId)
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (viewModel.mediaMemo.value != null) {
+            player.prepare()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        player.pause()
+    }
+
     override fun onStop() {
         super.onStop()
-        player.release()
+        player.stop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        player.release()
         _dataBinding = null
     }
 
@@ -65,25 +77,40 @@ class AudioMemoFragment : Fragment() {
     }
 
     private fun setPlayer(path: String) {
-        player = SimpleExoPlayer.Builder(requireContext()).build()
-        player.also {
-            it.setMediaItem(MediaItem.fromUri(Uri.fromFile(File(path))))
-            dataBinding.pcvAudioMemoControlAudio.player = it
+        player = ExoPlayer.Builder(requireContext()).build()
+            .apply {
+                setMediaItem(MediaItem.fromUri(Uri.fromFile(File(path))))
+                setSeekParameters(SeekParameters.CLOSEST_SYNC)
+                addListener(object: Player.Listener {
+                    override fun onPositionDiscontinuity(
+                        oldPosition: Player.PositionInfo,
+                        newPosition: Player.PositionInfo,
+                        reason: Int
+                    ) {
+                        super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+                        viewModel.modifyFocusedTextOrNot(newPosition.positionMs, audioMemoAdapter.currentList.toList())
+                    }
+                })
+                prepare()
+            }.also {
+                dataBinding.pcvAudioMemoControlAudio.player = it
+            }
+        dataBinding.pcvAudioMemoControlAudio.setProgressUpdateListener { position, _ ->
+            viewModel.modifyFocusedTextOrNot(position, audioMemoAdapter.currentList.toList())
         }
     }
 
     private fun setAdapters() {
         audioMemoAdapter.apply {
-            setOnAudioMemoItemClickListener(object: AudioMemoAdapter.OnAudioMemoItemClickListener {
+            setOnAudioMemoItemClickListener(object : AudioMemoAdapter.OnAudioMemoItemClickListener {
                 override fun onItemClick(view: View, position: Int) {
-                    val item = currentList[position]
-                    Log.i(TAG, "${item.time}")
-                    player.seekTo((item.time.toLong()))
+                    player.seekTo((currentList[position].time.toLong()))
                 }
             })
         }
         dataBinding.rvAudioMemoRecognizedText.adapter = audioMemoAdapter
     }
-    // PlayerControlView 설정
+
+
 
 }

@@ -1,5 +1,6 @@
 package com.kotlinisgood.boomerang.ui.audiomemo
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,8 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
     val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
     private val _timeSeriesTextList = MutableLiveData<List<TimeSeriesText>>(emptyList())
     val timeSeriesTextList: LiveData<List<TimeSeriesText>> get() = _timeSeriesTextList
+    private var _selected = MutableLiveData<Int>(-1)
+    val selected: LiveData<Int> get() = _selected
 
     fun getMediaMemo(id: Int) {
         viewModelScope.launch {
@@ -33,6 +36,29 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
             println("mediaMeo :  ${_mediaMemo.value}")
             println("timeSeriesTextList :  ${_timeSeriesTextList.value}")
         }
+    }
+
+    private fun setTimeSeriesTextList(list: List<TimeSeriesText>) {
+        _timeSeriesTextList.value = list
+    }
+
+    fun modifyFocusedTextOrNot(position: Long, list: List<TimeSeriesText>) {
+        val newList = list.toMutableList()
+        val item = newList.last { it.time <= position }
+        val index = newList.indexOf(item)
+        val before = selected.value?: return
+        if (index != -1 && before != index) {
+            if (before != -1) {
+                newList[before] = newList[before].copy(focused = false)
+            }
+            setSelected(index)
+            newList[index] = newList[index].copy(focused = true)
+            setTimeSeriesTextList(newList.toList())
+        }
+    }
+
+    private fun setSelected(index: Int) {
+        _selected.value = index
     }
 
 }
