@@ -9,6 +9,7 @@ import com.kotlinisgood.boomerang.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,16 +17,21 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
 
     private var _mediaMemo = MutableLiveData<MediaMemo>()
     val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
-    val timeSeriesTextList = MutableLiveData<List<TimeSeriesText>>()
+    private val _timeSeriesTextList = MutableLiveData<List<TimeSeriesText>>(emptyList())
+    val timeSeriesTextList: LiveData<List<TimeSeriesText>> get() = _timeSeriesTextList
 
     fun getMediaMemo(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _mediaMemo.postValue(repository.getMediaMemo(id))
-            _mediaMemo.value?.let {
-                timeSeriesTextList.postValue(it.textList.mapIndexed { idx, text ->
-                    TimeSeriesText(idx, it.timeList[idx], text)
-                })
+        viewModelScope.launch {
+            _mediaMemo.value = withContext(Dispatchers.IO) {
+                repository.getMediaMemo(id)
             }
+            _mediaMemo.value?.let {
+                _timeSeriesTextList.value = it.textList.mapIndexed { idx, text ->
+                    TimeSeriesText(idx, it.timeList[idx], text)
+                }.toList()
+            }
+            println("mediaMeo :  ${_mediaMemo.value}")
+            println("timeSeriesTextList :  ${_timeSeriesTextList.value}")
         }
     }
 

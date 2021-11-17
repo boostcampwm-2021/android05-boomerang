@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/boomerang_theme_color"
-                app:title="@string/app_name_kr">
+                app:title="@{viewModel.mediaMemo.title}">
 
             </com.google.android.material.appbar.MaterialToolbar>
 
