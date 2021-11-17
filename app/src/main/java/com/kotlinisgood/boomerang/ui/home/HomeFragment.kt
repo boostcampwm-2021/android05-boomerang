@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
+import com.kotlinisgood.boomerang.util.AUDIO_MODE
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -60,8 +61,12 @@ class HomeFragment : Fragment() {
         val adapter = HomeAdapter()
         adapter.setOnItemClickListener(object: HomeAdapter.OnItemClickListener{
             override fun onItemClick(view: View, position: Int) {
-                val id = adapter.currentList[position].id
-                val action = HomeFragmentDirections.actionHomeFragmentToBoomerangCatchAnimation(id)
+                val item = adapter.currentList[position]
+                val action = if (item.memoType == AUDIO_MODE) {
+                    HomeFragmentDirections.actionHomeFragmentToAudioMemoFragment(item.id)
+                } else {
+                    HomeFragmentDirections.actionHomeFragmentToMemoFragment(item.id)
+                }
                 findNavController().navigate(action)
             }
         })
@@ -133,6 +138,13 @@ class HomeFragment : Fragment() {
                     .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                     .setLabel(R.string.menu_home_sd_video_light)
                     .create(),
+                SpeedDialActionItem.Builder(
+                    R.id.menu_home_sd_audio,
+                    R.drawable.image_audio
+                )
+                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setLabel(R.string.menu_home_sd_audio)
+                    .create()
             )
         )
         dataBinding.sdHomeShowItems.setOnActionSelectedListener { actionItem ->
@@ -149,6 +161,11 @@ class HomeFragment : Fragment() {
                         HomeFragmentDirections.actionHomeFragmentToVideoSelectionFragment(
                             VIDEO_MODE_SUB_VIDEO
                         )
+                    )
+                }
+                R.id.menu_home_sd_audio -> {
+                    findNavController().navigate(
+                        HomeFragmentDirections.actionHomeFragmentToAudioRecordFragment()
                     )
                 }
             }
