@@ -1,6 +1,7 @@
 package com.kotlinisgood.boomerang.ui.videodoodlelight
 
 import android.annotation.SuppressLint
+import android.media.MediaMetadataRetriever
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -17,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
@@ -42,6 +44,7 @@ class VideoDoodleLightFragment : Fragment() {
     private var doodleColor = 0xFFFF0000
 
     private lateinit var player: SimpleExoPlayer
+    private var playerEnded = false
 
     private var drawView: DrawView? = null
 
@@ -67,6 +70,7 @@ class VideoDoodleLightFragment : Fragment() {
         setBackPressed()
         setViewModel()
         setAdapter()
+        setObserver()
     }
 
     private fun setViewModel() {
@@ -95,6 +99,7 @@ class VideoDoodleLightFragment : Fragment() {
         binding.exoplayer.player = player
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
+        player.addListener(playerListener)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -110,12 +115,19 @@ class VideoDoodleLightFragment : Fragment() {
                             canMemo = false
                         }
                     }
-                    if (canMemo) {
-                        startRecord()
-                        binding.canvas.isEnabled = true
-                    } else {
-                        toggleBtnDoodle.uncheck(R.id.btn_doodle)
-                        Toast.makeText(context, "이미 메모가 있습니다", Toast.LENGTH_SHORT).show()
+                    when {
+                        playerEnded || currentTime > player.duration - 300-> {
+                            toggleBtnDoodle.uncheck(R.id.btn_doodle)
+                            Toast.makeText(context,"영상이 끝났습니다.",Toast.LENGTH_SHORT).show()
+                        }
+                        canMemo -> {
+                            startRecord()
+                            binding.canvas.isEnabled = true
+                        }
+                        else -> {
+                            toggleBtnDoodle.uncheck(R.id.btn_doodle)
+                            Toast.makeText(context, "이미 메모가 있습니다", Toast.LENGTH_SHORT).show()
+                        }
                     }
 
                 } else {
@@ -152,6 +164,17 @@ class VideoDoodleLightFragment : Fragment() {
         }
     }
 
+    fun setObserver(){
+        viewModel.timeOver.observe(viewLifecycleOwner){ timeOver ->
+            if(timeOver == true){
+                stopRecord()
+                viewModel.resetTimer()
+                binding.toggleBtnDoodle.uncheck(R.id.btn_doodle)
+                Toast.makeText(context, "영상 시간을 초과하여 메모하실 수 없습니다!",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     private fun startRecord() {
         setDrawingView()
@@ -172,6 +195,7 @@ class VideoDoodleLightFragment : Fragment() {
             Log.e("MainActivity", "startRecord failed", e)
             return
         }
+        viewModel.startRecordTime()
         recording = true
     }
 
@@ -181,8 +205,17 @@ class VideoDoodleLightFragment : Fragment() {
             viewRecorder.reset()
             viewRecorder.release()
             binding.canvas.removeAllViews()
-            viewModel.setEndTime(player.currentPosition.toInt())
+            viewModel.resetTimer()
+            viewModel.setEndTime(getDuration(File(viewModel.getCurrentSubVideo()?.uri?.toUri()?.path))!!.toInt())
             recording = false
+        }
+    }
+
+    private fun getDuration(file: File): String? {
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(file.absolutePath)
+        return mmr.run {
+            extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         }
     }
 
@@ -247,7 +280,33 @@ class VideoDoodleLightFragment : Fragment() {
         super.onPause()
         player.run {
             stop()
+            player.removeListener(playerListener)
             release()
+        }
+    }
+
+    private val playerListener = object: Player.Listener{
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            super.onPlaybackStateChanged(playbackState)
+            when(playbackState){
+                Player.STATE_ENDED -> {
+                    playerEnded = true
+                    if(recording){
+                        stopRecord()
+                        binding.toggleBtnDoodle.uncheck(R.id.btn_doodle)
+                    }
+                }
+                Player.STATE_READY -> {
+                    viewModel.setDuration(player.duration)
+                }
+            }
+        }
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            super.onIsPlayingChanged(isPlaying)
+            if (isPlaying){
+                playerEnded = false
+            }
         }
     }
 }
