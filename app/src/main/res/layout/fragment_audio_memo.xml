@@ -21,11 +21,10 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/tb_home"
+                android:id="@+id/tb_audio_memo"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/boomerang_theme_color"
-                app:title="@{viewModel.mediaMemo.title}">
+                android:background="@color/boomerang_theme_color">
 
             </com.google.android.material.appbar.MaterialToolbar>
 
@@ -52,7 +51,6 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
-                submitList="@{viewModel.timeSeriesTextList}"
                 android:id="@+id/rv_audio_memo_recognized_text"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
