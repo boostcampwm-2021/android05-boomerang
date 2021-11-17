@@ -140,7 +140,19 @@
     <fragment
         android:id="@+id/audioRecordFragment"
         android:name="com.kotlinisgood.boomerang.ui.audiorecord.AudioRecordFragment"
-        android:label="AudioRecordFragment" />
+        android:label="AudioRecordFragment" >
+        <action
+            android:id="@+id/action_audioRecordFragment_to_audioMemoFragment"
+            app:destination="@id/audioMemoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/audioMemoFragment"
+        android:name="com.kotlinisgood.boomerang.ui.audiomemo.AudioMemoFragment"
+        android:label="AudioMemoFragment" >
+        <argument
+            android:name="mediaMemoId"
+            app:argType="integer" />
+    </fragment>
     <dialog
         android:id="@+id/boomerangThrowAnimation"
         android:name="com.kotlinisgood.boomerang.ui.BoomerangThrowAnimation"

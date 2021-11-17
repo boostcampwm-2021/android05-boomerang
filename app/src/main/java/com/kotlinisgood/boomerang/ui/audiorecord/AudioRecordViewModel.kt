@@ -24,6 +24,9 @@ class AudioRecordViewModel
     val loading: LiveData<Boolean> get() = _loading
     private val audioList = mutableListOf<MediaMemo>()
 
+    private val _audioMemo = MutableLiveData<MediaMemo>()
+    val audioMemo: LiveData<MediaMemo> get() = _audioMemo
+
     private val fileList = mutableListOf<File>()
 
     private val timeList = mutableListOf(0)
@@ -54,7 +57,7 @@ class AudioRecordViewModel
                     it.processAsync()
                 }
             }
-            MediaMemo(title, outputPath, createTime, createTime,
+            _audioMemo.value = MediaMemo(title, outputPath, createTime, createTime,
                 AUDIO_MODE, emptyList(), textList, timeList).also {
                 withContext(Dispatchers.IO) {
                     repository.saveMediaMemo(it)
