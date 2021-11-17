@@ -24,7 +24,8 @@
                 android:id="@+id/tb_audio_memo"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/boomerang_theme_color">
+                android:background="@color/boomerang_theme_color"
+                app:title="@{viewModel.mediaMemo.title}">
 
             </com.google.android.material.appbar.MaterialToolbar>
 
@@ -51,6 +52,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
+                submitList="@{viewModel.timeSeriesTextList}"
                 android:id="@+id/rv_audio_memo_recognized_text"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -59,14 +61,22 @@
                 android:layout_marginEnd="10dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/tv_audio_memo_memo_title"
-                app:layout_constraintBottom_toTopOf="@id/pcv_audio_memo_control_audio"
+                app:layout_constraintBottom_toTopOf="@id/container_audio_memo_pcv"
                 tools:listitem="@layout/item_rv_audio_memo_recognized_text" />
 
-            <com.google.android.exoplayer2.ui.PlayerControlView
-                android:id="@+id/pcv_audio_memo_control_audio"
+            <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+                android:id="@+id/container_audio_memo_pcv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent" >
+
+                <com.google.android.exoplayer2.ui.PlayerControlView
+                    android:id="@+id/pcv_audio_memo_control_audio"
+                    android:layout_width="match_parent"
+                    app:show_timeout="0"
+                    android:layout_height="wrap_content" />
+            </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.kotlinisgood.boomerang.ui.audiomemo
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,8 +9,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class AudioMemoFragment : Fragment() {
@@ -19,6 +23,8 @@ class AudioMemoFragment : Fragment() {
     val dataBinding get() = _dataBinding!!
     private val viewModel: AudioMemoViewModel by viewModels()
     private val args: AudioMemoFragmentArgs by navArgs()
+    private val audioMemoAdapter = AudioMemoAdapter()
+    private lateinit var player: SimpleExoPlayer
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,32 +43,42 @@ class AudioMemoFragment : Fragment() {
         viewModel.getMediaMemo(args.mediaMemoId)
     }
 
+    override fun onStop() {
+        super.onStop()
+        player.release()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _dataBinding = null
     }
 
     private fun setBinding() {
-        dataBinding.apply {
-            viewModel = viewModel
-            lifecycleOwner = viewLifecycleOwner
-        }
+        dataBinding.viewModel = viewModel
+        dataBinding.lifecycleOwner = viewLifecycleOwner
     }
 
     private fun setObservers() {
         viewModel.mediaMemo.observe(viewLifecycleOwner) {
-            // ToDo 가져온 값을 토대로 UI 세팅
-            it.title
-            it.mediaUri // path
+            setPlayer(it.mediaUri)
+        }
+    }
+
+    private fun setPlayer(path: String) {
+        player = SimpleExoPlayer.Builder(requireContext()).build()
+        player.also {
+            it.setMediaItem(MediaItem.fromUri(Uri.fromFile(File(path))))
+            dataBinding.pcvAudioMemoControlAudio.player = it
         }
     }
 
     private fun setAdapters() {
-        val audioMemoAdapter = AudioMemoAdapter().apply {
+        audioMemoAdapter.apply {
             setOnAudioMemoItemClickListener(object: AudioMemoAdapter.OnAudioMemoItemClickListener {
                 override fun onItemClick(view: View, position: Int) {
                     val item = currentList[position]
                     Log.i(TAG, "${item.time}")
+                    player.seekTo((item.time.toLong()))
                 }
             })
         }
