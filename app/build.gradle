@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.kotlinisgood.boomerang"
-        minSdk 21
+        minSdk 23
         targetSdk 31
         versionCode 1
         versionName "1.0"

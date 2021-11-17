@@ -35,8 +35,7 @@
                     <com.google.android.material.appbar.MaterialToolbar
                         android:id="@+id/tb_home"
                         android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize"
-                        android:background="@color/boomerang_theme_color">
+                        android:layout_height="?attr/actionBarSize">
 
                     </com.google.android.material.appbar.MaterialToolbar>
 
