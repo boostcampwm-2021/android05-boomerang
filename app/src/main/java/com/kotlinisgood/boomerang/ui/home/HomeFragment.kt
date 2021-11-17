@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -115,7 +116,14 @@ class HomeFragment : Fragment() {
         dataBinding.tbHome.inflateMenu(R.menu.menu_fragment_home)
         dataBinding.tbHome.setNavigationIcon(R.drawable.ic_menu)
         dataBinding.tbHome.setNavigationOnClickListener {
-            println("yahoo")
+            dataBinding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+        dataBinding.navigationView.setNavigationItemSelectedListener {
+            println(it)
+//            오픈소스 라이선스 제외하고 true로 해야함. 현재 선택한 메모 상태를 보여줄 수 있음
+            it.isChecked = true
+            dataBinding.drawerLayout.close()
+            true
         }
         dataBinding.tbHome.setOnMenuItemClickListener {
             when (it.itemId) {

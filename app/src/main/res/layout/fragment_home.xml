@@ -10,55 +10,78 @@
             type="com.kotlinisgood.boomerang.ui.home.HomeViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.home.HomeFragment">
+        tools:openDrawer="start">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/container_appbar"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="false">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/tb_home"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/boomerang_theme_color">
-
-            </com.google.android.material.appbar.MaterialToolbar>
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:descendantFocusability="blocksDescendants"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/container_appbar">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_home_show_media"
-                submitList="@{viewModel.mediaMemo}"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:layout_constraintVertical_bias="0.0"
-                tools:layout_editor_absoluteX="0dp"
-                tools:listitem="@layout/item_rv_home_show_videos" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                tools:context=".ui.home.HomeFragment">
 
-        <com.leinardi.android.speeddial.SpeedDialView
-            android:id="@+id/sd_home_show_items"
+                <com.google.android.material.appbar.AppBarLayout
+                    android:id="@+id/container_appbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.appbar.MaterialToolbar
+                        android:id="@+id/tb_home"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        android:background="@color/boomerang_theme_color">
+
+                    </com.google.android.material.appbar.MaterialToolbar>
+
+                </com.google.android.material.appbar.AppBarLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:descendantFocusability="blocksDescendants"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/container_appbar">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_home_show_media"
+                        submitList="@{viewModel.mediaMemo}"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:layout_editor_absoluteX="0dp"
+                        tools:listitem="@layout/item_rv_home_show_videos" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.leinardi.android.speeddial.SpeedDialView
+                    android:id="@+id/sd_home_show_items"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:sdMainFabClosedBackgroundColor="@color/boomerang_theme_color_second"
+                    app:sdMainFabClosedSrc="@drawable/ic_add"
+                    app:sdMainFabOpenedBackgroundColor="@color/boomerang_theme_color_second" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigation_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:sdMainFabClosedBackgroundColor="@color/boomerang_theme_color_second"
-            app:sdMainFabClosedSrc="@drawable/ic_add"
-            app:sdMainFabOpenedBackgroundColor="@color/boomerang_theme_color_second" />
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:headerLayout="@layout/header_navigation_drawer"
+            app:menu="@menu/navigation_drawer_memo_type" />
 
+    </androidx.drawerlayout.widget.DrawerLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
