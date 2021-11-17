@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
@@ -23,7 +24,7 @@ fun <T, VH : RecyclerView.ViewHolder> RecyclerView.submitList(list: List<T>?) {
 }
 
 @BindingAdapter("imageFromVideoMemo")
-fun ShapeableImageView.imageFromVideoMemo(mediaMemo: MediaMemo) {
+fun ImageView.imageFromVideoMemo(mediaMemo: MediaMemo) {
     val uri = Uri.parse(mediaMemo.mediaUri)
     val mmr = MediaMetadataRetriever()
     mmr.setDataSource(context, uri)

@@ -40,6 +40,10 @@ class HomeAdapter :
 
         fun bind(item: MediaMemo) {
             binding.mediaMemo = item
+//            when (item.memoType) {
+//                VIDEO_MODE_FRAME -> binding.itemLayoutHomeVideo.setBackgroundColor(Color.CYAN)
+//                VIDEO_MODE_SUB_VIDEO -> binding.itemLayoutHomeVideo.setBackgroundColor(Color.MAGENTA)
+//            }
         }
     }
 

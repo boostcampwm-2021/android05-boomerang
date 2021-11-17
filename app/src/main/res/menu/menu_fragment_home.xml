@@ -3,25 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_home_order"
-        android:title="@string/menu_home_order_title"
-        android:icon="@drawable/ic_filter_list"
-        android:contentDescription="@string/menu_home_order_description"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/menu_home_setting"
-        android:title="@string/menu_home_setting_title"
-        android:icon="@drawable/ic_setting"
-        android:contentDescription="@string/menu_home_setting_description"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/menu_home_search"
         android:title="@string/menu_home_search_title"
         android:icon="@drawable/ic_search"
         android:contentDescription="@string/menu_home_search_description"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom" />
+
+    <item
+        android:id="@+id/menu_home_order"
+        android:title="@string/menu_home_order_title"
+        android:icon="@drawable/ic_filter_list"
+        android:contentDescription="@string/menu_home_order_description"
+        app:showAsAction="ifRoom" />
 
 </menu>

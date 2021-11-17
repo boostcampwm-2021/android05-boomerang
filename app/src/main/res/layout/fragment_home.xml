@@ -25,8 +25,7 @@
                 android:id="@+id/tb_home"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/boomerang_theme_color"
-                app:title="@string/app_name_kr">
+                android:background="@color/boomerang_theme_color">
 
             </com.google.android.material.appbar.MaterialToolbar>
 
@@ -45,7 +44,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintVertical_bias="0.0"
                 tools:layout_editor_absoluteX="0dp"
                 tools:listitem="@layout/item_rv_home_show_videos" />

@@ -1,15 +1,15 @@
 package com.kotlinisgood.boomerang.ui.home
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
 import com.kotlinisgood.boomerang.util.AUDIO_MODE
@@ -36,11 +36,11 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dataBinding.rvHomeShowMedia.layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
         setHasOptionsMenu(true)
         setBinding()
         setAdapter()
         setMenusOnToolbar()
-
         loadMediaMemo()
         setSpeedDial()
         setSearchMenu()
@@ -113,6 +113,10 @@ class HomeFragment : Fragment() {
 
     private fun setMenusOnToolbar() {
         dataBinding.tbHome.inflateMenu(R.menu.menu_fragment_home)
+        dataBinding.tbHome.setNavigationIcon(R.drawable.ic_menu)
+        dataBinding.tbHome.setNavigationOnClickListener {
+            println("yahoo")
+        }
         dataBinding.tbHome.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_home_order -> {
