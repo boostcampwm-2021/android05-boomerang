@@ -28,4 +28,6 @@
     <string name="bottom_sheet_modify_recent">수정일 최신 순</string>
     <string name="bottom_sheet_modify_old">수정일 오래된 순</string>
     <string name="fragment_audio_record_reconginized_text">음성 인식 버튼을 누르면 연속으로 음성이 인식이 됩니다. 이후 중지하고 싶으시면 빈 화면 혹은 가운데 마이크 버튼을 누른 후 취소버튼을 눌러주세요 \n\n 음성 저장 버튼을 누르면 음성이 하나로 합쳐집니다.</string>
+    <string name="menu_home_sd_audio">음성 메모 작성</string>
+    <string name="menu_home_sd_audio_description">Go to record audio and extract text</string>
 </resources>

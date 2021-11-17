@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat
 @Suppress("UNCHECKED_CAST")
 @BindingAdapter("submitList")
 fun <T, VH : RecyclerView.ViewHolder> RecyclerView.submitList(list: List<T>?) {
+    println("=======List: $list")
     list?.let {
         (adapter as ListAdapter<T, VH>).submitList(list)
     }

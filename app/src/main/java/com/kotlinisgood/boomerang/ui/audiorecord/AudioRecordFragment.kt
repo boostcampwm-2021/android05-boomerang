@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -90,11 +91,19 @@ class AudioRecordFragment : Fragment() {
         }
         setRecognizerListener()
         setOnClickListener()
+        setObserver()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _dataBinding = null
+    }
+
+    private fun setObserver() {
+        viewModel.audioMemo.observe(viewLifecycleOwner) {
+            val action = AudioRecordFragmentDirections.actionAudioRecordFragmentToHomeFragment()
+            findNavController().navigate(action)
+        }
     }
 
     private fun checkPermissions() {

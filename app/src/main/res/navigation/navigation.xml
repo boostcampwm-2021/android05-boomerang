@@ -19,6 +19,15 @@
         <action
             android:id="@+id/action_homeFragment_to_videoSelectionFragment"
             app:destination="@id/videoSelectionFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_audioRecordFragment"
+            app:destination="@+id/audioRecordFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_audioMemoFragment"
+            app:destination="@+id/audioMemoFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_memoFragment"
+            app:destination="@+id/memoFragment" />
     </fragment>
 
     <fragment
@@ -140,7 +149,19 @@
     <fragment
         android:id="@+id/audioRecordFragment"
         android:name="com.kotlinisgood.boomerang.ui.audiorecord.AudioRecordFragment"
-        android:label="AudioRecordFragment" />
+        android:label="AudioRecordFragment" >
+        <action
+            android:id="@+id/action_audioRecordFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/audioMemoFragment"
+        android:name="com.kotlinisgood.boomerang.ui.audiomemo.AudioMemoFragment"
+        android:label="AudioMemoFragment" >
+        <argument
+            android:name="mediaMemoId"
+            app:argType="integer" />
+    </fragment>
     <dialog
         android:id="@+id/boomerangThrowAnimation"
         android:name="com.kotlinisgood.boomerang.ui.BoomerangThrowAnimation"

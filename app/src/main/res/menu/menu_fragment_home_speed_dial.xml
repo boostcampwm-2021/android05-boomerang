@@ -12,4 +12,10 @@
         android:icon="@drawable/image_my_memo"
         android:contentDescription="@string/menu_home_sd_video_light_description" />
 
+    <item
+        android:id="@+id/menu_home_sd_audio"
+        android:title="@string/menu_home_sd_audio"
+        android:icon="@drawable/image_audio"
+        android:contentDescription="@string/menu_home_sd_audio_description" />
+
 </menu>
