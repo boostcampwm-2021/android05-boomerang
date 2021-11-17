@@ -1,6 +1,7 @@
 package com.kotlinisgood.boomerang.ui.audiomemo
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AudioMemoFragment : Fragment() {
 
+    private val TAG = "AudioMemoFragment"
     private var _dataBinding: FragmentAudioMemoBinding? = null
     val dataBinding get() = _dataBinding!!
     private val viewModel: AudioMemoViewModel by viewModels()
@@ -34,16 +36,33 @@ class AudioMemoFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
         }
         viewModel.getMediaMemo(args.mediaMemoId)
+        setObservers()
+        setAdapters()
     }
 
-    fun setObservers() {
+    private fun setObservers() {
         viewModel.mediaMemo.observe(viewLifecycleOwner) {
             // ToDo 가져온 값을 토대로 UI 세팅
+            val timeSeries = it.textList.mapIndexed { idx, text ->
+                TimeSeriesText(idx, it.timeList[idx], text)
+            }
+            it.title
+            it.mediaUri // path
         }
     }
 
     // ToDo recyclerView adapter 설정
-
+    private fun setAdapters() {
+        val audioMemoAdapter = AudioMemoAdapter().apply {
+            setOnAudioMemoItemClickListener(object: AudioMemoAdapter.OnAudioMemoItemClickListener {
+                override fun onItemClick(view: View, position: Int) {
+                    val item = currentList[position]
+                    Log.i(TAG, "${item.time}")
+                }
+            })
+        }
+        dataBinding.rvAudioMemoRecognizedText.adapter = audioMemoAdapter
+    }
     // PlayerControlView 설정
 
 }

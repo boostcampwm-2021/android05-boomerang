@@ -16,10 +16,16 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
 
     private var _mediaMemo = MutableLiveData<MediaMemo>()
     val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
+    val timeSeriesTextList = MutableLiveData<List<TimeSeriesText>>()
 
     fun getMediaMemo(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             _mediaMemo.postValue(repository.getMediaMemo(id))
+            _mediaMemo.value?.let {
+                timeSeriesTextList.postValue(it.textList.mapIndexed { idx, text ->
+                    TimeSeriesText(idx, it.timeList[idx], text)
+                })
+            }
         }
     }
 
