@@ -151,7 +151,7 @@
         android:name="com.kotlinisgood.boomerang.ui.audiorecord.AudioRecordFragment"
         android:label="AudioRecordFragment" >
         <action
-            android:id="@+id/action_videoEditFragment_to_homeFragment"
+            android:id="@+id/action_audioRecordFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment

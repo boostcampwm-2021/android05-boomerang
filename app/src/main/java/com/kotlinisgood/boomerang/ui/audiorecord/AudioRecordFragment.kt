@@ -101,7 +101,7 @@ class AudioRecordFragment : Fragment() {
 
     private fun setObserver() {
         viewModel.audioMemo.observe(viewLifecycleOwner) {
-            val action = AudioRecordFragmentDirections.actionVideoEditFragmentToHomeFragment()
+            val action = AudioRecordFragmentDirections.actionAudioRecordFragmentToHomeFragment()
             findNavController().navigate(action)
         }
     }
