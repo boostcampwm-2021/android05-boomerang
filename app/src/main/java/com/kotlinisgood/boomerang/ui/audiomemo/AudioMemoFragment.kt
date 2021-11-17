@@ -31,27 +31,32 @@ class AudioMemoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _dataBinding?.apply {
+        setBinding()
+        setObservers()
+        setAdapters()
+        viewModel.getMediaMemo(args.mediaMemoId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _dataBinding = null
+    }
+
+    private fun setBinding() {
+        dataBinding.apply {
             viewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
         }
-        viewModel.getMediaMemo(args.mediaMemoId)
-        setObservers()
-        setAdapters()
     }
 
     private fun setObservers() {
         viewModel.mediaMemo.observe(viewLifecycleOwner) {
             // ToDo 가져온 값을 토대로 UI 세팅
-            val timeSeries = it.textList.mapIndexed { idx, text ->
-                TimeSeriesText(idx, it.timeList[idx], text)
-            }
             it.title
             it.mediaUri // path
         }
     }
 
-    // ToDo recyclerView adapter 설정
     private fun setAdapters() {
         val audioMemoAdapter = AudioMemoAdapter().apply {
             setOnAudioMemoItemClickListener(object: AudioMemoAdapter.OnAudioMemoItemClickListener {
