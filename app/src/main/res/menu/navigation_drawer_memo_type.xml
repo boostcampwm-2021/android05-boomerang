@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/navigation_drawer_memo_type"
+        android:title="메모">
+        <menu>
+            <item
+                android:id="@+id/navigation_drawer_memo_type_all"
+                android:checkable="true"
+                android:icon="@drawable/ic_all"
+                android:title="모든 메모"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/navigation_drawer_memo_type_voice"
+                android:checkable="true"
+                android:icon="@drawable/ic_voice"
+                android:title="음성 메모"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/navigation_drawer_memo_type_my_video"
+                android:checkable="true"
+                android:icon="@drawable/ic_person"
+                android:title="나만의 메모"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/navigation_drawer_memo_type_together_video"
+                android:checkable="true"
+                android:icon="@drawable/ic_people"
+                android:title="모두의 메모"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/navigation_drawer_option"
+        android:title="설정">
+        <menu>
+            <item
+                android:id="@+id/navigation_drawer_option_open_source"
+                android:checkable="true"
+                android:icon="@drawable/ic_code"
+                android:title="오픈소스 라이선스"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+
+</menu>

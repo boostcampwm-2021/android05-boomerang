@@ -181,7 +181,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
 
         try {
-            circularEncoder = Encoder(width, width, 500000, 30, 60)
+            circularEncoder = Encoder(width, width, 6000000, 30, 60)
         } catch (e: IOException) {
             throw Exception(e)
         }
