@@ -17,9 +17,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleLightBinding
@@ -33,7 +33,7 @@ class VideoDoodleLightFragment : Fragment() {
 
     private lateinit var binding: FragmentVideoDoodleLightBinding
     private val args: VideoDoodleLightFragmentArgs by navArgs()
-    private val viewModel: VideoDoodleLightViewModel by viewModels()
+    private val videoDoodleLightViewModel: VideoDoodleLightViewModel by viewModels()
 
     private lateinit var viewRecorder: ViewRecorder
     private var recording = false
@@ -43,7 +43,7 @@ class VideoDoodleLightFragment : Fragment() {
 
     private var doodleColor = 0xFFFF0000
 
-    private lateinit var player: SimpleExoPlayer
+    private lateinit var player: ExoPlayer
     private var playerEnded = false
 
     private var drawView: DrawView? = null
@@ -74,7 +74,7 @@ class VideoDoodleLightFragment : Fragment() {
     }
 
     private fun setViewModel() {
-        binding.viewModel = viewModel
+        binding.viewModel = videoDoodleLightViewModel
         binding.lifecycleOwner = viewLifecycleOwner
     }
 
@@ -95,7 +95,7 @@ class VideoDoodleLightFragment : Fragment() {
     }
 
     private fun setVideoView() {
-        player = SimpleExoPlayer.Builder(requireContext()).build()
+        player = ExoPlayer.Builder(requireContext()).build()
         binding.exoplayer.player = player
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
@@ -110,7 +110,7 @@ class VideoDoodleLightFragment : Fragment() {
                 if (isChecked) {
                     val currentTime = player.currentPosition
                     var canMemo = true
-                    viewModel!!.subVideos.value!!.forEach {
+                    videoDoodleLightViewModel.subVideos.value!!.forEach {
                         if (it.startingTime < currentTime && currentTime < it.endingTime) {
                             canMemo = false
                         }
@@ -153,7 +153,7 @@ class VideoDoodleLightFragment : Fragment() {
                 val action =
                     VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(
                         path,
-                        viewModel!!.subVideos.value!!.toTypedArray()
+                        videoDoodleLightViewModel.subVideos.value!!.toTypedArray()
                     )
                 findNavController().navigate(action)
             }
@@ -165,10 +165,10 @@ class VideoDoodleLightFragment : Fragment() {
     }
 
     fun setObserver(){
-        viewModel.timeOver.observe(viewLifecycleOwner){ timeOver ->
+        videoDoodleLightViewModel.timeOver.observe(viewLifecycleOwner){ timeOver ->
             if(timeOver == true){
                 stopRecord()
-                viewModel.resetTimer()
+                videoDoodleLightViewModel.resetTimer()
                 binding.toggleBtnDoodle.uncheck(R.id.btn_doodle)
                 Toast.makeText(context, "영상 시간을 초과하여 메모하실 수 없습니다!",Toast.LENGTH_SHORT).show()
             }
@@ -184,7 +184,7 @@ class VideoDoodleLightFragment : Fragment() {
         try {
             viewRecorder.prepare()
             viewRecorder.start()
-            viewModel.setCurrentSubVideo(
+            videoDoodleLightViewModel.setCurrentSubVideo(
                 SubVideo(
                     Uri.fromFile(File(context?.filesDir, "$fileName.mp4")).toString(),
                     player.currentPosition.toInt(),
@@ -195,7 +195,7 @@ class VideoDoodleLightFragment : Fragment() {
             Log.e("MainActivity", "startRecord failed", e)
             return
         }
-        viewModel.startRecordTime()
+        videoDoodleLightViewModel.startRecordTime()
         recording = true
     }
 
@@ -205,8 +205,9 @@ class VideoDoodleLightFragment : Fragment() {
             viewRecorder.reset()
             viewRecorder.release()
             binding.canvas.removeAllViews()
-            viewModel.resetTimer()
-            viewModel.setEndTime(getDuration(File(viewModel.getCurrentSubVideo()?.uri?.toUri()?.path))!!.toInt())
+            videoDoodleLightViewModel.resetTimer()
+            videoDoodleLightViewModel.setEndTime(getDuration(File(videoDoodleLightViewModel.getCurrentSubVideo()
+                !!.uri.toUri().path))!!.toInt())
             recording = false
         }
     }
@@ -248,7 +249,7 @@ class VideoDoodleLightFragment : Fragment() {
                 dialog.dismiss()
             }
             .setPositiveButton("삭제") { dialog, which ->
-                viewModel.subVideos.value!!.forEach {
+                videoDoodleLightViewModel.subVideos.value!!.forEach {
                     val file = File(it.uri.toUri().path)
                     file.delete()
                 }
@@ -265,7 +266,7 @@ class VideoDoodleLightFragment : Fragment() {
                 dialog.dismiss()
             }
             .setPositiveButton("삭제") { dialog, which ->
-                viewModel.deleteSubVideo(position)
+                videoDoodleLightViewModel.deleteSubVideo(position)
             }
             .show()
     }
@@ -297,7 +298,7 @@ class VideoDoodleLightFragment : Fragment() {
                     }
                 }
                 Player.STATE_READY -> {
-                    viewModel.setDuration(player.duration)
+                    videoDoodleLightViewModel.setDuration(player.duration)
                 }
             }
         }
