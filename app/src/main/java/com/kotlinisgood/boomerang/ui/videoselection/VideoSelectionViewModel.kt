@@ -15,6 +15,6 @@ class VideoSelectionViewModel @Inject constructor(
     val videoList: LiveData<List<ExternalVideoDTO>> = _videoList
 
     fun loadVideos() {
-        _videoList.value = videoGallery.loadVideos()
+        _videoList.value = videoGallery.loadVideos().subList(0,4)
     }
 }
