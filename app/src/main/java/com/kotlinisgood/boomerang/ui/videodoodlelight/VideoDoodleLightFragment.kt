@@ -64,7 +64,8 @@ class VideoDoodleLightFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         path = args.videoPath
-        uri = path.toUri()
+        uri = Uri.fromFile(File(path))
+        println("uri is ${uri}")
         setVideoView()
         setListener()
         setBackPressed()

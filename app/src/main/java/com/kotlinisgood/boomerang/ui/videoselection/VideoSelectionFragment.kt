@@ -113,6 +113,8 @@ class VideoSelectionFragment : Fragment() {
                             requireActivity().contentResolver,
                             uri
                         )
+                        println("uri is $uri")
+                        println("path is $path")
                         if (videoMode == VIDEO_MODE_FRAME) {
                             val action =
                                 VideoSelectionFragmentDirections

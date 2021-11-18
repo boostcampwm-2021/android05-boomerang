@@ -2,6 +2,7 @@ package com.kotlinisgood.boomerang.ui.videodoodle
 
 import android.graphics.SurfaceTexture
 import android.media.MediaPlayer
+import android.net.Uri
 import android.opengl.GLES20
 import android.opengl.GLES30
 import android.os.Bundle
@@ -157,7 +158,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture!!.setOnFrameAvailableListener(this)
 
         val surface = Surface(surfaceTexture)
-        mediaPlayer = MediaPlayer.create(context, path.toUri())
+        val uri = Uri.fromFile(File(path))
+        mediaPlayer = MediaPlayer.create(context, uri)
+        println("uri is ${uri}")
         mediaPlayer.setSurface(surface)
         videoWidth = mediaPlayer.videoWidth
         videoHeight = mediaPlayer.videoHeight
