@@ -88,6 +88,7 @@ class MemoFragment : Fragment() {
             player = SimpleExoPlayer.Builder(requireContext()).build().apply {
                 setMediaItem(mediaItem)
                 addListener(onPlayStateChangeListener)
+                prepare()
             }
             binding.exoplayer.player = player
 
