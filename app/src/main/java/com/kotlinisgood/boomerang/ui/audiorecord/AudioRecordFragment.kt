@@ -153,7 +153,7 @@ class AudioRecordFragment : Fragment() {
             if (dataBinding.etAudioRecordEnterTitle.text.toString() == "") {
                 Toast.makeText(it.context, titleWarning, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
-            } else if (viewModel.isAudioListEmpty()) {
+            } else if (viewModel.isFileListEmpty()) {
                 Toast.makeText(it.context, audioListWarning, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

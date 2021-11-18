@@ -22,8 +22,6 @@ class AudioRecordViewModel
 
     private var _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> get() = _loading
-    private val audioList = mutableListOf<MediaMemo>()
-
     private val _audioMemo = MutableLiveData<MediaMemo>()
     val audioMemo: LiveData<MediaMemo> get() = _audioMemo
 
@@ -32,7 +30,7 @@ class AudioRecordViewModel
     private val timeList = mutableListOf(0)
     private val textList = mutableListOf<String>()
 
-    fun isAudioListEmpty() = audioList.isEmpty()
+    fun isFileListEmpty() = (fileList.size == 0)
 
     fun saveAudioMemo(title: String, baseFile: File) {
         val createTime = System.currentTimeMillis()
@@ -70,11 +68,10 @@ class AudioRecordViewModel
     }
 
     private fun deleteAudios() {
-        audioList.forEach {
-            val file = File(it.mediaUri)
-            file.delete()
+        fileList.forEach {
+            it.delete()
         }
-        audioList.clear()
+        fileList.clear()
         textList.clear()
         timeList.clear()
         timeList.add(0)
