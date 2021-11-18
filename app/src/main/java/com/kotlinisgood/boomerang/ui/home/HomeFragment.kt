@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -24,7 +25,7 @@ class HomeFragment : Fragment() {
     private var _dataBinding: FragmentHomeBinding? = null
     private val dataBinding get() = _dataBinding!!
     private val viewModel: HomeViewModel by viewModels()
-
+    private var sglm: StaggeredGridLayoutManager? = null
     private lateinit var homeRecyclerView : RecyclerView
 
     override fun onCreateView(
@@ -37,7 +38,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataBinding.rvHomeShowMedia.layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
+        getStaggeredGridLayoutManager()
         setHasOptionsMenu(true)
         setBinding()
         setAdapter()
@@ -74,15 +75,28 @@ class HomeFragment : Fragment() {
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
+                getStaggeredGridLayoutManager()
                 homeRecyclerView.layoutManager?.scrollToPosition(0)
             }
 
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
+                getStaggeredGridLayoutManager()
+                homeRecyclerView.layoutManager?.scrollToPosition(0)
+            }
+
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+                super.onItemRangeChanged(positionStart, itemCount)
+                getStaggeredGridLayoutManager()
                 homeRecyclerView.layoutManager?.scrollToPosition(0)
             }
         })
         homeRecyclerView.adapter = adapter
+        homeRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                sglm?.invalidateSpanAssignments()
+            }
+        })
     }
 
     private fun loadMediaMemo() {
@@ -182,6 +196,14 @@ class HomeFragment : Fragment() {
                 }
             }
             false
+        }
+    }
+
+    fun getStaggeredGridLayoutManager() {
+        sglm = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL).apply {
+            gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+        }.also {
+            dataBinding.rvHomeShowMedia.layoutManager = it
         }
     }
 

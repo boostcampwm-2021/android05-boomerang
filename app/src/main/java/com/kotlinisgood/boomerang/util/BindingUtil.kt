@@ -28,8 +28,8 @@ fun ImageView.imageFromVideoMemo(mediaMemo: MediaMemo) {
     val uri = Uri.parse(mediaMemo.mediaUri)
     val mmr = MediaMetadataRetriever()
     mmr.setDataSource(context, uri)
-    val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-    val durationInMillisec = duration!!.toLong()
+    val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: return
+    val durationInMillisec = duration.toLong()
     val bmp = mmr.getFrameAtTime(durationInMillisec * 1000 / 2)
     setImageBitmap(bmp)
 }
