@@ -32,6 +32,8 @@ class AudioRecordViewModel
     private val timeList = mutableListOf(0)
     private val textList = mutableListOf<String>()
 
+    fun isAudioListEmpty() = audioList.isEmpty()
+
     fun saveAudioMemo(title: String, baseFile: File) {
         val createTime = System.currentTimeMillis()
         val outputPath = baseFile.absolutePath + "/$createTime.mp4"
