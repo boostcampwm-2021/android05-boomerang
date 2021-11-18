@@ -25,7 +25,11 @@
             android:textColor="@{timeSeriesText.focused ? @color/recognized_text_focus : @color/recognized_text_no_focus}"
             android:text="@{timeSeriesText.text}"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
             android:layout_marginEnd="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent "/>
 

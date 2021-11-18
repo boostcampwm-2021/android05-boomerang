@@ -33,6 +33,7 @@ class AudioRecordViewModel
     private val textList = mutableListOf<String>()
 
     fun saveAudioMemo(title: String, baseFile: File) {
+        _loading.value = true
         val createTime = System.currentTimeMillis()
         val outputPath = baseFile.absolutePath + "/$createTime.mp4"
         viewModelScope.launch {
@@ -62,6 +63,7 @@ class AudioRecordViewModel
                 withContext(Dispatchers.IO) {
                     repository.saveMediaMemo(it)
                     deleteAudios()
+                    _loading.value = false
                 }
             }
         }

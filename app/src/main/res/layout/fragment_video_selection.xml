@@ -17,16 +17,18 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/container_video_selection_appbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+            app:layout_constraintTop_toTopOf="parent" >
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/tb_video_selection"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/boomerang_theme_color"
+                android:background="?attr/colorSurface"
                 app:navigationIcon="@drawable/ic_close"
                 app:title="@string/fragment_video_selection_title"
+                app:titleTextAppearance="?attr/textAppearanceTitleLarge"
                 app:menu="@menu/menu_fragment_video_selection">
 
             </com.google.android.material.appbar.MaterialToolbar>

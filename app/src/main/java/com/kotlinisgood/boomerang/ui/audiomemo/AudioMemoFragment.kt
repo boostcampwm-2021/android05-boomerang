@@ -108,9 +108,10 @@ class AudioMemoFragment : Fragment() {
                 }
             })
         }
-        dataBinding.rvAudioMemoRecognizedText.adapter = audioMemoAdapter
+        dataBinding.rvAudioMemoRecognizedText.apply {
+            adapter = audioMemoAdapter
+            itemAnimator = null
+        }
     }
-
-
 
 }

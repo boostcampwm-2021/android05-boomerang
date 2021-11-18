@@ -20,8 +20,7 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
     val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
     private val _timeSeriesTextList = MutableLiveData<List<TimeSeriesText>>(emptyList())
     val timeSeriesTextList: LiveData<List<TimeSeriesText>> get() = _timeSeriesTextList
-    private var _selected = MutableLiveData<Int>(-1)
-    val selected: LiveData<Int> get() = _selected
+    private var _selected = -1
 
     fun getMediaMemo(id: Int) {
         viewModelScope.launch {
@@ -33,8 +32,6 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
                     TimeSeriesText(idx, it.timeList[idx], text)
                 }.toList()
             }
-            println("mediaMeo :  ${_mediaMemo.value}")
-            println("timeSeriesTextList :  ${_timeSeriesTextList.value}")
         }
     }
 
@@ -46,10 +43,9 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
         val newList = list.toMutableList()
         val item = newList.last { it.time <= position }
         val index = newList.indexOf(item)
-        val before = selected.value?: return
-        if (index != -1 && before != index) {
-            if (before != -1) {
-                newList[before] = newList[before].copy(focused = false)
+        if (index != -1 && _selected != index) {
+            if (_selected != -1) {
+                newList[_selected] = newList[_selected].copy(focused = false)
             }
             setSelected(index)
             newList[index] = newList[index].copy(focused = true)
@@ -58,7 +54,7 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
     }
 
     private fun setSelected(index: Int) {
-        _selected.value = index
+        _selected = index
     }
 
 }
