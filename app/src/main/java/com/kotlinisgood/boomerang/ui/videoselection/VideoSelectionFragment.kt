@@ -108,25 +108,19 @@ class VideoSelectionFragment : Fragment() {
                         false
                     } else {
                         val uri =
-                            videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri
-                        val path = UriUtil.getPathFromUri(
-                            requireActivity().contentResolver,
-                            uri
-                        )
-                        println("uri is $uri")
-                        println("path is $path")
+                            videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].toString()
                         if (videoMode == VIDEO_MODE_FRAME) {
                             val action =
                                 VideoSelectionFragmentDirections
                                     .actionVideoSelectionFragmentToVideoDoodleFragment(
-                                        path
+                                        uri
                                     )
                             findNavController().navigate(action)
                         } else if (videoMode == VIDEO_MODE_SUB_VIDEO) {
                             val action =
                                 VideoSelectionFragmentDirections
                                     .actionVideoSelectionFragmentToVideoDoodleLightFragment(
-                                        path
+                                        uri
                                     )
                             findNavController().navigate(action)
                         }

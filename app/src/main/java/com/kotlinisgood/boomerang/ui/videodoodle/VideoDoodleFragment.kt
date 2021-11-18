@@ -158,9 +158,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture!!.setOnFrameAvailableListener(this)
 
         val surface = Surface(surfaceTexture)
-        val uri = Uri.fromFile(File(path))
+        val uri = path.toUri()
         mediaPlayer = MediaPlayer.create(context, uri)
-        println("uri is ${uri}")
         mediaPlayer.setSurface(surface)
         videoWidth = mediaPlayer.videoWidth
         videoHeight = mediaPlayer.videoHeight
