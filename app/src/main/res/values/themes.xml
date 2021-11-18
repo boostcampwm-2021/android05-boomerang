@@ -7,8 +7,9 @@
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorSecondaryVariant">@color/boomerang_secondary_container</item>
         <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondaryContainer">@color/boomerang_secondary_container</item>
         <!-- Status bar color. -->
         <!-- Customize your theme here. -->
         <item name="android:dialogTheme">@style/DialogTheme</item>
@@ -33,4 +34,16 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
+    <style name="AudioRecordButtonTheme" parent="@style/Widget.Material3.Button.TonalButton" >
+        <item name="backgroundTint">@color/boomerang_secondary_container</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="CustomTextInputLayoutOutLined" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/audio_record_memo_stroke</item>
+        <item name="endIconMode">clear_text</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+    </style>
+
 </resources>
