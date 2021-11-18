@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 
 class BoomerangThrowAnimation : DialogFragment() {
     private lateinit var binding: FragmentBoomerangThrowBinding
-    private val args: BoomerangThrowAnimationArgs by navArgs()
     private lateinit var animatorSet: AnimatorSet
 
     override fun onCreateView(
@@ -77,24 +76,7 @@ class BoomerangThrowAnimation : DialogFragment() {
                     duration = binding.animationView.duration
                 })
                 start()
-                addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator?) {
-                        super.onAnimationEnd(animation)
-                        if (args.memoType == VIDEO_MODE_FRAME) {
-                            val action =
-                                BoomerangThrowAnimationDirections.actionBoomerangThrowAnimationToVideoDoodleFragment(
-                                    args.videoPath
-                                )
-                            findNavController().navigate(action)
-                        } else if (args.memoType == VIDEO_MODE_SUB_VIDEO) {
-                            val action =
-                                BoomerangThrowAnimationDirections.actionBoomerangThrowAnimationToVideoDoodleLightFragment(
-                                    args.videoPath
-                                )
-                            findNavController().navigate(action)
-                        }
-                    }
-                })
+
             }
         }
     }

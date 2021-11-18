@@ -14,9 +14,6 @@
             android:id="@+id/action_homeFragment_to_bottomSheetFragment"
             app:destination="@id/bottomSheetFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_boomerangCatchAnimation"
-            app:destination="@id/boomerangCatchAnimation" />
-        <action
             android:id="@+id/action_homeFragment_to_videoSelectionFragment"
             app:destination="@id/videoSelectionFragment" />
         <action
@@ -38,8 +35,11 @@
             android:name="memoType"
             app:argType="integer" />
         <action
-            android:id="@+id/action_videoSelectionFragment_to_boomerangThrowAnimation"
-            app:destination="@id/boomerangThrowAnimation" />
+            android:id="@+id/action_videoSelectionFragment_to_videoDoodleLightFragment"
+            app:destination="@id/videoDoodleLightFragment" />
+        <action
+            android:id="@+id/action_videoSelectionFragment_to_videoDoodleFragment"
+            app:destination="@id/videoDoodleFragment" />
     </fragment>
 
     <fragment
@@ -162,36 +162,6 @@
             android:name="mediaMemoId"
             app:argType="integer" />
     </fragment>
-    <dialog
-        android:id="@+id/boomerangThrowAnimation"
-        android:name="com.kotlinisgood.boomerang.ui.BoomerangThrowAnimation"
-        android:label="BoomerangThrowAnimation" >
-        <argument
-            android:name="memoType"
-            app:argType="integer" />
-        <action
-            android:id="@+id/action_boomerangThrowAnimation_to_videoDoodleLightFragment"
-            app:destination="@id/videoDoodleLightFragment" />
-        <action
-            android:id="@+id/action_boomerangThrowAnimation_to_videoDoodleFragment"
-            app:destination="@id/videoDoodleFragment" />
-        <argument
-            android:name="videoPath"
-            app:argType="string" />
-    </dialog>
-    <dialog
-        android:id="@+id/boomerangCatchAnimation"
-        android:name="com.kotlinisgood.boomerang.ui.BoomerangCatchAnimation"
-        android:label="BoomerangCatchAnimation" >
-        <action
-            android:id="@+id/action_boomerangCatchAnimation_to_memoFragment"
-            app:destination="@id/memoFragment"
-            app:popUpTo="@id/homeFragment"
-            app:popUpToInclusive="false"/>
-        <argument
-            android:name="id"
-            app:argType="integer" />
-    </dialog>
 
 
 </navigation>
