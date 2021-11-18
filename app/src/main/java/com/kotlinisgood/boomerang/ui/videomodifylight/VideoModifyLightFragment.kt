@@ -14,8 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoModifyLightBinding
@@ -31,7 +31,7 @@ import java.io.IOException
 class VideoModifyLightFragment : Fragment() {
 
     private lateinit var binding : FragmentVideoModifyLightBinding
-    private val viewModel: VideoModifyLightViewModel by viewModels()
+    private val videoModifyLightViewModel: VideoModifyLightViewModel by viewModels()
     private val args: VideoModifyLightFragmentArgs by navArgs()
 
     private lateinit var viewRecorder: ViewRecorder
@@ -39,7 +39,7 @@ class VideoModifyLightFragment : Fragment() {
 
     private var doodleColor = 0xFFFF0000
 
-    private lateinit var player: SimpleExoPlayer
+    private lateinit var player: ExoPlayer
 
     private var drawView: DrawView? = null
 
@@ -61,12 +61,12 @@ class VideoModifyLightFragment : Fragment() {
     }
 
     fun setViewModel(){
-        binding.viewModel = viewModel
+        binding.viewModel = videoModifyLightViewModel
         binding.lifecycleOwner = viewLifecycleOwner
-        viewModel.loadVideoMemo(args.id)
-        player = SimpleExoPlayer.Builder(requireContext()).build()
+        videoModifyLightViewModel.loadVideoMemo(args.id)
+        player = ExoPlayer.Builder(requireContext()).build()
         binding.exoplayer.player = player
-        viewModel.mediaMemo.observe(viewLifecycleOwner){ videoMemo ->
+        videoModifyLightViewModel.mediaMemo.observe(viewLifecycleOwner){ videoMemo ->
             val mediaItem = MediaItem.fromUri(videoMemo.mediaUri)
             player.setMediaItem(mediaItem)
         }
@@ -96,7 +96,7 @@ class VideoModifyLightFragment : Fragment() {
                 if (isChecked) {
                     val currentTime = player.currentPosition
                     var canMemo = true
-                    viewModel!!.subVideos.value!!.forEach {
+                    videoModifyLightViewModel.subVideos.value!!.forEach {
                         if (it.startingTime < currentTime && currentTime < it.endingTime) {
                             canMemo = false
                         }
@@ -127,8 +127,8 @@ class VideoModifyLightFragment : Fragment() {
             }
 
             btnMoveToResult.setOnClickListener {
-                viewModel!!.updateVideoMemo()
-                val action = viewModel!!.mediaMemo.value?.let { it1 ->
+                videoModifyLightViewModel.updateVideoMemo()
+                val action = videoModifyLightViewModel.mediaMemo.value?.let { it1 ->
                     VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(
                         it1.id)
                 }
@@ -150,7 +150,7 @@ class VideoModifyLightFragment : Fragment() {
         try {
             viewRecorder.prepare()
             viewRecorder.start()
-            viewModel.setCurrentSubVideo(
+            videoModifyLightViewModel.setCurrentSubVideo(
                 SubVideo(
                 Uri.fromFile(File(context?.filesDir, "$fileName.mp4")).toString(),
                 player.currentPosition.toInt(),
@@ -170,7 +170,7 @@ class VideoModifyLightFragment : Fragment() {
             viewRecorder.reset()
             viewRecorder.release()
             binding.canvas.removeAllViews()
-            viewModel.setEndTime(player.currentPosition.toInt())
+            videoModifyLightViewModel.setEndTime(player.currentPosition.toInt())
             recording = false
         }
     }
@@ -217,7 +217,7 @@ class VideoModifyLightFragment : Fragment() {
                 dialog.dismiss()
             }
             .setPositiveButton("삭제") { dialog, which ->
-                viewModel.deleteSubVideo(position)
+                videoModifyLightViewModel.deleteSubVideo(position)
             }
             .show()
     }
