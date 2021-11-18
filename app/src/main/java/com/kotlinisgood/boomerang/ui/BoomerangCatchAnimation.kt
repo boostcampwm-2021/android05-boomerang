@@ -22,7 +22,7 @@ class BoomerangCatchAnimation : DialogFragment() {
     private lateinit var binding: FragmentBoomerangCatchBinding
     private lateinit var animatorSet: AnimatorSet
 
-    private val args: BoomerangCatchAnimationArgs by navArgs()
+//    private val args: BoomerangCatchAnimationArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,16 +79,16 @@ class BoomerangCatchAnimation : DialogFragment() {
                     duration = binding.animationView.duration
                 })
                 start()
-                addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator?) {
-                        super.onAnimationEnd(animation)
-                        val action =
-                            BoomerangCatchAnimationDirections.actionBoomerangCatchAnimationToMemoFragment(
-                                args.id
-                            )
-                        findNavController().navigate(action)
-                    }
-                })
+//                addListener(object : AnimatorListenerAdapter() {
+//                    override fun onAnimationEnd(animation: Animator?) {
+//                        super.onAnimationEnd(animation)
+//                        val action =
+//                            BoomerangCatchAnimationDirections.actionBoomerangCatchAnimationToMemoFragment(
+//                                args.id
+//                            )
+//                        findNavController().navigate(action)
+//                    }
+//                })
             }
         }
     }

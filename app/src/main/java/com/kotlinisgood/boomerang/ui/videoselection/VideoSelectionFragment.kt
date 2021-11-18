@@ -116,16 +116,14 @@ class VideoSelectionFragment : Fragment() {
                         if (videoMode == VIDEO_MODE_FRAME) {
                             val action =
                                 VideoSelectionFragmentDirections
-                                    .actionVideoSelectionFragmentToBoomerangThrowAnimation(
-                                        args.memoType,
+                                    .actionVideoSelectionFragmentToVideoDoodleFragment(
                                         path
                                     )
                             findNavController().navigate(action)
                         } else if (videoMode == VIDEO_MODE_SUB_VIDEO) {
                             val action =
                                 VideoSelectionFragmentDirections
-                                    .actionVideoSelectionFragmentToBoomerangThrowAnimation(
-                                        args.memoType,
+                                    .actionVideoSelectionFragmentToVideoDoodleLightFragment(
                                         path
                                     )
                             findNavController().navigate(action)
