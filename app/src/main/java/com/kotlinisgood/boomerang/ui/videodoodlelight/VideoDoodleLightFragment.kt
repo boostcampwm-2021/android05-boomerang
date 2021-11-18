@@ -100,6 +100,7 @@ class VideoDoodleLightFragment : Fragment() {
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
         player.addListener(playerListener)
+        player.prepare()
     }
 
     @SuppressLint("ClickableViewAccessibility")
