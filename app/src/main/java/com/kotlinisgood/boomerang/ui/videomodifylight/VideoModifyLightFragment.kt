@@ -64,7 +64,7 @@ class VideoModifyLightFragment : Fragment() {
         binding.viewModel = videoModifyLightViewModel
         binding.lifecycleOwner = viewLifecycleOwner
         videoModifyLightViewModel.loadVideoMemo(args.id)
-        player = ExoPlayer.Builder(requireContext()).build()
+        player = ExoPlayer.Builder(requireContext()).build().apply { prepare() }
         binding.exoplayer.player = player
         videoModifyLightViewModel.mediaMemo.observe(viewLifecycleOwner){ videoMemo ->
             val mediaItem = MediaItem.fromUri(videoMemo.mediaUri)

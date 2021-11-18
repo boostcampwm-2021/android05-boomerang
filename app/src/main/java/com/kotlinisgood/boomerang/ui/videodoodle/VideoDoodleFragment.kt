@@ -2,11 +2,14 @@ package com.kotlinisgood.boomerang.ui.videodoodle
 
 import android.graphics.SurfaceTexture
 import android.media.MediaPlayer
+import android.net.Uri
 import android.opengl.GLES20
 import android.opengl.GLES30
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
@@ -15,6 +18,7 @@ import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import com.kotlinisgood.boomerang.util.UriUtil
 import java.io.File
 import java.io.IOException
 
@@ -25,7 +29,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private lateinit var binding: FragmentVideoDoodleBinding
 
     private val args: VideoDoodleFragmentArgs by navArgs()
-    private val path by lazy { args.videoPath }
+    private val uriString by lazy { args.videoPath }
 
     private var eglCore: EglCore? = null
     private var displaySurface: EglWindowSurface? = null
@@ -156,8 +160,14 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture = SurfaceTexture(textureId)
         surfaceTexture!!.setOnFrameAvailableListener(this)
 
+        val uri = if (Build.VERSION.SDK_INT >= 30 ) {
+            uriString.toUri()
+        } else {
+            Uri.fromFile(File(UriUtil.getPathFromUri(requireActivity().contentResolver, uriString.toUri())))
+        }
+
         val surface = Surface(surfaceTexture)
-        mediaPlayer = MediaPlayer.create(context, path.toUri())
+        mediaPlayer = MediaPlayer.create(context, uri)
         mediaPlayer.setSurface(surface)
         videoWidth = mediaPlayer.videoWidth
         videoHeight = mediaPlayer.videoHeight

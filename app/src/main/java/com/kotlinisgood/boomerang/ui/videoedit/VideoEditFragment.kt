@@ -119,7 +119,10 @@ class VideoEditFragment : Fragment() {
     }
 
     private fun setPlayer() {
-        player.addListener(onPlayStateChangeListener)
+        player.apply {
+            addListener(onPlayStateChangeListener)
+            prepare()
+        }
     }
 
 
