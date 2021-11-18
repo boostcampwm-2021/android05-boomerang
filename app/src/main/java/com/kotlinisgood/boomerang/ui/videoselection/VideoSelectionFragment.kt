@@ -108,7 +108,7 @@ class VideoSelectionFragment : Fragment() {
                         false
                     } else {
                         val uri =
-                            videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].toString()
+                            videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri.toString()
                         if (videoMode == VIDEO_MODE_FRAME) {
                             val action =
                                 VideoSelectionFragmentDirections
