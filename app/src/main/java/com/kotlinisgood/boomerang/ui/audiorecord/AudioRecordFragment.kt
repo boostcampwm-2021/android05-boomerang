@@ -34,6 +34,7 @@ class AudioRecordFragment : Fragment() {
     private val TAG = "AudioRecordSecond"
     private val permissionRejected = "Permission Not Granted By the User"
     private val titleWarning = "타이틀을 입력해주세요"
+    private val audioListWarning = "인식된 음성이 존재하지 않습니다"
     private val VOICE = 1000
 
     private var _dataBinding: FragmentAudioRecordBinding? = null
@@ -152,7 +153,11 @@ class AudioRecordFragment : Fragment() {
             if (dataBinding.etAudioRecordEnterTitle.text.toString() == "") {
                 Toast.makeText(it.context, titleWarning, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
+            } else if (viewModel.isAudioListEmpty()) {
+                Toast.makeText(it.context, audioListWarning, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
             val title = dataBinding.etAudioRecordEnterTitle.text.toString()
             viewModel.saveAudioMemo(title, requireActivity().filesDir)
             // https://stackoverflow.com/questions/35340025/how-to-merge-two-or-more-mp3-audio-file-in-android
