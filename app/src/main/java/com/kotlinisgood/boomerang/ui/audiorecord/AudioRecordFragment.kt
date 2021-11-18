@@ -90,6 +90,7 @@ class AudioRecordFragment : Fragment() {
             viewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
         }
+        setTbNavigationIcon()
         setRecognizerListener()
         setOnClickListener()
         setObserver()
@@ -142,6 +143,12 @@ class AudioRecordFragment : Fragment() {
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, requireActivity().packageName)
             putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
             putExtra("android.speech.extra.GET_AUDIO", true)
+        }
+    }
+
+    private fun setTbNavigationIcon() {
+        dataBinding.tbAudioRecord.setNavigationOnClickListener {
+            requireActivity().onBackPressed()
         }
     }
 
