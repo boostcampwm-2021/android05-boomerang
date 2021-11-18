@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.media.MediaRecorder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,6 +25,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
+import com.kotlinisgood.boomerang.util.UriUtil
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
@@ -39,7 +41,7 @@ class VideoDoodleLightFragment : Fragment() {
     private var recording = false
 
     private lateinit var uri: Uri
-    private lateinit var path: String
+    private lateinit var uriString: String
 
     private var doodleColor = 0xFFFF0000
 
@@ -63,8 +65,8 @@ class VideoDoodleLightFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        path = args.videoPath
-        uri = path.toUri()
+        uriString = args.videoPath
+        uri = uriString.toUri()
         setVideoView()
         setListener()
         setBackPressed()
@@ -97,6 +99,13 @@ class VideoDoodleLightFragment : Fragment() {
     private fun setVideoView() {
         player = ExoPlayer.Builder(requireContext()).build()
         binding.exoplayer.player = player
+
+        val uri = if (Build.VERSION.SDK_INT >= 29 ) {
+            uriString.toUri()
+        } else {
+            Uri.fromFile(File(UriUtil.getPathFromUri(requireActivity().contentResolver, uriString.toUri())))
+        }
+
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
         player.addListener(playerListener)
@@ -153,7 +162,7 @@ class VideoDoodleLightFragment : Fragment() {
                 stopRecord()
                 val action =
                     VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(
-                        path,
+                        uriString,
                         videoDoodleLightViewModel.subVideos.value!!.toTypedArray()
                     )
                 findNavController().navigate(action)
