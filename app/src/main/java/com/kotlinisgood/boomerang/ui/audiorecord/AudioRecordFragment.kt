@@ -1,11 +1,13 @@
 package com.kotlinisgood.boomerang.ui.audiorecord
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +38,7 @@ class AudioRecordFragment : Fragment() {
     private val permissionRejected = "Permission Not Granted By the User"
     private val titleWarning = "타이틀을 입력해주세요"
     private val audioListWarning = "인식된 음성이 존재하지 않습니다"
+    private val STTWarning = "구글앱 사용을 활성화해주시거나 구글 앱의 데이터를 삭제한 후 다시 시도해주세요. \n이동하시겠습니까?"
     private val VOICE = 1000
 
     private var _dataBinding: FragmentAudioRecordBinding? = null
@@ -134,7 +138,25 @@ class AudioRecordFragment : Fragment() {
     }
 
     private fun startSTT() {
-        activityCallback.launch(recognizerIntent)
+        try {
+            activityCallback.launch(recognizerIntent)
+        } catch (e: ActivityNotFoundException) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("구글 앱에 문제가 있습니다.")
+                    .setMessage(STTWarning)
+                    .setNegativeButton("닫기") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("이동") { dialog, which ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", "com.google.android.googlequicksearchbox",null)
+                        }
+                        startActivity(intent)
+                        dialog.dismiss()
+                    }
+                    .show()
+        }
+
     }
 
     private fun setRecognizerListener() {
@@ -144,6 +166,7 @@ class AudioRecordFragment : Fragment() {
             putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
             putExtra("android.speech.extra.GET_AUDIO", true)
         }
+        Intent(Intent.ACTION_VIEW)
     }
 
     private fun setTbNavigationIcon() {
