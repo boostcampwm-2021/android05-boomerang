@@ -289,6 +289,7 @@ class VideoDoodleLightFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+        binding.toggleBtnDoodle.uncheck(R.id.btn_doodle)
         player.run {
             stop()
             player.removeListener(playerListener)
