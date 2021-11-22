@@ -1,5 +1,6 @@
 package com.kotlinisgood.boomerang.ui.videoedit
 
+import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Build
@@ -20,7 +21,7 @@ import androidx.navigation.fragment.navArgs
 import com.alphamovie.lib.AlphaMovieView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ExoPlayer
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
@@ -37,7 +38,7 @@ class VideoEditFragment : Fragment() {
 
     @Volatile
     private var currentTime = 0L
-    private lateinit var player: SimpleExoPlayer
+    private lateinit var player: ExoPlayer
     lateinit var jobScanner: Job
 
     private lateinit var alphaViewFactory: AlphaViewFactory
@@ -113,7 +114,7 @@ class VideoEditFragment : Fragment() {
 
     private fun setVideoView() {
         val mediaItem = MediaItem.fromUri(viewModel.getVideoUri())
-        player = SimpleExoPlayer.Builder(requireContext()).build()
+        player = ExoPlayer.Builder(requireContext()).build()
         player.setMediaItem(mediaItem)
         binding.exoplayer.player = player
     }
@@ -221,8 +222,15 @@ class VideoEditFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         player.run {
-            player.removeListener(onPlayStateChangeListener)
+            pause()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        player.run{
             stop()
+            player.removeListener(onPlayStateChangeListener)
             release()
         }
     }
