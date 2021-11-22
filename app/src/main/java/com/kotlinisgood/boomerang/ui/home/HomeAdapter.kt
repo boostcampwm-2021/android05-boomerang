@@ -7,30 +7,51 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
+import com.kotlinisgood.boomerang.databinding.ItemRvHomeShowAudioBinding
 import com.kotlinisgood.boomerang.databinding.ItemRvHomeShowVideosBinding
 import com.kotlinisgood.boomerang.util.AUDIO_MODE
 import com.kotlinisgood.boomerang.util.imageFromVideoMemo
 
 class HomeAdapter :
-    ListAdapter<MediaMemo, HomeAdapter.MemoViewHolder>(MediaMemoDiffCallback()) {
+    ListAdapter<MediaMemo, RecyclerView.ViewHolder>(MediaMemoDiffCallback()) {
 
     private var itemClickListener: OnItemClickListener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoViewHolder {
-        return MemoViewHolder(
-            ItemRvHomeShowVideosBinding.inflate(
-                LayoutInflater.from(
-                    parent.context
-                ), parent, false
-            )
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when(viewType) {
+            AUDIO_MODE -> {
+                AudioMemoViewHolder(
+                    ItemRvHomeShowAudioBinding.inflate(
+                        LayoutInflater.from(
+                            parent.context
+                        ), parent, false
+                    )
+                )
+            }
+            else -> {
+                VideoMemoViewHolder(
+                    ItemRvHomeShowVideosBinding.inflate(
+                        LayoutInflater.from(
+                            parent.context
+                        ), parent, false
+                    )
+                )
+            }
+        }
     }
 
-    override fun onBindViewHolder(holder: MemoViewHolder, position: Int) {
-        holder.bind(getItem(position))
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is VideoMemoViewHolder -> holder.bind(getItem(position))
+            is AudioMemoViewHolder -> holder.bind(getItem(position))
+        }
     }
 
-    inner class MemoViewHolder(
+    override fun getItemViewType(position: Int): Int {
+        return getItem(position).memoType
+    }
+
+    inner class VideoMemoViewHolder(
         private val binding: ItemRvHomeShowVideosBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -45,11 +66,21 @@ class HomeAdapter :
             if (item.memoType != AUDIO_MODE) {
                 binding.itemIvHomeVideoThumbnail.imageFromVideoMemo(item)
             }
+        }
+    }
 
-//            when (item.memoType) {
-//                VIDEO_MODE_FRAME -> binding.itemLayoutHomeVideo.setBackgroundColor(Color.CYAN)
-//                VIDEO_MODE_SUB_VIDEO -> binding.itemLayoutHomeVideo.setBackgroundColor(Color.MAGENTA)
-//            }
+    inner class AudioMemoViewHolder(
+        private val binding: ItemRvHomeShowAudioBinding,
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            itemView.setOnClickListener {
+                itemClickListener?.onItemClick(itemView, adapterPosition)
+            }
+        }
+
+        fun bind(item: MediaMemo) {
+            binding.mediaMemo = item
         }
     }
 
