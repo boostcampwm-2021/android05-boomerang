@@ -5,7 +5,7 @@ import android.opengl.*
 import android.util.Log
 import android.view.Surface
 
-class EglCore {
+class Egl {
     private lateinit var eglDisplay: EGLDisplay
 
     //    private var eglContext = EGL14.EGL_NO_CONTEXT

@@ -31,13 +31,15 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private val args: VideoDoodleFragmentArgs by navArgs()
     private val uriString by lazy { args.videoPath }
 
-    private var eglCore: EglCore? = null
-    private var displaySurface: EglWindowSurface? = null
-    private var encoderSurface: EglWindowSurface? = null
-    private var surfaceTexture: SurfaceTexture? = null
+    private lateinit var egl: Egl
+    private lateinit var surfaceTexture: SurfaceTexture
+
+    private lateinit var displaySurface: EglWindowSurface
     private lateinit var surfaceView: SurfaceView
+
+    private lateinit var encoderSurface: EglWindowSurface
     private var textureId = 0
-    private var fullFrameBlit: FullFrameRect? = null
+    private lateinit var fullFrameBlit: FullFrameRect
     private val mTmpMatrix = FloatArray(16)
     private lateinit var circularEncoder: Encoder
 
@@ -46,7 +48,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var videoHeight = 0
     private var width = 0
     private var height = 0
-    private var outputVideo: File? = null
+    private lateinit var outputVideo: File
 
     private var viewportX = 0
     private var viewportY = 0
@@ -115,7 +117,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
 
         binding.rbRed.isChecked = true
-        binding.rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
+        binding.rgDoodleColor.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rb_red -> drawColor = DrawColor(red = 1f, green = 0f, blue = 0f)
                 R.id.rb_green -> drawColor = DrawColor(red = 0f, green = 1f, blue = 0f)
@@ -172,7 +174,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             Log.d(TAG, "Save Completed")
             val action =
                 VideoDoodleFragmentDirections.actionVideoDoodleFragmentToVideoEditLightFragment(
-                    outputVideo!!.absolutePath,
+                    outputVideo.absolutePath,
                     mutableListOf<SubVideo>().toTypedArray()
                 )
             findNavController().navigate(action)
@@ -196,69 +198,51 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer.release()
+        surfaceTexture.release()
         circularEncoder.shutdown()
-        encoderSurface?.release()
-        encoderSurface = null
-        surfaceTexture?.release()
-        surfaceTexture = null
-        displaySurface?.release()
-        displaySurface = null
-        fullFrameBlit?.release(false)
-        fullFrameBlit = null
-        eglCore?.release()
-        eglCore = null
+        encoderSurface.release()
+        displaySurface.release()
+        fullFrameBlit.release(false)
+        egl.release()
     }
 
     override fun surfaceCreated(p0: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated: surfaceHolder=$p0")
         isSurfaceDestroyed = false
-//        EGL 설정
-        if (eglCore == null) {
-            eglCore = EglCore()
-            displaySurface = EglWindowSurface(eglCore!!, p0.surface, true)
-            displaySurface!!.makeCurrent()
+        egl = Egl()
+        displaySurface = EglWindowSurface(egl, p0.surface)
+        displaySurface.makeCurrent()
 
-            fullFrameBlit =
-                FullFrameRect(Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT))
-            textureId = fullFrameBlit!!.createTextureObject()
-            surfaceTexture = SurfaceTexture(textureId)
-            surfaceTexture!!.setOnFrameAvailableListener(this)
+        fullFrameBlit =
+            FullFrameRect(Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT))
+        textureId = fullFrameBlit.createTextureObject()
+        surfaceTexture = SurfaceTexture(textureId)
+        surfaceTexture.setOnFrameAvailableListener(this)
 
-            val surface = Surface(surfaceTexture)
-            mediaPlayer.setSurface(surface)
-            videoWidth = mediaPlayer.videoWidth
-            videoHeight = mediaPlayer.videoHeight
+        val surface = Surface(surfaceTexture)
+        mediaPlayer.setSurface(surface)
+        videoWidth = mediaPlayer.videoWidth
+        videoHeight = mediaPlayer.videoHeight
 
-            width = binding.svMovie.width
-            height = binding.svMovie.height
+        width = binding.svMovie.width
+        height = binding.svMovie.height
 
-            //        width, height가 videoWidth, VideoHeight보다 더 크다는 가정하에 함. 그 외의 경우도 만들어야 함!
-            if (videoWidth > videoHeight) {
-                val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
-                viewportX = 0
-                viewportY = (height - adjustedHeight) / 2
-                viewportWidth = width
-                viewportHeight = adjustedHeight
-            } else {
-                val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
-                viewportX = (width - adjustedWidth) / 2
-                viewportY = 0
-                viewportWidth = adjustedWidth
-                viewportHeight = height
-            }
-
-            try {
-                circularEncoder = Encoder(width, width, 6000000, 30, 60)
-            } catch (e: IOException) {
-                throw Exception(e)
-            }
-            encoderSurface = EglWindowSurface(eglCore!!, circularEncoder.inputSurface, true)
+        if (videoWidth > videoHeight) {
+            val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
+            viewportX = 0
+            viewportY = (height - adjustedHeight) / 2
+            viewportWidth = width
+            viewportHeight = adjustedHeight
         } else {
-            displaySurface = EglWindowSurface(eglCore!!, p0.surface, true)
-            displaySurface!!.makeCurrent()
-            val surface = Surface(surfaceTexture)
-            mediaPlayer.setSurface(surface)
+            val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
+            viewportX = (width - adjustedWidth) / 2
+            viewportY = 0
+            viewportWidth = adjustedWidth
+            viewportHeight = height
         }
+
+        circularEncoder = Encoder(width, width, 6000000, 30, 60)
+        encoderSurface = EglWindowSurface(egl, circularEncoder.inputSurface)
     }
 
     private fun playVideo() {
@@ -273,7 +257,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             isPlaying = false
         } else {
             mediaPlayer.start()
-//            binding.btnPlay.isEnabled = false
             binding.btnPlay.setBackgroundDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
@@ -299,47 +282,47 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     }
 
     private fun drawFrame() {
-        surfaceTexture?.updateTexImage()
-        surfaceTexture?.getTransformMatrix(mTmpMatrix)
+        surfaceTexture.updateTexImage()
+        surfaceTexture.getTransformMatrix(mTmpMatrix)
 
 //        SurfaceView에 그리기
         GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
-        fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
+        fullFrameBlit.drawFrame(textureId, mTmpMatrix)
         drawLine(currentPoint, height)
 
-        if (eglCore?.glVersion == 3) {
+        if (egl.glVersion == 3) {
 //        SurfaceView에 그릴 Framebuffer를 아직 swap하지 말고 인코딩 버퍼에 복사하고 둘 다 swap
-            encoderSurface?.makeCurrentReadFrom(displaySurface!!)
+            encoderSurface.makeCurrentReadFrom(displaySurface)
             GLES30.glBlitFramebuffer(
                 0,
                 0,
-                displaySurface!!.width,
-                displaySurface!!.height,
+                displaySurface.width,
+                displaySurface.height,
                 0,
                 0,
-                displaySurface!!.width,
-                displaySurface!!.height,
+                displaySurface.width,
+                displaySurface.height,
                 GLES30.GL_COLOR_BUFFER_BIT,
                 GLES30.GL_NEAREST
             )
             circularEncoder.transferBuffer()
-            encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
-            encoderSurface?.swapBuffers()
+            encoderSurface.setPresentationTime(surfaceTexture.timestamp)
+            encoderSurface.swapBuffers()
 
-            displaySurface?.makeCurrent()
-            displaySurface?.swapBuffers()
+            displaySurface.makeCurrent()
+            displaySurface.swapBuffers()
         } else {
 //            OpenGL ES 2.0일 경우. glBlitFramebuffer를 지원하지 않기에 그냥 두 번 그린다.
-            displaySurface?.swapBuffers()
+            displaySurface.swapBuffers()
 
-            encoderSurface?.makeCurrent()
+            encoderSurface.makeCurrent()
             GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
-            fullFrameBlit?.drawFrame(textureId, mTmpMatrix)
+            fullFrameBlit.drawFrame(textureId, mTmpMatrix)
             drawLine(currentPoint, height)
             circularEncoder.transferBuffer()
-            encoderSurface?.setPresentationTime(surfaceTexture!!.timestamp)
-            encoderSurface?.swapBuffers()
-            displaySurface?.makeCurrent()
+            encoderSurface.setPresentationTime(surfaceTexture.timestamp)
+            encoderSurface.swapBuffers()
+            displaySurface.makeCurrent()
         }
     }
 
