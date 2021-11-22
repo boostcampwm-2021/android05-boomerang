@@ -1,4 +1,4 @@
-package com.kotlinisgood.boomerang.ui.memo
+package com.kotlinisgood.boomerang.ui.videomemo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MemoViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
+class VideoMemoViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
 
     private var _mediaMemo: MutableLiveData<MediaMemo> = MutableLiveData()
     val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo

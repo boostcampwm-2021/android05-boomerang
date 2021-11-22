@@ -50,9 +50,9 @@
 
     <fragment
         android:id="@+id/memoFragment"
-        android:name="com.kotlinisgood.boomerang.ui.memo.MemoFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videomemo.VideoMemoFragment"
         android:label="fragment_memo"
-        tools:layout="@layout/fragment_memo" >
+        tools:layout="@layout/fragment_video_memo" >
         <argument
             android:name="id"
             app:argType="integer" />
