@@ -6,12 +6,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.google.android.exoplayer2.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 @AndroidEntryPoint
@@ -39,6 +46,7 @@ class AudioMemoFragment : Fragment() {
         setBinding()
         setObservers()
         setAdapters()
+        setMenusOnToolbar()
         viewModel.getMediaMemo(args.mediaMemoId)
     }
 
@@ -112,6 +120,45 @@ class AudioMemoFragment : Fragment() {
             adapter = audioMemoAdapter
             itemAnimator = null
         }
+    }
+
+    private fun setMenusOnToolbar() {
+        dataBinding.tbAudioMemo.apply {
+            inflateMenu(R.menu.menu_fragment_audio_memo)
+            setNavigationOnClickListener {
+                requireActivity().onBackPressed()
+            }
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_audio_memo_delete -> {
+                        showDeleteDialog()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
+    }
+
+    private fun showDeleteDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("메모 삭제")
+            .setMessage("메몰를 삭제하시겠습니까?")
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("삭제") { dialog, _ ->
+                lifecycleScope.launch {
+                    val result = viewModel.deleteMemo()
+                    if (result) {
+                        dialog.dismiss()
+                        requireActivity().onBackPressed()
+                    } else {
+                        Toast.makeText(requireContext(), "메모 삭제에 실패하였습니다", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .show()
     }
 
 }

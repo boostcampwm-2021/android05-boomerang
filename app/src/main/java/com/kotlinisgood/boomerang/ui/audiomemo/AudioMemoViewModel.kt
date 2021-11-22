@@ -1,6 +1,5 @@
 package com.kotlinisgood.boomerang.ui.audiomemo
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -55,6 +54,17 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
 
     private fun setSelected(index: Int) {
         _selected = index
+    }
+
+    suspend fun deleteMemo(): Boolean {
+        return withContext(Dispatchers.IO) {
+                try {
+                    mediaMemo.value?.let { repository.deleteMemo(it); true } ?: false
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    false
+                }
+        }
     }
 
 }
