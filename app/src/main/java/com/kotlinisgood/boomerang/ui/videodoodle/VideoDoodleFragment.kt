@@ -9,6 +9,9 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
@@ -54,6 +57,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     var currentPoint: MutableList<Pair<Int, Int>> = mutableListOf()
 
+    private var isPlaying = false
     var isSurfaceDestroyed = false
 
     override fun onCreateView(
@@ -92,7 +96,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             binding.btnPlay.isEnabled = true
         }
 
-
         binding.btnPlay.setOnClickListener {
             playVideo()
         }
@@ -104,11 +107,10 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         binding.svMovie.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
+                    if (isPlaying) drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    fillSpace(motionEvent.x.toInt(), motionEvent.y.toInt())
-//                    drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
+                    if (isPlaying) fillSpace(motionEvent.x.toInt(), motionEvent.y.toInt())
                 }
                 MotionEvent.ACTION_UP -> {
                 }
@@ -151,7 +153,13 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     override fun onPause() {
         super.onPause()
         mediaPlayer.pause()
-        binding.btnPlay.isEnabled = true
+        binding.btnPlay.setBackgroundDrawable(
+            ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.ic_baseline_play_arrow_24
+            )
+        )
+        isPlaying = false
     }
 
     override fun onDestroy() {
@@ -223,8 +231,26 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     }
 
     private fun playVideo() {
-        mediaPlayer.start()
-        binding.btnPlay.isEnabled = false
+        if (isPlaying) {
+            mediaPlayer.pause()
+            binding.btnPlay.setBackgroundDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_baseline_play_arrow_24
+                )
+            )
+            isPlaying = false
+        } else {
+            mediaPlayer.start()
+//            binding.btnPlay.isEnabled = false
+            binding.btnPlay.setBackgroundDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_baseline_pause_24
+                )
+            )
+            isPlaying = true
+        }
     }
 
     override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {

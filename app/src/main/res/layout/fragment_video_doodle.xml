@@ -9,25 +9,6 @@
         android:layout_height="match_parent"
         android:layout_margin="16dp">
 
-        <Button
-            android:id="@+id/btn_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="play"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/btn_capture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="capture"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_play"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <com.kotlinisgood.boomerang.ui.videodoodle.AspectFrameLayout
             android:id="@+id/frame_movie"
             android:layout_width="0dp"
@@ -35,7 +16,7 @@
             app:layout_constraintDimensionRatio="H,1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_play">
+            app:layout_constraintTop_toTopOf="parent">
 
             <SurfaceView
                 android:id="@+id/sv_movie"
@@ -44,6 +25,27 @@
                 android:layout_gravity="center" />
 
         </com.kotlinisgood.boomerang.ui.videodoodle.AspectFrameLayout>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_play"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="16dp"
+            android:enabled="false"
+            android:background="@drawable/ic_baseline_play_arrow_24"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/frame_movie" />
+
+        <Button
+            android:id="@+id/btn_capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="capture"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/frame_movie" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
