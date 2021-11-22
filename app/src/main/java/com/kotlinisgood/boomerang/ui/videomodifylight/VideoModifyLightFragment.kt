@@ -62,6 +62,7 @@ class VideoModifyLightFragment : Fragment() {
         setAdapter()
         setListener()
         setBackPressed()
+        setObserver()
     }
 
     fun setViewModel(){
@@ -238,7 +239,8 @@ class VideoModifyLightFragment : Fragment() {
                 dialog.dismiss()
             }
             .setPositiveButton("나가기") { dialog, which ->
-                findNavController().popBackStack()
+                val action = VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(videoModifyLightViewModel.mediaMemo.value!!.id)
+                findNavController().navigate(action)
             }
             .show()
     }
