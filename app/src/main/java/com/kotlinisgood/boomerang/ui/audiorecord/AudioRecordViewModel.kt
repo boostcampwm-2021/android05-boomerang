@@ -44,24 +44,25 @@ class AudioRecordViewModel
                     mixingType = AudioMixer.MixingType.SEQUENTIAL
                     setProcessingListener(object : AudioMixer.ProcessingListener {
                         override fun onProgress(progress: Double) {
-
+                            _loading.postValue(true)
                         }
 
                         override fun onEnd() {
-
+                            _loading.postValue(false)
+                            _audioMemo.postValue(MediaMemo(
+                                title, outputPath, createTime, createTime,
+                                AUDIO_MODE, emptyList(), textList, timeList
+                            ).also {
+                                viewModelScope.launch {
+                                    repository.saveMediaMemo(it)
+                                    deleteAudios()
+                                }
+                            })
                         }
-
                     })
                 }.also {
                     it.start()
                     it.processAsync()
-                }
-            }
-            _audioMemo.value = MediaMemo(title, outputPath, createTime, createTime,
-                AUDIO_MODE, emptyList(), textList, timeList).also {
-                withContext(Dispatchers.IO) {
-                    repository.saveMediaMemo(it)
-                    deleteAudios()
                 }
             }
         }

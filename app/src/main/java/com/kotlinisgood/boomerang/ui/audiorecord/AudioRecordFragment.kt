@@ -24,7 +24,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.dialog.MaterialDialogs
 import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
+import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,6 +41,7 @@ class AudioRecordFragment : Fragment() {
     private val titleWarning = "타이틀을 입력해주세요"
     private val audioListWarning = "인식된 음성이 존재하지 않습니다"
     private val STTWarning = "구글앱 사용을 활성화해주시거나 구글 앱의 데이터를 삭제한 후 다시 시도해주세요. \n이동하시겠습니까?"
+    private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
     private val VOICE = 1000
 
     private var _dataBinding: FragmentAudioRecordBinding? = null
@@ -110,6 +113,13 @@ class AudioRecordFragment : Fragment() {
             val action = AudioRecordFragmentDirections.actionAudioRecordFragmentToHomeFragment()
             findNavController().navigate(action)
         }
+        viewModel.loading.observe(viewLifecycleOwner) { loading ->
+            if (loading) {
+                loadingDialog.show()
+            } else {
+                loadingDialog.dismiss()
+            }
+        }
     }
 
     private fun checkPermissions() {
@@ -180,6 +190,7 @@ class AudioRecordFragment : Fragment() {
             checkPermissions()
         }
         dataBinding.btVoiceRecordMakeFile.setOnClickListener {
+            loadingDialog.show()
             if (dataBinding.etAudioRecordEnterTitle.text.toString() == "") {
                 Toast.makeText(it.context, titleWarning, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
