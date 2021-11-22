@@ -10,7 +10,7 @@
     <item
         android:id="@+id/menu_video_memo_delete"
         android:title="@string/menu_delete_title"
-        android:icon="@drawable/ic_trashcan"
+        android:icon="@drawable/ic_dark_trashcan"
         android:contentDescription="@string/menu_delete_description"
         app:showAsAction="always" />
 </menu>
