@@ -58,26 +58,32 @@ class VideoMemoFragment : Fragment() {
     }
 
     private fun setMenuOnToolBar() {
-        binding.tbMemo.inflateMenu(R.menu.menu_fragment_video_memo)
-        binding.tbMemo.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.menu_memo_modify -> {
-                    println(viewModelVideo.mediaMemo.value)
-                    val action = viewModelVideo.mediaMemo.value?.id?.let { it ->
-                        VideoMemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(
-                            it
-                        )
+        binding.tbMemo.apply {
+            inflateMenu(R.menu.menu_fragment_video_memo)
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_memo_modify -> {
+                        println(viewModelVideo.mediaMemo.value)
+                        val action = viewModelVideo.mediaMemo.value?.id?.let { it ->
+                            VideoMemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(
+                                it
+                            )
+                        }
+                        if (action != null) {
+                            findNavController().navigate(action)
+                        }
+                        true
                     }
-                    if (action != null) {
-                        findNavController().navigate(action)
+                    R.id.menu_video_memo_delete -> {
+                        showDeleteDialog()
+                        true
                     }
-                    true
+                    else -> false
                 }
-                R.id.menu_video_memo_delete -> {
-                    showDeleteDialog()
-                    true
-                }
-                else -> false
+            }
+            setNavigationIcon(R.drawable.ic_arrow_back)
+            setNavigationOnClickListener {
+                requireActivity().onBackPressed()
             }
         }
     }
