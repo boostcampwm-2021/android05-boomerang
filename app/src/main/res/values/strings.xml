@@ -32,4 +32,6 @@
     <string name="menu_home_sd_audio_description">Go to record audio and extract text</string>
     <string name="tb_audio_record_title">음성 메모</string>
     <string name="fragment_audio_record_et_title_hint">제목</string>
+    <string name="menu_delete_title">삭제</string>
+    <string name="menu_delete_description">현재 메모를 삭제합니다.</string>
 </resources>
