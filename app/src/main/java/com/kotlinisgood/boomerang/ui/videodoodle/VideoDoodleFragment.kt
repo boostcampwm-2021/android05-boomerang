@@ -9,7 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.core.content.FileProvider
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
@@ -53,9 +53,11 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var viewportWidth = 0
     private var viewportHeight = 0
 
-    var currentPoint: MutableList<Pair<Int, Int>> = mutableListOf()
-
-    var isSurfaceDestroyed = false
+    //    x, y, 색상
+    private var currentPoint: MutableList<Triple<Int, Int, DrawColor>> = mutableListOf()
+    private var drawColor = DrawColor(red = 1f, green = 0f, blue = 0f)
+    private var isPlaying = false
+    private var isSurfaceDestroyed = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,9 +76,27 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         val currentUnixTime = System.currentTimeMillis()
         outputVideo = File(requireContext().filesDir, "${currentUnixTime}.mp4")
 
+        val uri = if (Build.VERSION.SDK_INT >= 30) {
+            uriString.toUri()
+        } else {
+            Uri.fromFile(
+                File(
+                    UriUtil.getPathFromUri(
+                        requireActivity().contentResolver,
+                        uriString.toUri()
+                    )
+                )
+            )
+        }
+
+        mediaPlayer = MediaPlayer.create(context, uri)
+
+        mediaPlayer.setOnPreparedListener {
+            binding.btnPlay.isEnabled = true
+        }
+
         binding.btnPlay.setOnClickListener {
-            binding.btnPlay.isEnabled = false
-            playVideoAlt()
+            playVideo()
         }
 
         binding.btnCapture.setOnClickListener {
@@ -86,11 +106,10 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         binding.svMovie.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
+                    if (isPlaying) drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    fillSpace(motionEvent.x.toInt(), motionEvent.y.toInt())
-//                    drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
+                    if (isPlaying) fillSpace(motionEvent.x.toInt(), motionEvent.y.toInt())
                 }
                 MotionEvent.ACTION_UP -> {
                 }
@@ -98,19 +117,34 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             binding.svMovie.performClick()
             true
         }
+
+        binding.rbRed.isChecked = true
+        binding.rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.rb_red -> drawColor = DrawColor(red = 1f, green = 0f, blue = 0f)
+                R.id.rb_green -> drawColor = DrawColor(red = 0f, green = 1f, blue = 0f)
+                R.id.rb_blue -> drawColor = DrawColor(red = 0f, green = 0f, blue = 1f)
+                R.id.rb_yellow -> drawColor = DrawColor(red = 1f, green = 1f, blue = 0f)
+            }
+        }
+
+        binding.btnErase.setOnClickListener {
+            currentPoint.clear()
+        }
     }
 
     private fun drawLine(x: Int, y: Int) {
-        currentPoint.add(Pair(x, y))
+        currentPoint.add(Triple(x, y, drawColor))
     }
 
     private fun fillSpace(x: Int, y: Int) {
         val last = currentPoint.last()
         for (i in 1..50) {
             currentPoint.add(
-                Pair(
+                Triple(
                     last.first + (x - last.first) * i / 100,
-                    last.second + (y - last.second) * i / 100
+                    last.second + (y - last.second) * i / 100,
+                    drawColor
                 )
             )
         }
@@ -132,7 +166,18 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun onPause() {
         super.onPause()
-        mediaPlayer.stop()
+        mediaPlayer.pause()
+        binding.btnPlay.setBackgroundDrawable(
+            ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.ic_baseline_play_arrow_24
+            )
+        )
+        isPlaying = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         mediaPlayer.release()
         circularEncoder.shutdown()
         encoderSurface?.release()
@@ -149,57 +194,77 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun surfaceCreated(p0: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated: surfaceHolder=$p0")
-
+        isSurfaceDestroyed = false
 //        EGL 설정
-        eglCore = EglCore()
-        displaySurface = EglWindowSurface(eglCore!!, p0.surface, false)
-        displaySurface!!.makeCurrent()
+        if (eglCore == null) {
+            eglCore = EglCore()
+            displaySurface = EglWindowSurface(eglCore!!, p0.surface, true)
+            displaySurface!!.makeCurrent()
 
-        fullFrameBlit = FullFrameRect(Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT))
-        textureId = fullFrameBlit!!.createTextureObject()
-        surfaceTexture = SurfaceTexture(textureId)
-        surfaceTexture!!.setOnFrameAvailableListener(this)
+            fullFrameBlit =
+                FullFrameRect(Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT))
+            textureId = fullFrameBlit!!.createTextureObject()
+            surfaceTexture = SurfaceTexture(textureId)
+            surfaceTexture!!.setOnFrameAvailableListener(this)
 
-        val uri = if (Build.VERSION.SDK_INT >= 30 ) {
-            uriString.toUri()
+            val surface = Surface(surfaceTexture)
+            mediaPlayer.setSurface(surface)
+            videoWidth = mediaPlayer.videoWidth
+            videoHeight = mediaPlayer.videoHeight
+
+            width = binding.svMovie.width
+            height = binding.svMovie.height
+
+            //        width, height가 videoWidth, VideoHeight보다 더 크다는 가정하에 함. 그 외의 경우도 만들어야 함!
+            if (videoWidth > videoHeight) {
+                val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
+                viewportX = 0
+                viewportY = (height - adjustedHeight) / 2
+                viewportWidth = width
+                viewportHeight = adjustedHeight
+            } else {
+                val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
+                viewportX = (width - adjustedWidth) / 2
+                viewportY = 0
+                viewportWidth = adjustedWidth
+                viewportHeight = height
+            }
+
+            try {
+                circularEncoder = Encoder(width, width, 6000000, 30, 60)
+            } catch (e: IOException) {
+                throw Exception(e)
+            }
+            encoderSurface = EglWindowSurface(eglCore!!, circularEncoder.inputSurface, true)
         } else {
-            Uri.fromFile(File(UriUtil.getPathFromUri(requireActivity().contentResolver, uriString.toUri())))
+            displaySurface = EglWindowSurface(eglCore!!, p0.surface, true)
+            displaySurface!!.makeCurrent()
+            val surface = Surface(surfaceTexture)
+            mediaPlayer.setSurface(surface)
         }
-
-        val surface = Surface(surfaceTexture)
-        mediaPlayer = MediaPlayer.create(context, uri)
-        mediaPlayer.setSurface(surface)
-        videoWidth = mediaPlayer.videoWidth
-        videoHeight = mediaPlayer.videoHeight
-
-        width = binding.svMovie.width
-        height = binding.svMovie.height
-
-        //        width, height가 videoWidth, VideoHeight보다 더 크다는 가정하에 함. 그 외의 경우도 만들어야 함!
-        if (videoWidth > videoHeight) {
-            val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
-            viewportX = 0
-            viewportY = (height - adjustedHeight) / 2
-            viewportWidth = width
-            viewportHeight = adjustedHeight
-        } else {
-            val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
-            viewportX = (width - adjustedWidth) / 2
-            viewportY = 0
-            viewportWidth = adjustedWidth
-            viewportHeight = height
-        }
-
-        try {
-            circularEncoder = Encoder(width, width, 6000000, 30, 60)
-        } catch (e: IOException) {
-            throw Exception(e)
-        }
-        encoderSurface = EglWindowSurface(eglCore!!, circularEncoder.inputSurface, true)
     }
 
-    private fun playVideoAlt() {
-        mediaPlayer.start()
+    private fun playVideo() {
+        if (isPlaying) {
+            mediaPlayer.pause()
+            binding.btnPlay.setBackgroundDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_baseline_play_arrow_24
+                )
+            )
+            isPlaying = false
+        } else {
+            mediaPlayer.start()
+//            binding.btnPlay.isEnabled = false
+            binding.btnPlay.setBackgroundDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_baseline_pause_24
+                )
+            )
+            isPlaying = true
+        }
     }
 
     override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
@@ -261,9 +326,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
     }
 
-    private fun drawLine(currentPoint: List<Pair<Int, Int>>, height: Int) {
+    private fun drawLine(currentPoint: List<Triple<Int, Int, DrawColor>>, height: Int) {
         currentPoint.forEach {
-            GLES20.glClearColor(1f, 1f, 0f, 1f)
+            GLES20.glClearColor(it.third.red, it.third.green, it.third.blue, 1f)
             GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
             GLES20.glScissor(it.first, height - it.second, 15, 15)
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
@@ -272,6 +337,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     }
 
     companion object {
-        private const val TAG = "VideoDoodleFragmentTAG"
+        private const val TAG = "VideoDoodleFragment"
     }
 }
+
+data class DrawColor(val red: Float, val green: Float, val blue: Float)
