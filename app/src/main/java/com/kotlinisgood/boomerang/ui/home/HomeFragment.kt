@@ -1,6 +1,7 @@
 package com.kotlinisgood.boomerang.ui.home
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
 import com.kotlinisgood.boomerang.util.AUDIO_MODE
@@ -138,9 +140,13 @@ class HomeFragment : Fragment() {
             dataBinding.drawerLayout.openDrawer(GravityCompat.START)
         }
         dataBinding.navigationView.setNavigationItemSelectedListener {
-            println(it)
 //            오픈소스 라이선스 제외하고 true로 해야함. 현재 선택한 메모 상태를 보여줄 수 있음
-            it.isChecked = true
+            when(it.itemId) {
+                R.id.navigation_drawer_option_open_source -> {
+                    startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
+                }
+            }
+//            it.isChecked = true
             dataBinding.drawerLayout.close()
             true
         }
