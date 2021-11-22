@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
@@ -74,9 +73,28 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         val currentUnixTime = System.currentTimeMillis()
         outputVideo = File(requireContext().filesDir, "${currentUnixTime}.mp4")
 
+        val uri = if (Build.VERSION.SDK_INT >= 30) {
+            uriString.toUri()
+        } else {
+            Uri.fromFile(
+                File(
+                    UriUtil.getPathFromUri(
+                        requireActivity().contentResolver,
+                        uriString.toUri()
+                    )
+                )
+            )
+        }
+
+        mediaPlayer = MediaPlayer.create(context, uri)
+
+        mediaPlayer.setOnPreparedListener {
+            binding.btnPlay.isEnabled = true
+        }
+
+
         binding.btnPlay.setOnClickListener {
-            binding.btnPlay.isEnabled = false
-            playVideoAlt()
+            playVideo()
         }
 
         binding.btnCapture.setOnClickListener {
@@ -132,7 +150,12 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun onPause() {
         super.onPause()
-        mediaPlayer.stop()
+        mediaPlayer.pause()
+        binding.btnPlay.isEnabled = true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         mediaPlayer.release()
         circularEncoder.shutdown()
         encoderSurface?.release()
@@ -149,57 +172,59 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun surfaceCreated(p0: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated: surfaceHolder=$p0")
-
+        isSurfaceDestroyed = false
 //        EGL 설정
-        eglCore = EglCore()
-        displaySurface = EglWindowSurface(eglCore!!, p0.surface, false)
-        displaySurface!!.makeCurrent()
+        if (eglCore == null) {
+            eglCore = EglCore()
+            displaySurface = EglWindowSurface(eglCore!!, p0.surface, true)
+            displaySurface!!.makeCurrent()
 
-        fullFrameBlit = FullFrameRect(Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT))
-        textureId = fullFrameBlit!!.createTextureObject()
-        surfaceTexture = SurfaceTexture(textureId)
-        surfaceTexture!!.setOnFrameAvailableListener(this)
+            fullFrameBlit =
+                FullFrameRect(Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT))
+            textureId = fullFrameBlit!!.createTextureObject()
+            surfaceTexture = SurfaceTexture(textureId)
+            surfaceTexture!!.setOnFrameAvailableListener(this)
 
-        val uri = if (Build.VERSION.SDK_INT >= 30 ) {
-            uriString.toUri()
+            val surface = Surface(surfaceTexture)
+            mediaPlayer.setSurface(surface)
+            videoWidth = mediaPlayer.videoWidth
+            videoHeight = mediaPlayer.videoHeight
+
+            width = binding.svMovie.width
+            height = binding.svMovie.height
+
+            //        width, height가 videoWidth, VideoHeight보다 더 크다는 가정하에 함. 그 외의 경우도 만들어야 함!
+            if (videoWidth > videoHeight) {
+                val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
+                viewportX = 0
+                viewportY = (height - adjustedHeight) / 2
+                viewportWidth = width
+                viewportHeight = adjustedHeight
+            } else {
+                val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
+                viewportX = (width - adjustedWidth) / 2
+                viewportY = 0
+                viewportWidth = adjustedWidth
+                viewportHeight = height
+            }
+
+            try {
+                circularEncoder = Encoder(width, width, 6000000, 30, 60)
+            } catch (e: IOException) {
+                throw Exception(e)
+            }
+            encoderSurface = EglWindowSurface(eglCore!!, circularEncoder.inputSurface, true)
         } else {
-            Uri.fromFile(File(UriUtil.getPathFromUri(requireActivity().contentResolver, uriString.toUri())))
+            displaySurface = EglWindowSurface(eglCore!!, p0.surface, true)
+            displaySurface!!.makeCurrent()
+            val surface = Surface(surfaceTexture)
+            mediaPlayer.setSurface(surface)
         }
-
-        val surface = Surface(surfaceTexture)
-        mediaPlayer = MediaPlayer.create(context, uri)
-        mediaPlayer.setSurface(surface)
-        videoWidth = mediaPlayer.videoWidth
-        videoHeight = mediaPlayer.videoHeight
-
-        width = binding.svMovie.width
-        height = binding.svMovie.height
-
-        //        width, height가 videoWidth, VideoHeight보다 더 크다는 가정하에 함. 그 외의 경우도 만들어야 함!
-        if (videoWidth > videoHeight) {
-            val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
-            viewportX = 0
-            viewportY = (height - adjustedHeight) / 2
-            viewportWidth = width
-            viewportHeight = adjustedHeight
-        } else {
-            val adjustedWidth = (width * (videoWidth / videoHeight.toFloat())).toInt()
-            viewportX = (width - adjustedWidth) / 2
-            viewportY = 0
-            viewportWidth = adjustedWidth
-            viewportHeight = height
-        }
-
-        try {
-            circularEncoder = Encoder(width, width, 6000000, 30, 60)
-        } catch (e: IOException) {
-            throw Exception(e)
-        }
-        encoderSurface = EglWindowSurface(eglCore!!, circularEncoder.inputSurface, true)
     }
 
-    private fun playVideoAlt() {
+    private fun playVideo() {
         mediaPlayer.start()
+        binding.btnPlay.isEnabled = false
     }
 
     override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
@@ -272,6 +297,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     }
 
     companion object {
-        private const val TAG = "VideoDoodleFragmentTAG"
+        private const val TAG = "VideoDoodleFragment"
     }
 }
