@@ -34,6 +34,13 @@ fun ImageView.imageFromVideoMemo(mediaMemo: MediaMemo) {
     setImageBitmap(bmp)
 }
 
+@BindingAdapter("showTextFromAudioMemo")
+fun TextView.showTextFromAudioMemo(mediaMemo: MediaMemo) {
+    if (mediaMemo.memoType != AUDIO_MODE) return
+    val text = mediaMemo.textList[0]
+    setText(text)
+}
+
 @SuppressLint("SetTextI18n", "SimpleDateFormat")
 @BindingAdapter("dateFromVideoMemo")
 fun TextView.dateFromVideoMemo(mediaMemo: MediaMemo) {
