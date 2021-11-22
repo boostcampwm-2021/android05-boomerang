@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +16,7 @@ import com.kotlinisgood.boomerang.util.imageFromVideoMemo
 
 
 class HomeAdapter(private val liveData: LiveData<OrderState>) :
-    ListAdapter<MediaMemo, HomeAdapter.MemoViewHolder>(MediaMemoDiffCallback()) {
+    ListAdapter<MediaMemo, RecyclerView.ViewHolder>(MediaMemoDiffCallback()) {
 
     private var itemClickListener: OnItemClickListener? = null
 
@@ -79,6 +78,7 @@ class HomeAdapter(private val liveData: LiveData<OrderState>) :
     ) : RecyclerView.ViewHolder(binding.root) {
 
         init {
+            binding.orderState = liveData.value
             itemView.setOnClickListener {
                 itemClickListener?.onItemClick(itemView, adapterPosition)
             }
