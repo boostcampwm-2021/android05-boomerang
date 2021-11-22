@@ -83,7 +83,7 @@ class VideoMemoFragment : Fragment() {
             }
             setNavigationIcon(R.drawable.ic_arrow_back)
             setNavigationOnClickListener {
-                requireActivity().onBackPressed()
+                findNavController().popBackStack()
             }
         }
     }
