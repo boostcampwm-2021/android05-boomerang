@@ -99,10 +99,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             playVideo()
         }
 
-        binding.btnCapture.setOnClickListener {
-            saveCompleted(circularEncoder.saveVideo(outputVideo))
-        }
-
         binding.svMovie.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
