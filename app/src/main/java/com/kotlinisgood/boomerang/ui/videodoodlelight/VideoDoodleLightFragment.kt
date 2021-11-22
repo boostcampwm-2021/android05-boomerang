@@ -51,17 +51,6 @@ class VideoDoodleLightFragment : Fragment() {
 
     private var drawView: DrawView? = null
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        println("====================onAttach===================")
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        println("====================OnCreate===================")
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -72,13 +61,11 @@ class VideoDoodleLightFragment : Fragment() {
             container,
             false
         )
-        println("====================OnCreateView===================")
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        println("====================OnViewCreated===================")
         uriString = args.videoPath
         uri = uriString.toUri()
         setVideoView()
@@ -87,17 +74,6 @@ class VideoDoodleLightFragment : Fragment() {
         setViewModel()
         setAdapter()
         setObserver()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        println("====================OnStart===================")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        println("====================onResume===================")
-
     }
 
     private fun setViewModel() {
@@ -315,7 +291,6 @@ class VideoDoodleLightFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        println("====================OnPause===================")
         binding.toggleBtnDoodle.uncheck(R.id.btn_doodle)
         stopRecord()
         player.run {
@@ -323,28 +298,12 @@ class VideoDoodleLightFragment : Fragment() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        println("====================onStop===================")
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
-        println("====================OnDestroyView===================")
         player.run{
             removeListener(playerListener)
             release()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        println("====================onDestory===================")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        println("====================onDetach===================")
     }
 
     private val playerListener = object: Player.Listener{
