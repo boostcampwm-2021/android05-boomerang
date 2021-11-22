@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,7 +60,11 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
     suspend fun deleteMemo(): Boolean {
         return withContext(Dispatchers.IO) {
                 try {
-                    mediaMemo.value?.let { repository.deleteMemo(it); true } ?: false
+                    mediaMemo.value?.let {
+                        repository.deleteMemo(it)
+                        File(it.mediaUri).delete()
+                        true
+                    } ?: false
                 } catch (e: Exception) {
                     e.printStackTrace()
                     false

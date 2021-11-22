@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import com.alphamovie.lib.AlphaMovieView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoMemoBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
@@ -56,7 +58,7 @@ class VideoMemoFragment : Fragment() {
     }
 
     private fun setMenuOnToolBar() {
-        binding.tbMemo.inflateMenu(R.menu.menu_fragment_memo)
+        binding.tbMemo.inflateMenu(R.menu.menu_fragment_video_memo)
         binding.tbMemo.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_memo_modify -> {
@@ -71,9 +73,36 @@ class VideoMemoFragment : Fragment() {
                     }
                     true
                 }
+                R.id.menu_video_memo_delete -> {
+                    showDeleteDialog()
+                    true
+                }
                 else -> false
             }
         }
+    }
+
+    private fun showDeleteDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("메모 삭제")
+            .setMessage("메몰를 삭제하시겠습니까?")
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("삭제") { dialog, _ ->
+                lifecycleScope.launch {
+                    val result = viewModelVideo.deleteMemo()
+                    delay(500)
+                    if (result) {
+                        dialog.dismiss()
+                        findNavController().navigate(VideoMemoFragmentDirections.actionAudioMemoFragmentToHomeFragment())
+                    } else {
+                        Toast.makeText(requireContext(), "메모 삭제에 실패하였습니다", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                    }
+                }
+            }
+            .show()
     }
 
     fun setViewModel() {

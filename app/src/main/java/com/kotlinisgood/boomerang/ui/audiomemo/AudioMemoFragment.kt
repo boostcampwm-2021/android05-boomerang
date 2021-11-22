@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -152,7 +153,7 @@ class AudioMemoFragment : Fragment() {
                     val result = viewModel.deleteMemo()
                     if (result) {
                         dialog.dismiss()
-                        requireActivity().onBackPressed()
+                        findNavController().navigate(AudioMemoFragmentDirections.actionAudioMemoFragmentToHomeFragment())
                     } else {
                         Toast.makeText(requireContext(), "메모 삭제에 실패하였습니다", Toast.LENGTH_SHORT).show()
                     }

@@ -190,13 +190,14 @@ class VideoDoodleLightFragment : Fragment() {
         setDrawingView()
         val fileName = System.currentTimeMillis()
         setViewRecorder()
-        viewRecorder.setOutputFile(context?.filesDir.toString() + "/$fileName.mp4")
+        val filePath = requireActivity().filesDir.absolutePath + "/$fileName.mp4"
+        viewRecorder.setOutputFile(filePath)
         try {
             viewRecorder.prepare()
             viewRecorder.start()
             videoDoodleLightViewModel.setCurrentSubVideo(
                 SubVideo(
-                    Uri.fromFile(File(context?.filesDir, "$fileName.mp4")).toString(),
+                    filePath,
                     player.currentPosition.toInt(),
                     player.currentPosition.toInt()
                 )
