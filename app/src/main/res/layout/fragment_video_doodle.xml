@@ -31,8 +31,8 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginTop="16dp"
-            android:enabled="false"
             android:background="@drawable/ic_baseline_play_arrow_24"
+            android:enabled="false"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -97,6 +97,17 @@
                 android:background="@drawable/background_rb_yellow"
                 android:button="@null" />
         </RadioGroup>
+
+        <Button
+            android:id="@+id/btn_erase"
+            style="@style/Widget.App.Button.OutlinedButton.IconOnly.Toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:icon="@drawable/ic_delete"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rg_doodle_color" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

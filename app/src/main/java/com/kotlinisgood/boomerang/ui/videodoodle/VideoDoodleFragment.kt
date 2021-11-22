@@ -127,6 +127,10 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                 R.id.rb_yellow -> drawColor = DrawColor(red = 1f, green = 1f, blue = 0f)
             }
         }
+
+        binding.btnErase.setOnClickListener {
+            currentPoint.clear()
+        }
     }
 
     private fun drawLine(x: Int, y: Int) {
