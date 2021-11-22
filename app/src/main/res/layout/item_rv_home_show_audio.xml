@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="com.kotlinisgood.boomerang.model.OrderState"/>
+        <variable
+            name="orderState"
+            type="OrderState" />
         <variable
             name="mediaMemo"
             type="com.kotlinisgood.boomerang.database.entity.MediaMemo" />
@@ -36,7 +40,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:src="@drawable/ic_setting" />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_memo_info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -47,34 +52,49 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_tv_home_audio_title"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="@{mediaMemo.title}"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/tv_duration"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="Title" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    setDurationFromMediaMemo="@{mediaMemo}"
+                    app:layout_constraintStart_toEndOf="@id/item_tv_home_audio_title"/>
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/item_tv_home_audio_playtime"
+                    android:id="@+id/tv_create_date"
+                    createDateFromMediaMemo="@{mediaMemo}"
+                    setDateVisibility="@{orderState == OrderState.CREATE_OLD || orderState == OrderState.CREATE_RECENT}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceLabelMedium"
                     android:textColor="?android:attr/textColorSecondary"
-                    tools:text="1:20" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/item_tv_home_audio_title" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/item_tv_home_audio_day_info"
-                    dateFromVideoMemo="@{mediaMemo}"
+                    android:id="@+id/tv_edit_date"
+                    editDateFromMediaMemo="@{mediaMemo}"
+                    setDateVisibility="@{orderState == OrderState.MODIFY_OLD || orderState == OrderState.MODIFY_RECENT}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:textAppearance="?attr/textAppearanceLabelMedium"
                     android:textColor="?android:attr/textColorSecondary"
-                    tools:text="1일 전" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_create_date" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

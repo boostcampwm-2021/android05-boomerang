@@ -83,7 +83,7 @@ class VideoMemoFragment : Fragment() {
             }
             setNavigationIcon(R.drawable.ic_arrow_back)
             setNavigationOnClickListener {
-                requireActivity().onBackPressed()
+                findNavController().popBackStack()
             }
         }
     }
@@ -91,7 +91,7 @@ class VideoMemoFragment : Fragment() {
     private fun showDeleteDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("메모 삭제")
-            .setMessage("메몰를 삭제하시겠습니까?")
+            .setMessage("메모를 삭제하시겠습니까?")
             .setNegativeButton("취소") { dialog, _ ->
                 dialog.dismiss()
             }

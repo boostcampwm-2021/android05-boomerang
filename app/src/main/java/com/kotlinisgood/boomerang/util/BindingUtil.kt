@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
@@ -41,13 +42,42 @@ fun TextView.showTextFromAudioMemo(mediaMemo: MediaMemo) {
     setText(text)
 }
 
-@SuppressLint("SetTextI18n", "SimpleDateFormat")
-@BindingAdapter("dateFromVideoMemo")
-fun TextView.dateFromVideoMemo(mediaMemo: MediaMemo) {
+
+@BindingAdapter("setDurationFromMediaMemo")
+fun TextView.setMemoTime(mediaMemo: MediaMemo){
+    val uri = Uri.parse(mediaMemo.mediaUri)
+    val mmr = MediaMetadataRetriever()
+    mmr.setDataSource(context, uri)
+    val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: return
+    val durationInMilli = duration.toLong()
+    val minute = durationInMilli/1000 / 60 % 60
+    val second = durationInMilli/1000 % 60
+    val durationString = String.format("%02d:%02d", minute, second)
+    text = durationString
+}
+
+@SuppressLint("SetTextI18n")
+@BindingAdapter("createDateFromMediaMemo")
+fun TextView.createDateFromVideoMemo(mediaMemo: MediaMemo){
     val sdf = SimpleDateFormat("yyyy-MM-dd")
     val createTimeStr = sdf.format(mediaMemo.createTime)
+    text = "생성일 : $createTimeStr"
+}
+
+@BindingAdapter("editDateFromMediaMemo")
+fun TextView.editDateFromMediaMemo(mediaMemo: MediaMemo){
+    val sdf = SimpleDateFormat("yyyy-MM-dd")
     val editTimeStr = sdf.format(mediaMemo.modifyTime)
-    text = "생성일: $createTimeStr\n수정일: $editTimeStr"
+    text = "수정일 : $editTimeStr"
+}
+
+@BindingAdapter("setDateVisibility")
+fun View.bindVisibility(visible: Boolean){
+    visibility = if(visible){
+        View.VISIBLE
+    } else {
+        View.GONE
+    }
 }
 
 @BindingAdapter("imageFromSubVideo")
