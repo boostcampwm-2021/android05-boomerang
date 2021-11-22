@@ -1,4 +1,4 @@
-package com.kotlinisgood.boomerang.ui.memo
+package com.kotlinisgood.boomerang.ui.videomemo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,12 +8,17 @@ import com.alphamovie.lib.AlphaMovieView
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
-class MemoViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
+class VideoMemoViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
 
     private var _mediaMemo: MutableLiveData<MediaMemo> = MutableLiveData()
     val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
@@ -41,4 +46,30 @@ class MemoViewModel @Inject constructor(private val repository: AppRepository) :
     fun addAlphaMovieView(alphaMovieView: AlphaMovieView) {
         alphaMovieViews.add(alphaMovieView)
     }
+
+    suspend fun deleteMemo(): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                mediaMemo.value?.let {
+                    repository.deleteMemo(it)
+                    if (it.memoType == VIDEO_MODE_FRAME) {
+                        File(it.mediaUri).delete()
+                    } else if (it.memoType == VIDEO_MODE_SUB_VIDEO) {
+                        it.memoList.forEach { subVideo ->
+                            val file = File(subVideo.uri)
+                            println("File abs path is : ${file.absolutePath}")
+                            println("File path is : ${file.path}")
+                            println("File is : ${file.isFile}")
+                            File(subVideo.uri).delete()
+                        }
+                    }
+                    true
+                } ?: false
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
+        }
+    }
+
 }

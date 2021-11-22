@@ -27,4 +27,8 @@ class AppRepository @Inject constructor(
         return localDataSource.searchMedia(query)
     }
 
+    suspend fun deleteMemo(mediaMemo: MediaMemo) {
+        localDataSource.deleteMemo(mediaMemo)
+    }
+
 }

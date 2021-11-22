@@ -24,7 +24,7 @@
             app:destination="@+id/audioMemoFragment" />
         <action
             android:id="@+id/action_homeFragment_to_memoFragment"
-            app:destination="@+id/memoFragment" />
+            app:destination="@+id/videoMemoFragment" />
     </fragment>
 
     <fragment
@@ -49,16 +49,21 @@
         tools:layout="@layout/fragment_oss" />
 
     <fragment
-        android:id="@+id/memoFragment"
-        android:name="com.kotlinisgood.boomerang.ui.memo.MemoFragment"
+        android:id="@+id/videoMemoFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videomemo.VideoMemoFragment"
         android:label="fragment_memo"
-        tools:layout="@layout/fragment_memo" >
+        tools:layout="@layout/fragment_video_memo" >
         <argument
             android:name="id"
             app:argType="integer" />
         <action
             android:id="@+id/action_memoFragment_to_videoModifyLightFragment"
             app:destination="@id/videoModifyLightFragment" />
+        <action
+            android:id="@+id/action_audioMemoFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -133,8 +138,8 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_videoModifyLightFragment_to_memoFragment"
-            app:destination="@id/memoFragment"
-            app:popUpTo="@id/memoFragment"
+            app:destination="@id/videoMemoFragment"
+            app:popUpTo="@id/videoMemoFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <dialog
@@ -164,6 +169,11 @@
         <argument
             android:name="mediaMemoId"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_audioMemoFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 

@@ -1,4 +1,4 @@
-package com.kotlinisgood.boomerang.ui.memo
+package com.kotlinisgood.boomerang.ui.videomemo
 
 import android.media.MediaPlayer
 import android.os.Build
@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -17,19 +18,20 @@ import com.alphamovie.lib.AlphaMovieView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
-import com.kotlinisgood.boomerang.databinding.FragmentMemoBinding
+import com.kotlinisgood.boomerang.databinding.FragmentVideoMemoBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.ui.videoedit.AlphaViewFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 
 @AndroidEntryPoint
-class MemoFragment : Fragment() {
+class VideoMemoFragment : Fragment() {
 
-    private lateinit var binding: FragmentMemoBinding
-    private val viewModel: MemoViewModel by viewModels()
-    private val args: MemoFragmentArgs by navArgs()
+    private lateinit var binding: FragmentVideoMemoBinding
+    private val viewModelVideo: VideoMemoViewModel by viewModels()
+    private val args: VideoMemoFragmentArgs by navArgs()
 
     private var currentTime = 0L
     private lateinit var player: SimpleExoPlayer
@@ -43,7 +45,7 @@ class MemoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMemoBinding.inflate(inflater, container, false)
+        binding = FragmentVideoMemoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -56,13 +58,13 @@ class MemoFragment : Fragment() {
     }
 
     private fun setMenuOnToolBar() {
-        binding.tbMemo.inflateMenu(R.menu.menu_fragment_memo)
+        binding.tbMemo.inflateMenu(R.menu.menu_fragment_video_memo)
         binding.tbMemo.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_memo_modify -> {
-                    println(viewModel.mediaMemo.value)
-                    val action = viewModel.mediaMemo.value?.id?.let { it ->
-                        MemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(
+                    println(viewModelVideo.mediaMemo.value)
+                    val action = viewModelVideo.mediaMemo.value?.id?.let { it ->
+                        VideoMemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(
                             it
                         )
                     }
@@ -71,19 +73,46 @@ class MemoFragment : Fragment() {
                     }
                     true
                 }
+                R.id.menu_video_memo_delete -> {
+                    showDeleteDialog()
+                    true
+                }
                 else -> false
             }
         }
     }
 
+    private fun showDeleteDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("메모 삭제")
+            .setMessage("메몰를 삭제하시겠습니까?")
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("삭제") { dialog, _ ->
+                lifecycleScope.launch {
+                    val result = viewModelVideo.deleteMemo()
+                    delay(500)
+                    if (result) {
+                        dialog.dismiss()
+                        findNavController().navigate(VideoMemoFragmentDirections.actionAudioMemoFragmentToHomeFragment())
+                    } else {
+                        Toast.makeText(requireContext(), "메모 삭제에 실패하였습니다", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                    }
+                }
+            }
+            .show()
+    }
+
     fun setViewModel() {
-        binding.viewModel = viewModel
+        binding.viewModel = viewModelVideo
         binding.lifecycleOwner = viewLifecycleOwner
-        viewModel.loadMediaMemo(args.id)
+        viewModelVideo.loadMediaMemo(args.id)
     }
 
     fun setPlayer(){
-        viewModel.mediaMemo.observe(viewLifecycleOwner){ mediaMemo ->
+        viewModelVideo.mediaMemo.observe(viewLifecycleOwner){ mediaMemo ->
             val mediaItem = MediaItem.fromUri(mediaMemo.mediaUri)
             player = SimpleExoPlayer.Builder(requireContext()).build().apply {
                 setMediaItem(mediaItem)
@@ -93,7 +122,7 @@ class MemoFragment : Fragment() {
             binding.exoplayer.player = player
 
             mediaMemo.memoList.forEach {
-                viewModel.addAlphaMovieView(alphaViewFactory.create().apply {
+                viewModelVideo.addAlphaMovieView(alphaViewFactory.create().apply {
                     setVideoFromUri(requireContext(), it.uri.toUri())
                 })
             }
@@ -110,8 +139,8 @@ class MemoFragment : Fragment() {
                 if (currentAlpha != null && currentAlpha!!.isPlaying) {
                     currentAlpha!!.mediaPlayer.pause()
                 }
-                viewModel.getSubVideoStates()
-                    .forEachIndexed { index, _ -> viewModel.getSubVideoStates()[index] = false }
+                viewModelVideo.getSubVideoStates()
+                    .forEachIndexed { index, _ -> viewModelVideo.getSubVideoStates()[index] = false }
             }
         }
     }
@@ -120,18 +149,18 @@ class MemoFragment : Fragment() {
     private suspend fun scan() {
         withContext(Dispatchers.Default) {
             while (true) {
-                viewModel.getSubVideo().forEachIndexed { index, subVideo ->
+                viewModelVideo.getSubVideo().forEachIndexed { index, subVideo ->
                     withContext(Dispatchers.Main) {
                         currentTime = player.currentPosition
                     }
                     if ((subVideo.startingTime).toLong() <= currentTime &&
                         (subVideo.endingTime).toLong() >= currentTime
                     ) {
-                        if (!viewModel.getSubVideoStates()[index]) {
+                        if (!viewModelVideo.getSubVideoStates()[index]) {
                             withContext(Dispatchers.Main) {
                                 // 현재 재생 중이던 영상과 subVideo 가 같을 때
                                 if (subVideo == currentSubVideo) {
-                                    viewModel.getSubVideoStates()[index] = true
+                                    viewModelVideo.getSubVideoStates()[index] = true
                                     currentAlpha!!.mediaPlayer.seekTo(
                                         (player.currentPosition - subVideo.startingTime.toLong()),
                                         MediaPlayer.SEEK_CLOSEST
@@ -146,8 +175,8 @@ class MemoFragment : Fragment() {
                                         currentAlpha = null
                                     }
 
-                                    val alphaMovieView = viewModel.alphaMovieViews[index]
-                                    viewModel.getSubVideoStates()[index] = true
+                                    val alphaMovieView = viewModelVideo.alphaMovieViews[index]
+                                    viewModelVideo.getSubVideoStates()[index] = true
                                     currentSubVideo = subVideo
                                     currentAlpha = alphaMovieView
 
@@ -166,7 +195,7 @@ class MemoFragment : Fragment() {
                             }
                         }
                     }
-                    if(!viewModel.getSubVideoStates().contains(true)) {
+                    if(!viewModelVideo.getSubVideoStates().contains(true)) {
                         withContext(Dispatchers.Main) {
                             if (currentSubVideo != null) {
                                 binding.alphaView.removeAllViews()
@@ -188,8 +217,8 @@ class MemoFragment : Fragment() {
             requireContext(),
             currentSubVideo.uri.toUri()
         )
-        val index = viewModel.getSubVideo().indexOf(currentSubVideo)
-        viewModel.alphaMovieViews[index] = alphaView
+        val index = viewModelVideo.getSubVideo().indexOf(currentSubVideo)
+        viewModelVideo.alphaMovieViews[index] = alphaView
     }
 
     override fun onPause() {
