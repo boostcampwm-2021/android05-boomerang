@@ -3,17 +3,21 @@ package com.kotlinisgood.boomerang.ui.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.databinding.ItemRvHomeShowAudioBinding
 import com.kotlinisgood.boomerang.databinding.ItemRvHomeShowVideosBinding
+import com.kotlinisgood.boomerang.model.OrderState
 import com.kotlinisgood.boomerang.util.AUDIO_MODE
 import com.kotlinisgood.boomerang.util.imageFromVideoMemo
 
-class HomeAdapter :
-    ListAdapter<MediaMemo, RecyclerView.ViewHolder>(MediaMemoDiffCallback()) {
+
+class HomeAdapter(private val liveData: LiveData<OrderState>) :
+    ListAdapter<MediaMemo, HomeAdapter.MemoViewHolder>(MediaMemoDiffCallback()) {
 
     private var itemClickListener: OnItemClickListener? = null
 
@@ -56,6 +60,7 @@ class HomeAdapter :
     ) : RecyclerView.ViewHolder(binding.root) {
 
         init {
+            binding.orderState = liveData.value
             itemView.setOnClickListener {
                 itemClickListener?.onItemClick(itemView, adapterPosition)
             }

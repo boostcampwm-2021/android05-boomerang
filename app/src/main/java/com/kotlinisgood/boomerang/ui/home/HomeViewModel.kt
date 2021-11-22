@@ -30,7 +30,7 @@ class HomeViewModel @Inject constructor(
     val mediaMemo: LiveData<List<MediaMemo>> = _mediaMemo
 
     private var _orderSetting = MutableLiveData<OrderState>()
-    private val orderSetting: LiveData<OrderState> get() = _orderSetting
+    val orderSetting: LiveData<OrderState> get() = _orderSetting
     private var currentQuery: String = ""
 
     init {

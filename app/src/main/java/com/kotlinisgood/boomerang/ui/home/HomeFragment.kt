@@ -63,7 +63,7 @@ class HomeFragment : Fragment() {
 
     private fun setAdapter() {
         homeRecyclerView = dataBinding.rvHomeShowMedia
-        val adapter = HomeAdapter()
+        val adapter = HomeAdapter(viewModel.orderSetting)
         adapter.setOnItemClickListener(object: HomeAdapter.OnItemClickListener{
             override fun onItemClick(view: View, position: Int) {
                 val item = adapter.currentList[position]
