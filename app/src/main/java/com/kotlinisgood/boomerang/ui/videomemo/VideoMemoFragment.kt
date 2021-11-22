@@ -15,9 +15,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.alphamovie.lib.AlphaMovieView
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoMemoBinding
@@ -34,7 +34,7 @@ class VideoMemoFragment : Fragment() {
     private val args: VideoMemoFragmentArgs by navArgs()
 
     private var currentTime = 0L
-    private lateinit var player: SimpleExoPlayer
+    private lateinit var player: ExoPlayer
     lateinit var jobScanner: Job
 
     private lateinit var alphaViewFactory: AlphaViewFactory
@@ -120,7 +120,7 @@ class VideoMemoFragment : Fragment() {
     fun setPlayer(){
         viewModelVideo.mediaMemo.observe(viewLifecycleOwner){ mediaMemo ->
             val mediaItem = MediaItem.fromUri(mediaMemo.mediaUri)
-            player = SimpleExoPlayer.Builder(requireContext()).build().apply {
+            player = ExoPlayer.Builder(requireContext()).build().apply {
                 setMediaItem(mediaItem)
                 addListener(onPlayStateChangeListener)
                 prepare()
@@ -229,6 +229,13 @@ class VideoMemoFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+        player.run {
+            pause()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         player.run {
             removeListener(onPlayStateChangeListener)
             stop()
