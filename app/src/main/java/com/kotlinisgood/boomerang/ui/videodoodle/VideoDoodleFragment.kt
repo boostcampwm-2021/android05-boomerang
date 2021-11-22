@@ -9,9 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
@@ -55,10 +53,11 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var viewportWidth = 0
     private var viewportHeight = 0
 
-    var currentPoint: MutableList<Pair<Int, Int>> = mutableListOf()
-
+    //    x, y, 색상
+    private var currentPoint: MutableList<Triple<Int, Int, DrawColor>> = mutableListOf()
+    private var drawColor = DrawColor(red = 1f, green = 0f, blue = 0f)
     private var isPlaying = false
-    var isSurfaceDestroyed = false
+    private var isSurfaceDestroyed = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -118,19 +117,30 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             binding.svMovie.performClick()
             true
         }
+
+        binding.rbRed.isChecked = true
+        binding.rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.rb_red -> drawColor = DrawColor(red = 1f, green = 0f, blue = 0f)
+                R.id.rb_green -> drawColor = DrawColor(red = 0f, green = 1f, blue = 0f)
+                R.id.rb_blue -> drawColor = DrawColor(red = 0f, green = 0f, blue = 1f)
+                R.id.rb_yellow -> drawColor = DrawColor(red = 1f, green = 1f, blue = 0f)
+            }
+        }
     }
 
     private fun drawLine(x: Int, y: Int) {
-        currentPoint.add(Pair(x, y))
+        currentPoint.add(Triple(x, y, drawColor))
     }
 
     private fun fillSpace(x: Int, y: Int) {
         val last = currentPoint.last()
         for (i in 1..50) {
             currentPoint.add(
-                Pair(
+                Triple(
                     last.first + (x - last.first) * i / 100,
-                    last.second + (y - last.second) * i / 100
+                    last.second + (y - last.second) * i / 100,
+                    drawColor
                 )
             )
         }
@@ -312,9 +322,9 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
     }
 
-    private fun drawLine(currentPoint: List<Pair<Int, Int>>, height: Int) {
+    private fun drawLine(currentPoint: List<Triple<Int, Int, DrawColor>>, height: Int) {
         currentPoint.forEach {
-            GLES20.glClearColor(1f, 1f, 0f, 1f)
+            GLES20.glClearColor(it.third.red, it.third.green, it.third.blue, 1f)
             GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
             GLES20.glScissor(it.first, height - it.second, 15, 15)
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
@@ -326,3 +336,5 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         private const val TAG = "VideoDoodleFragment"
     }
 }
+
+data class DrawColor(val red: Float, val green: Float, val blue: Float)
