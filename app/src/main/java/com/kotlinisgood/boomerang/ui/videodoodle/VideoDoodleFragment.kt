@@ -99,10 +99,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             playVideo()
         }
 
-        binding.btnCapture.setOnClickListener {
-            saveCompleted(circularEncoder.saveVideo(outputVideo))
-        }
-
         binding.svMovie.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -129,7 +125,28 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
 
         binding.btnErase.setOnClickListener {
+            currentPoint.forEach {
+                GLES20.glClearColor(0f, 0f, 0f, 1f)
+                GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
+                GLES20.glScissor(it.first, height - it.second, 15, 15)
+                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+                GLES20.glDisable(GLES20.GL_SCISSOR_TEST)
+            }
             currentPoint.clear()
+        }
+
+        binding.tbVideoDoodle.setNavigationOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
+        binding.tbVideoDoodle.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_video_selection_completion -> {
+                    saveCompleted(circularEncoder.saveVideo(outputVideo))
+                    true
+                }
+                else -> false
+            }
         }
     }
 

@@ -6,6 +6,7 @@ plugins {
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs")
     id('com.google.firebase.crashlytics')
+    id 'com.google.android.gms.oss-licenses-plugin'
 }
 
 android {
@@ -83,5 +84,7 @@ dependencies {
     //Lottie
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
+    //OSS
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
 }
 apply plugin: "com.google.gms.google-services"
