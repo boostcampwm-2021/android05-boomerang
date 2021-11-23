@@ -18,6 +18,7 @@ class VideoEditViewModel @Inject constructor(
     private val repository: AppRepository,
 ) : ViewModel() {
 
+    private var memoType = false
     private var memoTitle = ""
     private var videoUri: Uri = Uri.EMPTY
     private var subVideos = mutableListOf<SubVideo>()
@@ -25,29 +26,32 @@ class VideoEditViewModel @Inject constructor(
     private var subVideosStates = mutableListOf<Boolean>()
 
     fun saveMemo() {
-        val memo: MediaMemo = if (subVideos.size == 0) {
-            MediaMemo(
-                memoTitle,
-                videoUri.toString(),
-                System.currentTimeMillis(),
-                System.currentTimeMillis(),
-                VIDEO_MODE_FRAME,
-                subVideos,
-                emptyList(),
-                emptyList()
-            )
-        } else {
-            MediaMemo(
-                memoTitle,
-                videoUri.toString(),
-                System.currentTimeMillis(),
-                System.currentTimeMillis(),
-                VIDEO_MODE_SUB_VIDEO,
-                subVideos,
-                emptyList(),
-                emptyList()
-            )
+        val memo = MediaMemo(
+            memoTitle,
+            videoUri.toString(),
+            System.currentTimeMillis(),
+            System.currentTimeMillis(),
+            VIDEO_MODE_FRAME,
+            subVideos,
+            emptyList(),
+            emptyList()
+        )
+        viewModelScope.launch {
+            repository.saveMediaMemo(memo)
         }
+    }
+
+    fun saveMemo(uri: String) {
+        val memo = MediaMemo(
+            memoTitle,
+            uri,
+            System.currentTimeMillis(),
+            System.currentTimeMillis(),
+            VIDEO_MODE_SUB_VIDEO,
+            subVideos,
+            emptyList(),
+            emptyList()
+        )
         viewModelScope.launch {
             repository.saveMediaMemo(memo)
         }
@@ -82,8 +86,12 @@ class VideoEditViewModel @Inject constructor(
         return subVideosStates
     }
 
-    fun addAlphaMovieView(alphaMovieView: AlphaMovieView){
+    fun addAlphaMovieView(alphaMovieView: AlphaMovieView) {
         alphaMovieViews.add(alphaMovieView)
+    }
+
+    fun setMemoType(memoType: Boolean) {
+        this.memoType = memoType
     }
 
 //    fun getAlphaMovieViews(): MutableList<AlphaMovieView> {
