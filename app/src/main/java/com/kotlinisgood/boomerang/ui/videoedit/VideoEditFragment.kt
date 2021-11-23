@@ -115,10 +115,12 @@ class VideoEditFragment : Fragment() {
     }
 
     private fun setVideoView() {
-        val mediaItem = MediaItem.fromUri(viewModel.getVideoUri())
-        player = ExoPlayer.Builder(requireContext()).build()
-        player.setMediaItem(mediaItem)
-        binding.exoplayer.player = player
+        player = ExoPlayer.Builder(requireContext()).build().apply {
+            setMediaItem(MediaItem.fromUri(viewModel.getVideoUri()))
+        }.also {
+            binding.pcvVideoEdit.player = it
+            binding.exoplayer.player = it
+        }
     }
 
     private fun setPlayer() {
