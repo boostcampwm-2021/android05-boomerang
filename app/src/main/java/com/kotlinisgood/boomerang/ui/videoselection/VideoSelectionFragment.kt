@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -19,7 +20,9 @@ import com.kotlinisgood.boomerang.databinding.FragmentVideoSelectionBinding
 import com.kotlinisgood.boomerang.util.UriUtil
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
+import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class VideoSelectionFragment : Fragment() {
@@ -99,38 +102,37 @@ class VideoSelectionFragment : Fragment() {
     }
 
     private fun setOnMenuItemClickListener() {
-        dataBinding.tbVideoSelection.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.menu_video_selection_completion -> {
-                    if (videoSelectionAdapter.selectedIndex == -1) {
-                        Toast.makeText(requireContext(), "동영상이 선택되지 않았습니다", Toast.LENGTH_SHORT)
-                            .show()
-                        false
-                    } else {
-                        val uri =
-                            videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri.toString()
-                        if (videoMode == VIDEO_MODE_FRAME) {
-                            val action =
-                                VideoSelectionFragmentDirections
-                                    .actionVideoSelectionFragmentToVideoDoodleFragment(
-                                        uri
-                                    )
-                            findNavController().navigate(action)
-                        } else if (videoMode == VIDEO_MODE_SUB_VIDEO) {
-                            val action =
-                                VideoSelectionFragmentDirections
-                                    .actionVideoSelectionFragmentToVideoDoodleLightFragment(
-                                        uri
-                                    )
-                            findNavController().navigate(action)
-                        }
-                        videoSelectionAdapter.setSelectionComplete()
-                        true
-                    }
-
-                }
-                else -> false
+        dataBinding.tbVideoSelection.menu.forEach {
+            when(it.itemId) {
+                R.id.menu_video_selection_completion ->
+                    it.throttle(1000, TimeUnit.MILLISECONDS) { checkConditionAndNavigate() }
             }
+        }
+    }
+
+    private fun checkConditionAndNavigate() {
+        if (videoSelectionAdapter.selectedIndex == -1) {
+            Toast.makeText(requireContext(), "동영상이 선택되지 않았습니다", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            val uri =
+                videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri.toString()
+            if (videoMode == VIDEO_MODE_FRAME) {
+                val action =
+                    VideoSelectionFragmentDirections
+                        .actionVideoSelectionFragmentToVideoDoodleFragment(
+                            uri
+                        )
+                findNavController().navigate(action)
+            } else if (videoMode == VIDEO_MODE_SUB_VIDEO) {
+                val action =
+                    VideoSelectionFragmentDirections
+                        .actionVideoSelectionFragmentToVideoDoodleLightFragment(
+                            uri
+                        )
+                findNavController().navigate(action)
+            }
+            videoSelectionAdapter.setSelectionComplete()
         }
     }
 

@@ -27,9 +27,11 @@ import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
 import com.kotlinisgood.boomerang.util.UriUtil
+import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class VideoDoodleLightFragment : Fragment() {
@@ -158,7 +160,7 @@ class VideoDoodleLightFragment : Fragment() {
                 drawView?.setColor(doodleColor.toInt())
             }
 
-            btnMoveToResult.setOnClickListener {
+            btnMoveToResult.throttle(1000, TimeUnit.MILLISECONDS) {
                 binding.canvas.isEnabled = false
                 stopRecord()
                 val action =
@@ -169,7 +171,7 @@ class VideoDoodleLightFragment : Fragment() {
                 findNavController().navigate(action)
             }
 
-            btnGoBack.setOnClickListener {
+            btnGoBack.throttle(1000, TimeUnit.MILLISECONDS) {
                 showDialog()
             }
         }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -23,8 +24,10 @@ import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoMemoBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.ui.videoedit.AlphaViewFactory
+import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class VideoMemoFragment : Fragment() {
@@ -60,31 +63,32 @@ class VideoMemoFragment : Fragment() {
     private fun setMenuOnToolBar() {
         binding.tbMemo.apply {
             inflateMenu(R.menu.menu_fragment_video_memo)
-            setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.menu_memo_modify -> {
-                        println(viewModelVideo.mediaMemo.value)
-                        val action = viewModelVideo.mediaMemo.value?.id?.let { it ->
-                            VideoMemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(
-                                it
-                            )
-                        }
-                        if (action != null) {
-                            findNavController().navigate(action)
-                        }
-                        true
-                    }
-                    R.id.menu_video_memo_delete -> {
-                        showDeleteDialog()
-                        true
-                    }
-                    else -> false
-                }
-            }
             setNavigationIcon(R.drawable.ic_arrow_back)
             setNavigationOnClickListener {
                 findNavController().popBackStack()
             }
+            menu.forEach {
+                when (it.itemId) {
+                    R.id.menu_memo_modify -> {
+                        it.throttle(1000, TimeUnit.MILLISECONDS) { checkModifyAndMove()}
+                    }
+                    R.id.menu_video_memo_delete -> {
+                        it.throttle(1000, TimeUnit.MILLISECONDS) { showDeleteDialog() }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun checkModifyAndMove() {
+        println(viewModelVideo.mediaMemo.value)
+        val action = viewModelVideo.mediaMemo.value?.id?.let { it ->
+            VideoMemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(
+                it
+            )
+        }
+        if (action != null) {
+            findNavController().navigate(action)
         }
     }
 
