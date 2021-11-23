@@ -24,7 +24,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.dialog.MaterialDialogs
+import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -97,9 +97,8 @@ class AudioRecordFragment : Fragment() {
             viewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
         }
-        setTbNavigationIcon()
+        setTbSetting()
         setRecognizerListener()
-        setOnClickListener()
         setObserver()
     }
 
@@ -179,29 +178,37 @@ class AudioRecordFragment : Fragment() {
         Intent(Intent.ACTION_VIEW)
     }
 
-    private fun setTbNavigationIcon() {
-        dataBinding.tbAudioRecord.setNavigationOnClickListener {
-            requireActivity().onBackPressed()
-        }
-    }
-
-    private fun setOnClickListener() {
-        dataBinding.btVoiceRecordStartStt.setOnClickListener {
-            checkPermissions()
-        }
-        dataBinding.btVoiceRecordMakeFile.setOnClickListener {
-            loadingDialog.show()
-            if (dataBinding.etAudioRecordEnterTitle.text.toString() == "") {
-                Toast.makeText(it.context, titleWarning, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            } else if (viewModel.isFileListEmpty()) {
-                Toast.makeText(it.context, audioListWarning, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+    private fun setTbSetting() {
+        dataBinding.tbAudioRecord.apply {
+            setNavigationOnClickListener {
+                requireActivity().onBackPressed()
             }
-
-            val title = dataBinding.etAudioRecordEnterTitle.text.toString()
-            viewModel.saveAudioMemo(title, requireActivity().filesDir)
-            // https://stackoverflow.com/questions/35340025/how-to-merge-two-or-more-mp3-audio-file-in-android
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_audio_record_mic -> {
+                        checkPermissions()
+                        true
+                    }
+                    R.id.menu_audio_record_save -> {
+                        when {
+                            dataBinding.etAudioRecordEnterTitle.text.toString() == "" -> {
+                                Toast.makeText(requireContext(), titleWarning, Toast.LENGTH_SHORT).show()
+                                true
+                            }
+                            viewModel.isFileListEmpty() -> {
+                                Toast.makeText(requireContext(), audioListWarning, Toast.LENGTH_SHORT).show()
+                                true
+                            }
+                            else -> {
+                                val title = dataBinding.etAudioRecordEnterTitle.text.toString()
+                                viewModel.saveAudioMemo(title, requireActivity().filesDir)
+                                false
+                            }
+                        }
+                    }
+                    else -> { false }
+                }
+            }
         }
     }
 
