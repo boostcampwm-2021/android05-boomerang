@@ -160,19 +160,30 @@ class VideoDoodleLightFragment : Fragment() {
                 drawView?.setColor(doodleColor.toInt())
             }
 
-            btnMoveToResult.throttle(1000, TimeUnit.MILLISECONDS) {
-                binding.canvas.isEnabled = false
-                stopRecord()
-                val action =
-                    VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(
-                        uriString,
-                        videoDoodleLightViewModel.subVideos.value!!.toTypedArray()
-                    )
-                findNavController().navigate(action)
+            tbVideoDoodle.setNavigationOnClickListener {
+                it.throttle(1000, TimeUnit.MILLISECONDS) {
+                    showDialog()
+                }
             }
 
-            btnGoBack.throttle(1000, TimeUnit.MILLISECONDS) {
-                showDialog()
+            tbVideoDoodle.setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.menu_video_doodle -> {
+                        it.throttle(1000, TimeUnit.MILLISECONDS){
+                            binding.canvas.isEnabled = false
+                            stopRecord()
+                            val action =
+                                VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(
+                                    uriString,
+                                    videoDoodleLightViewModel.subVideos.value!!.toTypedArray(),
+                                    false
+                                )
+                            findNavController().navigate(action)
+                        }
+                        true
+                    }
+                    else -> false
+                }
             }
         }
     }

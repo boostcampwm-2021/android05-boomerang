@@ -15,23 +15,49 @@
         android:layout_height="match_parent"
         tools:context=".ui.videodoodle.VideoDoodleFragment">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/container_video_doodle_appbar"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+            app:layout_constraintTop_toTopOf="parent" >
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/tb_video_doodle"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorSurface"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:title="나만의 메모 작성"
+                app:titleTextAppearance="?attr/textAppearanceTitleLarge"
+                app:menu="@menu/menu_fragment_doodle">
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
         <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
             android:id="@+id/frame_video"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:layout_margin="@dimen/dp8"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="W, 1:1"
+            android:layout_margin="@dimen/dp16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:resize_mode="fixed_height">
+            app:layout_constraintTop_toBottomOf="@id/container_video_doodle_appbar"
+            app:resize_mode="fit">
 
             <com.google.android.exoplayer2.ui.PlayerView
+                android:background="@color/black"
                 android:id="@+id/exoplayer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 app:use_controller="false"
-                app:resize_mode="fixed_height" />
+                app:resize_mode="fit" />
+
         </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
 
         <FrameLayout
@@ -79,6 +105,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/toggle_btn_doodle"
+            app:layout_constraintBottom_toTopOf="@id/rv_subVideos">
             app:layout_constraintTop_toBottomOf="@id/pcv_video_doodle_light">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -123,6 +150,7 @@
         </RadioGroup>
 
         <androidx.recyclerview.widget.RecyclerView
+            app:layout_constraintBottom_toBottomOf="parent"
             submitList="@{viewModel.subVideos}"
             android:id="@+id/rv_subVideos"
             android:layout_width="0dp"
@@ -136,26 +164,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rg_doodle_color"
             tools:listitem="@layout/item_rv_doodle_light_subvideos" />
-
-        <Button
-            android:id="@+id/btn_go_back"
-            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dp8"
-            app:icon="@drawable/ic_baseline_close_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/btn_move_to_result"
-            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dp8"
-            app:icon="@drawable/ic_baseline_done_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
