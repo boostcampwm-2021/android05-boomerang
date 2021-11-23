@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -19,11 +20,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.jakewharton.rxbinding4.view.clicks
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
@@ -33,6 +36,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class AudioRecordFragment : Fragment() {
@@ -129,7 +133,6 @@ class AudioRecordFragment : Fragment() {
             putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
             putExtra("android.speech.extra.GET_AUDIO", true)
         }
-        Intent(Intent.ACTION_VIEW)
     }
 
     private fun setTbSetting() {
@@ -144,21 +147,20 @@ class AudioRecordFragment : Fragment() {
                         true
                     }
                     R.id.menu_audio_record_save -> {
-                        when {
-                            dataBinding.etAudioRecordEnterTitle.text.toString() == "" -> {
-                                Toast.makeText(requireContext(), titleWarning, Toast.LENGTH_SHORT).show()
-                                true
+                        it.clicks()
+                            .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                            .subscribe {
+                                if(dataBinding.etAudioRecordEnterTitle.text.toString() == "") {
+                                    Toast.makeText(requireContext(), titleWarning, Toast.LENGTH_SHORT).show()
+                                } else if (viewModel.isFileListEmpty()) {
+                                    Toast.makeText(requireContext(), audioListWarning, Toast.LENGTH_SHORT).show()
+                                } else {
+                                    val title = dataBinding.etAudioRecordEnterTitle.text.toString()
+                                    loadingDialog.show()
+                                    viewModel.saveAudioMemo(title, requireActivity().filesDir)
+                                }
                             }
-                            viewModel.isFileListEmpty() -> {
-                                Toast.makeText(requireContext(), audioListWarning, Toast.LENGTH_SHORT).show()
-                                true
-                            }
-                            else -> {
-                                val title = dataBinding.etAudioRecordEnterTitle.text.toString()
-                                viewModel.saveAudioMemo(title, requireActivity().filesDir)
-                                false
-                            }
-                        }
+                        true
                     }
                     else -> { false }
                 }
