@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding4.view.clicks
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
+import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
@@ -134,6 +136,7 @@ class AudioMemoFragment : Fragment() {
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_audio_memo_delete -> {
+
                         it.clicks()
                             .throttleFirst(1000, TimeUnit.MILLISECONDS)
                             .subscribe {
@@ -142,6 +145,13 @@ class AudioMemoFragment : Fragment() {
                         true
                     }
                     else -> false
+                }
+            }
+            menu.forEach {
+                when (it.itemId) {
+                    R.id.menu_audio_memo_delete -> {
+                        it.throttle(1000, TimeUnit.MILLISECONDS) { showDeleteDialog() }
+                    }
                 }
             }
         }
