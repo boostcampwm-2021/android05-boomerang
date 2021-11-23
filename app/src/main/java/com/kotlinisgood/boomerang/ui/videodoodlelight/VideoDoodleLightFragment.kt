@@ -102,7 +102,7 @@ class VideoDoodleLightFragment : Fragment() {
     private fun setVideoView() {
         player = ExoPlayer.Builder(requireContext()).build()
         binding.exoplayer.player = player
-
+        binding.pcvVideoDoodleLight.player = player
         val uri = if (Build.VERSION.SDK_INT >= 29 ) {
             uriString.toUri()
         } else {
