@@ -60,15 +60,16 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <com.leinardi.android.speeddial.SpeedDialView
-                    android:descendantFocusability="blocksDescendants"
                     android:id="@+id/sd_home_show_items"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:sdMainFabClosedBackgroundColor="@color/boomerang_theme_color_second"
+                    app:sdMainFabClosedBackgroundColor="@color/boomerang_main_color"
+                    app:sdMainFabClosedIconColor="@color/white"
                     app:sdMainFabClosedSrc="@drawable/ic_add"
-                    app:sdMainFabOpenedBackgroundColor="@color/boomerang_theme_color_second" />
+                    app:sdMainFabOpenedBackgroundColor="@color/boomerang_main_color"
+                    app:sdMainFabOpenedIconColor="@color/white" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

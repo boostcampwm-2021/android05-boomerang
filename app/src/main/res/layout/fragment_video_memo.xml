@@ -12,7 +12,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/boomerang_theme_color"
         tools:context=".ui.videomemo.VideoMemoFragment">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -25,8 +24,7 @@
                 android:id="@+id/tb_memo"
                 app:title="@{viewModel.mediaMemo.title}"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/boomerang_theme_color">
+                android:layout_height="?attr/actionBarSize">
 
             </com.google.android.material.appbar.MaterialToolbar>
 

@@ -10,7 +10,7 @@
                 android:id="@+id/navigation_drawer_memo_type_all"
                 android:checkable="true"
                 android:icon="@drawable/ic_all"
-                android:title="모든 메모"
+                android:title="전체 메모"
                 app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/navigation_drawer_memo_type_voice"
