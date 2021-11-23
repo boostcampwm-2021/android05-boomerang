@@ -2,6 +2,8 @@ package com.kotlinisgood.boomerang.util
 
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.widget.Toolbar
+import com.jakewharton.rxbinding4.appcompat.navigationClicks
 import com.jakewharton.rxbinding4.view.clicks
 import java.util.concurrent.TimeUnit
 
@@ -22,6 +24,14 @@ fun View.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit) {
 
 fun MenuItem.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit) {
     this.clicks()
+        .throttleFirst(duration, timeUnit)
+        .subscribe {
+            method()
+        }
+}
+
+fun Toolbar.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit) {
+    this.navigationClicks()
         .throttleFirst(duration, timeUnit)
         .subscribe {
             method()
