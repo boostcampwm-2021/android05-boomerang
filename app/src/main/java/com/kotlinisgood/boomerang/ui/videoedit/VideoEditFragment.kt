@@ -1,10 +1,10 @@
 package com.kotlinisgood.boomerang.ui.videoedit
 import android.content.Intent
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -25,10 +25,12 @@ import com.google.android.exoplayer2.Player
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import com.kotlinisgood.boomerang.util.UriUtil
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.io.File
+import java.net.URI
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -81,6 +83,7 @@ class VideoEditFragment : Fragment() {
             alphaView.setVideoFromUri(requireContext(), it.uri.toUri())
             viewModel.addAlphaMovieView(alphaView)
         }
+        viewModel.setMemoType(args.memoType)
     }
 
     private fun setListener() {
@@ -115,7 +118,19 @@ class VideoEditFragment : Fragment() {
                 }
                 R.id.menu_video_edit_save -> {
                     it.throttle(1000, TimeUnit.MILLISECONDS) {
-                        viewModel.saveMemo()
+                        if(args.memoType) {
+                            viewModel.saveMemo()
+                        } else {
+                            val uri = if (Build.VERSION.SDK_INT >= 29 ) {
+                                args.baseVideo.toUri()
+                            } else {
+                                Uri.fromFile(File(UriUtil.getPathFromUri(requireActivity().contentResolver, args.baseVideo.toUri())))
+                            }
+                            val file = File(requireContext().filesDir,System.currentTimeMillis().toString())
+                            val video = File(URI.create(uri.toString()))
+                            video.copyTo(file)
+                            viewModel.saveMemo(file.toUri().toString())
+                        }
                         findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
                     }
                 }
@@ -249,10 +264,5 @@ class VideoEditFragment : Fragment() {
             player.removeListener(onPlayStateChangeListener)
             release()
         }
-    }
-
-    companion object {
-        const val VIDEO_MODE_FRAME = 10000000
-        const val VIDEO_MODE_SUB_VIDEO = 10000001
     }
 }
