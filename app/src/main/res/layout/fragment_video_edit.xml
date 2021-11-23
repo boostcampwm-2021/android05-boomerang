@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp8"
             android:hint="@string/fragment_audio_record_et_title_hint"
-            app:layout_constraintTop_toBottomOf="@id/frame_video">
+            app:layout_constraintTop_toBottomOf="@id/pcv_video_edit">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_video_memo_title"
