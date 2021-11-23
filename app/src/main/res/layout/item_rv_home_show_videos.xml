@@ -22,7 +22,7 @@
         style="?attr/materialCardViewFilledStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_margin="@dimen/dp8">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -45,10 +45,10 @@
                 setDurationFromMediaMemo="@{mediaMemo}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="@dimen/dp8"
                 android:background="#B3000000"
-                android:paddingStart="2dp"
-                android:paddingEnd="2dp"
+                android:paddingStart="@dimen/item_tv_home_video_playtime"
+                android:paddingEnd="@dimen/item_tv_home_video_playtime"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="@id/item_iv_home_video_thumbnail"
@@ -59,7 +59,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp"
+                android:padding="@dimen/dp8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/item_iv_home_video_thumbnail">

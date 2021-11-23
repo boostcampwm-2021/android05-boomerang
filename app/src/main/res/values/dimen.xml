@@ -13,4 +13,5 @@
     <dimen name="dp64">64dp</dimen>
     <dimen name="audio_record_memo_corner">4dp</dimen>
     <dimen name="audio_record_card_view_stroke_width">1dp</dimen>
+    <dimen name="item_tv_home_video_playtime">2dp</dimen>
 </resources>
