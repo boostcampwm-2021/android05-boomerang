@@ -16,11 +16,13 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.jakewharton.rxbinding4.view.clicks
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class AudioMemoFragment : Fragment() {
@@ -132,7 +134,11 @@ class AudioMemoFragment : Fragment() {
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_audio_memo_delete -> {
-                        showDeleteDialog()
+                        it.clicks()
+                            .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                            .subscribe {
+                                showDeleteDialog()
+                            }
                         true
                     }
                     else -> false
