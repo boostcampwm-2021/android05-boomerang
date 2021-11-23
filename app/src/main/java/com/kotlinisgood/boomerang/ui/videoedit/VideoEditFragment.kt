@@ -25,7 +25,6 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
-import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.io.File
@@ -84,33 +83,49 @@ class VideoEditFragment : Fragment() {
         }
     }
 
-    private fun setShareButton() {
-        if(args.subVideos.toList().isNotEmpty()) binding.btnShareMemo.visibility = View.GONE
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_video_edit_share).isVisible = args.memoType
     }
 
     private fun setListener() {
-        binding.etMemoTitle.doOnTextChanged { text, start, before, count ->
-            viewModel.setTitle(text.toString())
+        binding.tbVideoDoodle.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
 
-        binding.btnSaveMemo.throttle(1000, TimeUnit.MILLISECONDS) {
-            viewModel.saveMemo()
-            findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
-        }
-
-        binding.btnShareMemo.throttle(1000, TimeUnit.MILLISECONDS) {
-            val fileName = args.baseVideo.split('/').last()
-            println(fileName)
-            val file = File(requireContext().filesDir, fileName)
-            val uri = FileProvider.getUriForFile(requireContext(), "com.kotlinisgood.boomerang.fileprovider", file)
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_STREAM, uri)
-                type = "video/mp4"
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        binding.tbVideoDoodle.inflateMenu(R.menu.menu_fragment_video_edit)
+        binding.tbVideoDoodle.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.menu_video_edit_share -> {
+                    it.throttle(1000, TimeUnit.MILLISECONDS){
+                        val fileName = args.baseVideo.split('/').last()
+                        println(fileName)
+                        val file = File(requireContext().filesDir, fileName)
+                        val uri = FileProvider.getUriForFile(requireContext(), "com.kotlinisgood.boomerang.fileprovider", file)
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            type = "video/mp4"
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        startActivity(shareIntent)
+                    }
+                    true
+                }
+                R.id.menu_video_edit_save -> {
+                    it.throttle(1000, TimeUnit.MILLISECONDS){
+                        viewModel.saveMemo()
+                        findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
+                    }
+                    true
+                }
+                else -> false
             }
-            val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(shareIntent)
+        }
+
+        binding.etVideoMemoTitle.doOnTextChanged { text, start, before, count ->
+            viewModel.setTitle(text.toString())
         }
     }
 
