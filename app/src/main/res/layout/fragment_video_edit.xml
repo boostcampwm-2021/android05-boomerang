@@ -17,7 +17,7 @@
             android:id="@+id/frame_video"
             android:layout_width="match_parent"
             android:layout_height="400dp"
-            android:padding="@dimen/dp8"
+            android:layout_margin="@dimen/dp8"
             app:layout_constraintTop_toTopOf="parent"
             app:resize_mode="fixed_height">
 
@@ -26,8 +26,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                app:use_controller="false"
                 app:resize_mode="fixed_height" />
         </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
+
+        <com.google.android.exoplayer2.ui.PlayerControlView
+            android:id="@+id/pcv_video_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:show_timeout="0"
+            app:layout_constraintTop_toBottomOf="@id/frame_video"
+            app:layout_constraintStart_toStartOf="@id/frame_video"
+            app:layout_constraintEnd_toEndOf="@id/frame_video"/>
 
         <FrameLayout
             android:id="@+id/alphaView"
@@ -44,7 +54,7 @@
             android:imeOptions="actionDone"
             android:lines="1"
             android:inputType="text"
-            app:layout_constraintTop_toBottomOf="@id/frame_video" />
+            app:layout_constraintTop_toBottomOf="@id/pcv_video_edit" />
 
         <Button
             android:id="@+id/btn_share_memo"

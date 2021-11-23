@@ -128,8 +128,10 @@ class VideoMemoFragment : Fragment() {
                 setMediaItem(mediaItem)
                 addListener(onPlayStateChangeListener)
                 prepare()
+            }.also {
+                binding.exoplayer.player = it
+                binding.pcvVideoMemo.player = it
             }
-            binding.exoplayer.player = player
 
             mediaMemo.memoList.forEach {
                 viewModelVideo.addAlphaMovieView(alphaViewFactory.create().apply {
