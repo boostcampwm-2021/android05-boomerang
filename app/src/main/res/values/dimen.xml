@@ -10,6 +10,7 @@
     <dimen name="dp32">32dp</dimen>
     <dimen name="dp36">36dp</dimen>
     <dimen name="dp40">40dp</dimen>
+    <dimen name="dp64">64dp</dimen>
     <dimen name="audio_record_memo_corner">4dp</dimen>
     <dimen name="audio_record_card_view_stroke_width">1dp</dimen>
 </resources>
