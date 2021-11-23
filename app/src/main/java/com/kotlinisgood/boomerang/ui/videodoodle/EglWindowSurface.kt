@@ -1,8 +1,8 @@
 package com.kotlinisgood.boomerang.ui.videodoodle
 
-import android.graphics.SurfaceTexture
+import android.opengl.EGL14
+import android.util.Log
 import android.view.Surface
-import java.lang.RuntimeException
 
 /**
  * EGLSurface 중 WindowSurface (Pixmap, Pbuffer는 offscreen을 위한 surface)
@@ -10,30 +10,112 @@ import java.lang.RuntimeException
  *
  * It's good practice to explicitly release() the surface, preferably from a "finally" block.
  */
-class EglWindowSurface : EglSurfaceBase {
-    private var mSurface: Surface? = null
-    private var mReleaseSurface = false
+/**
+ * Associates an EGL surface with the native window surface.
+ *
+ *
+ * Set releaseSurface to true if you want the Surface to be released when release() is
+ * called.  This is convenient, but can interfere with framework classes that expect to
+ * manage the Surface themselves (e.g. if you release a SurfaceView's Surface, the
+ * surfaceDestroyed() callback won't fire).
+ */
+class EglWindowSurface(private val egl: Egl, private var surface: Surface?) {
+    private var eglSurface = EGL14.EGL_NO_SURFACE
+    private var mWidth = -1
+    private var mHeight = -1
 
-    /**
-     * Associates an EGL surface with the native window surface.
-     *
-     *
-     * Set releaseSurface to true if you want the Surface to be released when release() is
-     * called.  This is convenient, but can interfere with framework classes that expect to
-     * manage the Surface themselves (e.g. if you release a SurfaceView's Surface, the
-     * surfaceDestroyed() callback won't fire).
-     */
-    constructor(eglCore: EglCore, surface: Surface?, releaseSurface: Boolean) : super(eglCore) {
+    init {
         createWindowSurface(surface)
-        mSurface = surface
-        mReleaseSurface = releaseSurface
     }
 
     /**
-     * Associates an EGL surface with the SurfaceTexture.
+     * Creates a window surface.
+     *
+     *
+     * @param surface May be a Surface or SurfaceTexture.
      */
-    constructor(eglCore: EglCore, surfaceTexture: SurfaceTexture?) : super(eglCore) {
-        createWindowSurface(surfaceTexture)
+    fun createWindowSurface(surface: Any?) {
+        check(!(eglSurface !== EGL14.EGL_NO_SURFACE)) { "surface already created" }
+        eglSurface = egl.createWindowSurface(surface!!)
+
+        // Don't cache width/height here, because the size of the underlying surface can change
+        // out from under us (see e.g. HardwareScalerActivity).
+        mWidth = egl.querySurface(eglSurface, EGL14.EGL_WIDTH);
+        mHeight = egl.querySurface(eglSurface, EGL14.EGL_HEIGHT);
+    }
+
+    /**
+     * Returns the surface's width, in pixels.
+     *
+     *
+     * If this is called on a window surface, and the underlying surface is in the process
+     * of changing size, we may not see the new size right away (e.g. in the "surfaceChanged"
+     * callback).  The size should match after the next buffer swap.
+     */
+    val width: Int
+        get() = if (mWidth < 0) {
+            egl.querySurface(eglSurface, EGL14.EGL_WIDTH)
+        } else {
+            mWidth
+        }
+
+    /**
+     * Returns the surface's height, in pixels.
+     */
+    val height: Int
+        get() {
+            return if (mHeight < 0) {
+                egl.querySurface(eglSurface, EGL14.EGL_HEIGHT)
+            } else {
+                mHeight
+            }
+        }
+
+    /**
+     * Release the EGL surface.
+     */
+    fun releaseEglSurface() {
+        egl.releaseSurface(eglSurface)
+        eglSurface = EGL14.EGL_NO_SURFACE
+        mHeight = -1
+        mWidth = mHeight
+    }
+
+    /**
+     * Makes our EGL context and surface current.
+     */
+    fun makeCurrent() {
+        egl.makeCurrent(eglSurface)
+    }
+
+    /**
+     * Makes our EGL context and surface current for drawing, using the supplied surface
+     * for reading.
+     */
+    fun makeCurrentReadFrom(readSurface: EglWindowSurface) {
+        egl.makeCurrent(eglSurface, readSurface.eglSurface)
+    }
+
+    /**
+     * Calls eglSwapBuffers.  Use this to "publish" the current frame.
+     *
+     * @return false on failure
+     */
+    fun swapBuffers(): Boolean {
+        val result = egl.swapBuffers(eglSurface)
+        if (!result) {
+            Log.d(TAG, "WARNING: swapBuffers() failed")
+        }
+        return result
+    }
+
+    /**
+     * Sends the presentation time stamp to EGL.
+     *
+     * @param nsecs Timestamp, in nanoseconds.
+     */
+    fun setPresentationTime(nsecs: Long) {
+        egl.setPresentationTime(eglSurface, nsecs)
     }
 
     /**
@@ -45,34 +127,12 @@ class EglWindowSurface : EglSurfaceBase {
      */
     fun release() {
         releaseEglSurface()
-        if (mSurface != null) {
-            if (mReleaseSurface) {
-                mSurface!!.release()
-            }
-            mSurface = null
+        if (surface != null) {
+            surface = null
         }
     }
 
-    /**
-     * Recreate the EGLSurface, using the new EglBase.  The caller should have already
-     * freed the old EGLSurface with releaseEglSurface().
-     *
-     *
-     * This is useful when we want to update the EGLSurface associated with a Surface.
-     * For example, if we want to share with a different EGLContext, which can only
-     * be done by tearing down and recreating the context.  (That's handled by the caller;
-     * this just creates a new EGLSurface for the Surface we were handed earlier.)
-     *
-     *
-     * If the previous EGLSurface isn't fully destroyed, e.g. it's still current on a
-     * context somewhere, the create call will fail with complaints from the Surface
-     * about already being connected.
-     */
-    fun recreate(newEglCore: EglCore) {
-        if (mSurface == null) {
-            throw RuntimeException("not yet implemented for SurfaceTexture")
-        }
-        mEglCore = newEglCore // switch to new context
-        createWindowSurface(mSurface) // create new surface
+    companion object {
+        private const val TAG: String = "EglSurfaceBase"
     }
 }
