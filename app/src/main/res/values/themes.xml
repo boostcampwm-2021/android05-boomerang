@@ -42,8 +42,7 @@
         <item name="boxStrokeColor">@color/audio_record_memo_stroke</item>
         <item name="endIconMode">clear_text</item>
         <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">10dp</item>
-        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
     </style>
 
 </resources>
