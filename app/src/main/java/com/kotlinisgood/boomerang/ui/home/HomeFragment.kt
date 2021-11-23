@@ -184,21 +184,39 @@ class HomeFragment : Fragment() {
         dataBinding.sdHomeShowItems.addAllActionItems(
             listOf(
                 SpeedDialActionItem.Builder(R.id.menu_home_sd_video, R.drawable.ic_people)
-//                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setFabBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.md_theme_dark_primary
+                        )
+                    )
+                    .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.black))
                     .setLabel(R.string.menu_home_sd_video)
                     .create(),
                 SpeedDialActionItem.Builder(
                     R.id.menu_home_sd_video_light,
                     R.drawable.ic_person
                 )
-//                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setFabBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.md_theme_dark_primary
+                        )
+                    )
+                    .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.black))
                     .setLabel(R.string.menu_home_sd_video_light)
                     .create(),
                 SpeedDialActionItem.Builder(
                     R.id.menu_home_sd_audio,
                     R.drawable.ic_voice
                 )
-//                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setFabBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.md_theme_dark_primary
+                        )
+                    )
+                    .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.black))
                     .setLabel(R.string.menu_home_sd_audio)
                     .create()
             )
