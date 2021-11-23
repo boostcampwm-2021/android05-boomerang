@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.databinding.ItemRvHomeShowAudioBinding
 import com.kotlinisgood.boomerang.databinding.ItemRvHomeShowVideosBinding
@@ -73,8 +74,8 @@ class HomeAdapter(private val liveData: LiveData<OrderState>) :
             if (item.memoType != AUDIO_MODE) {
                 binding.itemIvHomeVideoThumbnail.imageFromVideoMemo(item)
                 when(item.memoType) {
-//                    VIDEO_MODE_SUB_VIDEO -> binding.itemCardHomeVideo.setCardBackgroundColor(Color.CYAN)
-//                    VIDEO_MODE_FRAME -> binding.itemCardHomeVideo.setCardBackgroundColor(Color.MAGENTA)
+                    VIDEO_MODE_SUB_VIDEO -> binding.ivIcon.setBackgroundResource(R.drawable.ic_person)
+                    VIDEO_MODE_FRAME -> binding.ivIcon.setBackgroundResource(R.drawable.ic_people)
                 }
             }
         }

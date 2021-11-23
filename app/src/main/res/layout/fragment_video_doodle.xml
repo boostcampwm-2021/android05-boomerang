@@ -23,7 +23,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorSurface"
                 app:navigationIcon="@drawable/ic_arrow_back"
-                app:title="@string/fragment_video_selection_title"
+                app:title="모두의 메모 작성"
                 app:titleTextAppearance="?attr/textAppearanceTitleLarge"
                 app:menu="@menu/menu_fragment_video_selection">
 
