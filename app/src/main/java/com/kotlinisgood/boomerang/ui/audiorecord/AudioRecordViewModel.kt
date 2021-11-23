@@ -1,5 +1,6 @@
 package com.kotlinisgood.boomerang.ui.audiorecord
 
+import android.view.Menu
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,12 +9,16 @@ import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.util.AUDIO_MODE
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import zeroonezero.android.audio_mixer.AudioMixer
 import zeroonezero.android.audio_mixer.input.GeneralAudioInput
 import java.io.File
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +29,6 @@ class AudioRecordViewModel
     val loading: LiveData<Boolean> get() = _loading
     private val _audioMemo = MutableLiveData<MediaMemo>()
     val audioMemo: LiveData<MediaMemo> get() = _audioMemo
-
     private val fileList = mutableListOf<File>()
 
     private val timeList = mutableListOf(0)
@@ -35,36 +39,41 @@ class AudioRecordViewModel
     fun saveAudioMemo(title: String, baseFile: File) {
         val createTime = System.currentTimeMillis()
         val outputPath = baseFile.absolutePath + "/$createTime.mp4"
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                AudioMixer(outputPath).apply {
-                    fileList.forEach {
-                        addDataSource(GeneralAudioInput(it.absolutePath))
-                    }
-                    mixingType = AudioMixer.MixingType.SEQUENTIAL
-                    setProcessingListener(object : AudioMixer.ProcessingListener {
-                        override fun onProgress(progress: Double) {
-                            _loading.postValue(true)
+        try {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    AudioMixer(outputPath).apply {
+                        fileList.forEach {
+                            addDataSource(GeneralAudioInput(it.absolutePath))
                         }
+                        mixingType = AudioMixer.MixingType.SEQUENTIAL
+                        setProcessingListener(object : AudioMixer.ProcessingListener {
+                            override fun onProgress(progress: Double) {
+                                _loading.postValue(true)
+                            }
 
-                        override fun onEnd() {
-                            _loading.postValue(false)
-                            _audioMemo.postValue(MediaMemo(
-                                title, outputPath, createTime, createTime,
-                                AUDIO_MODE, emptyList(), textList, timeList
-                            ).also {
-                                viewModelScope.launch {
-                                    repository.saveMediaMemo(it)
-                                    deleteAudios()
-                                }
-                            })
-                        }
-                    })
-                }.also {
-                    it.start()
-                    it.processAsync()
+                            override fun onEnd() {
+                                _loading.postValue(false)
+                                _audioMemo.postValue(MediaMemo(
+                                    title, outputPath, createTime, createTime,
+                                    AUDIO_MODE, emptyList(), textList, timeList
+                                ).also {
+                                    viewModelScope.launch {
+                                        repository.saveMediaMemo(it)
+                                        deleteAudios()
+                                    }
+                                })
+                            }
+                        })
+                    }.also {
+                        it.start()
+                        it.processAsync()
+                    }
                 }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _loading.postValue(false)
         }
     }
 

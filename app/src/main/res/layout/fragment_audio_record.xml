@@ -27,6 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorSurface"
+                app:menu="@menu/menu_fragment_audio_record"
                 app:navigationIcon="@drawable/ic_arrow_back"
                 app:title="@string/tb_audio_record_title"
                 app:titleTextAppearance="?attr/textAppearanceTitleSmall">
@@ -63,7 +64,7 @@
             android:layout_height="0dp"
             android:layout_margin="@dimen/dp16"
             app:cardCornerRadius="@dimen/audio_record_memo_corner"
-            app:layout_constraintBottom_toTopOf="@id/bt_voice_record_start_stt"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/container_et_title"
             app:strokeColor="@color/audio_record_memo_stroke"
             app:strokeWidth="@dimen/audio_record_card_view_stroke_width">
@@ -98,33 +99,10 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@id/tv_audio_record_memo_title"
                     app:layout_constraintTop_toBottomOf="@id/tv_audio_record_memo_title" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
         </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bt_voice_record_start_stt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:text="음성인식"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/bt_voice_record_make_file" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bt_voice_record_make_file"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:text="음성 저장"
-            app:layout_constraintBottom_toBottomOf="@id/bt_voice_record_start_stt"
-            app:layout_constraintEnd_toStartOf="@id/bt_voice_record_start_stt"
-            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/cpi_voice_record_show_loading"
