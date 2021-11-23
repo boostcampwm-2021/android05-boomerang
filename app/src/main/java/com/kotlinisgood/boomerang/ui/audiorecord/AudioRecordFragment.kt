@@ -42,7 +42,6 @@ class AudioRecordFragment : Fragment() {
     private val audioListWarning = "인식된 음성이 존재하지 않습니다"
     private val STTWarning = "구글앱 사용을 활성화해주시거나 구글 앱의 데이터를 삭제한 후 다시 시도해주세요. \n이동하시겠습니까?"
     private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
-    private val VOICE = 1000
 
     private var _dataBinding: FragmentAudioRecordBinding? = null
     val dataBinding get() = _dataBinding!!
@@ -73,7 +72,9 @@ class AudioRecordFragment : Fragment() {
                     recognizedText?.let {
                         val audioUri = intent.data as Uri
                         lifecycleScope.launch {
-                            saveAudio(audioUri, it)
+                            withContext(Dispatchers.IO) {
+                                saveAudio(recognizedText, audioUri)
+                            }
                         }
                     }
                     self.launch(recognizerIntent)
@@ -117,6 +118,50 @@ class AudioRecordFragment : Fragment() {
                 loadingDialog.show()
             } else {
                 loadingDialog.dismiss()
+            }
+        }
+    }
+
+    private fun setRecognizerListener() {
+        recognizerIntent.apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+            putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, requireActivity().packageName)
+            putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
+            putExtra("android.speech.extra.GET_AUDIO", true)
+        }
+        Intent(Intent.ACTION_VIEW)
+    }
+
+    private fun setTbSetting() {
+        dataBinding.tbAudioRecord.apply {
+            setNavigationOnClickListener {
+                requireActivity().onBackPressed()
+            }
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_audio_record_mic -> {
+                        checkPermissions()
+                        true
+                    }
+                    R.id.menu_audio_record_save -> {
+                        when {
+                            dataBinding.etAudioRecordEnterTitle.text.toString() == "" -> {
+                                Toast.makeText(requireContext(), titleWarning, Toast.LENGTH_SHORT).show()
+                                true
+                            }
+                            viewModel.isFileListEmpty() -> {
+                                Toast.makeText(requireContext(), audioListWarning, Toast.LENGTH_SHORT).show()
+                                true
+                            }
+                            else -> {
+                                val title = dataBinding.etAudioRecordEnterTitle.text.toString()
+                                viewModel.saveAudioMemo(title, requireActivity().filesDir)
+                                false
+                            }
+                        }
+                    }
+                    else -> { false }
+                }
             }
         }
     }
@@ -165,63 +210,9 @@ class AudioRecordFragment : Fragment() {
                     }
                     .show()
         }
-
     }
 
-    private fun setRecognizerListener() {
-        recognizerIntent.apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
-            putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, requireActivity().packageName)
-            putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR")
-            putExtra("android.speech.extra.GET_AUDIO", true)
-        }
-        Intent(Intent.ACTION_VIEW)
-    }
-
-    private fun setTbSetting() {
-        dataBinding.tbAudioRecord.apply {
-            setNavigationOnClickListener {
-                requireActivity().onBackPressed()
-            }
-            setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.menu_audio_record_mic -> {
-                        checkPermissions()
-                        true
-                    }
-                    R.id.menu_audio_record_save -> {
-                        when {
-                            dataBinding.etAudioRecordEnterTitle.text.toString() == "" -> {
-                                Toast.makeText(requireContext(), titleWarning, Toast.LENGTH_SHORT).show()
-                                true
-                            }
-                            viewModel.isFileListEmpty() -> {
-                                Toast.makeText(requireContext(), audioListWarning, Toast.LENGTH_SHORT).show()
-                                true
-                            }
-                            else -> {
-                                val title = dataBinding.etAudioRecordEnterTitle.text.toString()
-                                viewModel.saveAudioMemo(title, requireActivity().filesDir)
-                                false
-                            }
-                        }
-                    }
-                    else -> { false }
-                }
-            }
-        }
-    }
-
-    private fun saveAudio(audioUri: Uri, recognizedText: String) {
-        Log.i(TAG, "save audio is called")
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                saveFirstAudio(recognizedText, audioUri)
-            }
-        }
-    }
-
-    private suspend fun saveFirstAudio(recognizedText: String, audioUri: Uri) {
+    private suspend fun saveAudio(recognizedText: String, audioUri: Uri) {
         Log.i(TAG, "save audio is called")
         var input: InputStream? = null
         var output: FileOutputStream? = null
