@@ -38,4 +38,12 @@
     <string name="menu_audio_record_mic_description">이 버튼을 누르면 음성 인식이 시작합니다</string>
     <string name="menu_audio_record_save_title">메모저장</string>
     <string name="menu_audio_record_save_description">이 아이콘을 누르면 지금까지 작성한 메모가 저장됩니다</string>
+    <string name="menu_video_doodle">다음</string>
+    <string name="menu_video_doodle_description">메모 완료</string>
+    <string name="menu_video_modify_title">완료</string>
+    <string name="menu_video_modify_description">수정 완료</string>
+    <string name="menu_video_edit_share_title">메모 공유</string>
+    <string name="menu_video_edit_share_description">동영상 메모를 공유한다</string>
+    <string name="menu_video_edit_save_title">메모 저장</string>
+    <string name="menu_video_edit_save_description">동영상 메모를 저장한다</string>
 </resources>
