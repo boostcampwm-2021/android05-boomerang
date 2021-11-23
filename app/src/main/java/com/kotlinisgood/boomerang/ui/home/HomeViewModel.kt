@@ -125,6 +125,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun loadMediaMemosByType(memoType: Int) {
+        viewModelScope.launch {
+            val media = withContext(Dispatchers.IO) {
+                repository.getMediaMemosByType(memoType)
+            }
+            _mediaMemo.value = media
+        }
+    }
+
     private fun getOrderState() {
         _orderSetting.value = sharedPref.getOrderState()
     }

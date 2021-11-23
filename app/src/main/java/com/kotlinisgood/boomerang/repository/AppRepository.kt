@@ -11,6 +11,10 @@ class AppRepository @Inject constructor(
         return localDataSource.getMediaMemos()
     }
 
+    suspend fun getMediaMemosByType(memoType: Int): List<MediaMemo> {
+        return localDataSource.getMediaMemosByType(memoType)
+    }
+
     suspend fun getMediaMemo(id: Int): MediaMemo {
         return localDataSource.getMediaMemo(id)
     }

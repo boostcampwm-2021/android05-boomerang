@@ -11,6 +11,9 @@ interface MediaMemoDao {
     @Query("SELECT * FROM media_memo WHERE id = :id")
     suspend fun getMediaMemo(id: Int): MediaMemo
 
+    @Query("SELECT * FROM media_memo WHERE memo_type = :memoType")
+    suspend fun getMediaMemoByType(memoType: Int): List<MediaMemo>
+
     @Update
     suspend fun updateMediaMemo(vararg mediaMemos: MediaMemo)
 
