@@ -1,16 +1,16 @@
 package com.kotlinisgood.boomerang.ui.videoedit
-
-import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import androidx.core.view.forEach
 import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -19,12 +19,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.alphamovie.lib.AlphaMovieView
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.ExoPlayer
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.io.File
@@ -65,7 +66,6 @@ class VideoEditFragment : Fragment() {
         setViewModel()
         setVideoView()
         setPlayer()
-        setShareButton()
         setListener()
     }
 
@@ -94,14 +94,19 @@ class VideoEditFragment : Fragment() {
         }
 
         binding.tbVideoDoodle.inflateMenu(R.menu.menu_fragment_video_edit)
-        binding.tbVideoDoodle.setOnMenuItemClickListener {
-            when(it.itemId){
+
+        binding.tbVideoDoodle.menu.forEach {
+            when (it.itemId) {
                 R.id.menu_video_edit_share -> {
-                    it.throttle(1000, TimeUnit.MILLISECONDS){
+                    it.throttle(1000, TimeUnit.MILLISECONDS) {
                         val fileName = args.baseVideo.split('/').last()
                         println(fileName)
                         val file = File(requireContext().filesDir, fileName)
-                        val uri = FileProvider.getUriForFile(requireContext(), "com.kotlinisgood.boomerang.fileprovider", file)
+                        val uri = FileProvider.getUriForFile(
+                            requireContext(),
+                            "com.kotlinisgood.boomerang.fileprovider",
+                            file
+                        )
                         val sendIntent: Intent = Intent().apply {
                             action = Intent.ACTION_SEND
                             putExtra(Intent.EXTRA_STREAM, uri)
@@ -111,19 +116,15 @@ class VideoEditFragment : Fragment() {
                         val shareIntent = Intent.createChooser(sendIntent, null)
                         startActivity(shareIntent)
                     }
-                    true
                 }
                 R.id.menu_video_edit_save -> {
-                    it.throttle(1000, TimeUnit.MILLISECONDS){
+                    it.throttle(1000, TimeUnit.MILLISECONDS) {
                         viewModel.saveMemo()
                         findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
                     }
-                    true
                 }
-                else -> false
             }
         }
-
         binding.etVideoMemoTitle.doOnTextChanged { text, start, before, count ->
             viewModel.setTitle(text.toString())
         }

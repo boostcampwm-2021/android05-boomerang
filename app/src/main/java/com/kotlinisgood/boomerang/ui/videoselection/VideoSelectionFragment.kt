@@ -17,7 +17,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoSelectionBinding
-import com.kotlinisgood.boomerang.util.UriUtil
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.kotlinisgood.boomerang.util.throttle
@@ -96,8 +95,8 @@ class VideoSelectionFragment : Fragment() {
     }
 
     private fun setTbNavigationIconClickListener() {
-        dataBinding.tbVideoSelection.setNavigationOnClickListener {
-            requireActivity().onBackPressed()
+        dataBinding.tbVideoSelection.throttle(1000,TimeUnit.MILLISECONDS) {
+            findNavController().popBackStack()
         }
     }
 

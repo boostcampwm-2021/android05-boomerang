@@ -64,7 +64,7 @@ class VideoMemoFragment : Fragment() {
         binding.tbMemo.apply {
             inflateMenu(R.menu.menu_fragment_video_memo)
             setNavigationIcon(R.drawable.ic_arrow_back)
-            setNavigationOnClickListener {
+            throttle(1000,TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
             }
             menu.forEach {

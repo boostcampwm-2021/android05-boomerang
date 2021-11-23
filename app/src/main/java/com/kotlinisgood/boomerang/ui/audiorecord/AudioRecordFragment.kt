@@ -11,7 +11,6 @@ import android.provider.Settings
 import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -21,13 +20,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.jakewharton.rxbinding4.view.clicks
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
@@ -93,7 +90,7 @@ class AudioRecordFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _dataBinding = FragmentAudioRecordBinding.inflate(inflater, container, false)
         return dataBinding.root
     }
@@ -139,8 +136,8 @@ class AudioRecordFragment : Fragment() {
 
     private fun setTbSetting() {
         dataBinding.tbAudioRecord.apply {
-            setNavigationOnClickListener {
-                requireActivity().onBackPressed()
+            throttle(1000,TimeUnit.MILLISECONDS) {
+                findNavController().popBackStack()
             }
             menu.forEach {
                 when (it.itemId) {
@@ -225,9 +222,8 @@ class AudioRecordFragment : Fragment() {
             val file = File(requireActivity().filesDir, fileName)
             output = FileOutputStream(file)
 
-            var read = 0
             val bytes = ByteArray(1024)
-            read = input?.read(bytes)!!
+            var read = input?.read(bytes)!!
             while (read != -1) {
                 output.write(bytes, 0, read)
                 read = input.read(bytes)

@@ -140,8 +140,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             currentPoint.clear()
         }
 
-        binding.tbVideoDoodle.setNavigationOnClickListener {
-            requireActivity().onBackPressed()
+        binding.tbVideoDoodle.throttle(1000,TimeUnit.MILLISECONDS) {
+            findNavController().popBackStack()
         }
 
         binding.tbVideoDoodle.menu.forEach {
