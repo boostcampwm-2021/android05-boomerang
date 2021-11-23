@@ -34,6 +34,8 @@
         </item>
         <!-- Customize your theme here. -->
         <item name="android:dialogTheme">@style/DialogTheme</item>
+        <!-- Font Style -->
+        <item name="android:fontFamily">@font/nanum_square</item>
     </style>
 
     <style name="Widget.App.Button.OutlinedButton.IconOnly.Toggle" parent="Widget.MaterialComponents.Button.OutlinedButton">

@@ -70,6 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:ellipsize="end"
+                    android:textFontWeight="700"
                     android:maxLines="1"
                     android:text="@{mediaMemo.title}"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
