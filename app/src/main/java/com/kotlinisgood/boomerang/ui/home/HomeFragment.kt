@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.forEach
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,8 +23,10 @@ import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
 import com.kotlinisgood.boomerang.util.AUDIO_MODE
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
+import com.kotlinisgood.boomerang.util.throttle
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 
 @AndroidEntryPoint
@@ -141,10 +144,21 @@ class HomeFragment : Fragment() {
     }
 
     private fun setMenusOnToolbar() {
-        dataBinding.tbHome.inflateMenu(R.menu.menu_fragment_home)
-        dataBinding.tbHome.setNavigationIcon(R.drawable.ic_menu)
-        dataBinding.tbHome.setNavigationOnClickListener {
-            dataBinding.drawerLayout.openDrawer(GravityCompat.START)
+        dataBinding.tbHome.apply {
+            inflateMenu(R.menu.menu_fragment_home)
+            setNavigationIcon(R.drawable.ic_menu)
+            setNavigationOnClickListener {
+                dataBinding.drawerLayout.openDrawer(GravityCompat.START)
+            }
+            menu.forEach {
+                when(it.itemId) {
+                    R.id.menu_home_order -> {
+                        it.throttle(1000, TimeUnit.MILLISECONDS) {
+                            findNavController().navigate(R.id.action_homeFragment_to_bottomSheetFragment)
+                        }
+                    }
+                }
+            }
         }
         dataBinding.navigationView.setCheckedItem(R.id.navigation_drawer_memo_type_all)
         dataBinding.navigationView.setNavigationItemSelectedListener {
@@ -168,15 +182,6 @@ class HomeFragment : Fragment() {
             }
             dataBinding.drawerLayout.close()
             true
-        }
-        dataBinding.tbHome.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.menu_home_order -> {
-                    findNavController().navigate(R.id.action_homeFragment_to_bottomSheetFragment)
-                    true
-                }
-                else -> false
-            }
         }
     }
 
