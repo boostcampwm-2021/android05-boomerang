@@ -83,18 +83,14 @@ class VideoEditFragment : Fragment() {
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.menu_video_edit_share).isVisible = args.memoType
-    }
-
     private fun setListener() {
-        binding.tbVideoDoodle.setNavigationOnClickListener {
+        binding.tbVideoDoodle.throttle(1000,TimeUnit.MILLISECONDS) {
             findNavController().popBackStack()
         }
 
         binding.tbVideoDoodle.inflateMenu(R.menu.menu_fragment_video_edit)
 
+        binding.tbVideoDoodle.menu.findItem(R.id.menu_video_edit_share).isVisible = args.memoType
         binding.tbVideoDoodle.menu.forEach {
             when (it.itemId) {
                 R.id.menu_video_edit_share -> {
