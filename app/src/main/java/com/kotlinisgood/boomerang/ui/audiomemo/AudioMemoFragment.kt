@@ -130,8 +130,8 @@ class AudioMemoFragment : Fragment() {
     private fun setMenusOnToolbar() {
         dataBinding.tbAudioMemo.apply {
             inflateMenu(R.menu.menu_fragment_audio_memo)
-            setNavigationOnClickListener {
-                requireActivity().onBackPressed()
+            throttle(1000, TimeUnit.MILLISECONDS) {
+                findNavController().popBackStack()
             }
             setOnMenuItemClickListener {
                 when (it.itemId) {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_video_edit_share"
+        android:title="@string/menu_video_edit_share_title"
+        android:icon="@drawable/ic_share"
+        android:contentDescription="@string/menu_video_edit_share_description"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_video_edit_save"
+        android:title="@string/menu_video_edit_save_title"
+        android:icon="@drawable/ic_save"
+        android:contentDescription="@string/menu_video_edit_save_description"
+        app:showAsAction="ifRoom" />
+</menu>

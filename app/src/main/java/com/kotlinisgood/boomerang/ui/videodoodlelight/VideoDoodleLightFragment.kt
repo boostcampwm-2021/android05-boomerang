@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.net.toUri
+import androidx.core.view.forEach
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -31,6 +32,7 @@ import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
+import java.sql.Time
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -160,19 +162,26 @@ class VideoDoodleLightFragment : Fragment() {
                 drawView?.setColor(doodleColor.toInt())
             }
 
-            btnMoveToResult.throttle(1000, TimeUnit.MILLISECONDS) {
-                binding.canvas.isEnabled = false
-                stopRecord()
-                val action =
-                    VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(
-                        uriString,
-                        videoDoodleLightViewModel.subVideos.value!!.toTypedArray()
-                    )
-                findNavController().navigate(action)
+            tbVideoDoodle.throttle(1000,TimeUnit.MILLISECONDS){
+                showDialog()
             }
 
-            btnGoBack.throttle(1000, TimeUnit.MILLISECONDS) {
-                showDialog()
+            tbVideoDoodle.menu.forEach{
+                when(it.itemId){
+                    R.id.menu_video_doodle -> {
+                        it.throttle(1000, TimeUnit.MILLISECONDS){
+                            binding.canvas.isEnabled = false
+                            stopRecord()
+                            val action =
+                                VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(
+                                    uriString,
+                                    videoDoodleLightViewModel.subVideos.value!!.toTypedArray(),
+                                    false
+                                )
+                            findNavController().navigate(action)
+                        }
+                    }
+                }
             }
         }
     }

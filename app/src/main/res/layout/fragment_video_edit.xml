@@ -12,22 +12,46 @@
         android:layout_height="match_parent"
         tools:context=".ui.videoedit.VideoEditFragment">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/container_video_edit_appbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/tb_video_doodle"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorSurface"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:title="메모 확인"
+                app:titleTextAppearance="?attr/textAppearanceTitleLarge">
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
 
         <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
             android:id="@+id/frame_video"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:layout_margin="@dimen/dp8"
-            app:layout_constraintTop_toTopOf="parent"
-            app:resize_mode="fixed_height">
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/dp16"
+            app:layout_constraintDimensionRatio="W, 1:1"
+            app:layout_constraintTop_toBottomOf="@id/container_video_edit_appbar"
+            app:resize_mode="fit">
 
             <com.google.android.exoplayer2.ui.PlayerView
                 android:id="@+id/exoplayer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                app:use_controller="false"
-                app:resize_mode="fixed_height" />
+                android:background="@color/black"
+                app:resize_mode="fit"
+                app:use_controller="false" />
         </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
 
         <com.google.android.exoplayer2.ui.PlayerControlView
@@ -41,38 +65,33 @@
 
         <FrameLayout
             android:id="@+id/alphaView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="@id/frame_video"
+            app:layout_constraintEnd_toEndOf="@id/frame_video"
+            app:layout_constraintStart_toStartOf="@id/frame_video"
             app:layout_constraintTop_toTopOf="@id/frame_video" />
 
-        <EditText
-            android:id="@+id/et_memo_title"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/container_et_title"
+            style="@style/CustomTextInputLayoutOutLined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="제목을 입력해주세요"
-            android:imeOptions="actionDone"
-            android:lines="1"
-            android:inputType="text"
-            app:layout_constraintTop_toBottomOf="@id/pcv_video_edit" />
+            android:layout_marginTop="@dimen/dp8"
+            android:hint="@string/fragment_audio_record_et_title_hint"
+            app:layout_constraintTop_toBottomOf="@id/pcv_video_edit">
 
-        <Button
-            android:id="@+id/btn_share_memo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dp32"
-            android:text="공유하기"
-            app:layout_constraintBottom_toTopOf="@id/btn_save_memo"
-            app:layout_constraintEnd_toEndOf="@id/btn_save_memo" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_video_memo_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:lines="1"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btn_save_memo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dp16"
-            android:text="저장하기"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -140,8 +140,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             currentPoint.clear()
         }
 
-        binding.tbVideoDoodle.setNavigationOnClickListener {
-            requireActivity().onBackPressed()
+        binding.tbVideoDoodle.throttle(1000,TimeUnit.MILLISECONDS) {
+            findNavController().popBackStack()
         }
 
         binding.tbVideoDoodle.menu.forEach {
@@ -178,7 +178,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             val action =
                 VideoDoodleFragmentDirections.actionVideoDoodleFragmentToVideoEditLightFragment(
                     outputVideo.absolutePath,
-                    mutableListOf<SubVideo>().toTypedArray()
+                    mutableListOf<SubVideo>().toTypedArray(),
+                    true
                 )
             findNavController().navigate(action)
         } else {

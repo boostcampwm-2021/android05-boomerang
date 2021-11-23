@@ -7,6 +7,8 @@ import com.alphamovie.lib.AlphaMovieView
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,7 +31,7 @@ class VideoEditViewModel @Inject constructor(
                 videoUri.toString(),
                 System.currentTimeMillis(),
                 System.currentTimeMillis(),
-                VideoEditFragment.VIDEO_MODE_FRAME,
+                VIDEO_MODE_FRAME,
                 subVideos,
                 emptyList(),
                 emptyList()
@@ -40,7 +42,7 @@ class VideoEditViewModel @Inject constructor(
                 videoUri.toString(),
                 System.currentTimeMillis(),
                 System.currentTimeMillis(),
-                VideoEditFragment.VIDEO_MODE_SUB_VIDEO,
+                VIDEO_MODE_SUB_VIDEO,
                 subVideos,
                 emptyList(),
                 emptyList()

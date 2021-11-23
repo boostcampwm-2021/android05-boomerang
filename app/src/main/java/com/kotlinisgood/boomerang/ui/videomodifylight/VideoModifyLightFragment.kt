@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.net.toUri
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -26,9 +27,11 @@ import com.kotlinisgood.boomerang.ui.videodoodlelight.DrawView
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideoAdapter
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
+import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class VideoModifyLightFragment : Fragment() {
@@ -144,19 +147,25 @@ class VideoModifyLightFragment : Fragment() {
                 drawView?.setColor(doodleColor.toInt())
             }
 
-            btnMoveToResult.setOnClickListener {
-                videoModifyLightViewModel.updateVideoMemo()
-                val action = videoModifyLightViewModel.mediaMemo.value?.let { it1 ->
-                    VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(
-                        it1.id)
-                }
-                if (action != null) {
-                    findNavController().navigate(action)
-                }
+            tbVideoDoodle.throttle(1000,TimeUnit.MILLISECONDS){
+                showDialog()
             }
 
-            btnGoBack.setOnClickListener {
-                showDialog()
+            tbVideoDoodle.menu.forEach{
+                when(it.itemId){
+                    R.id.menu_video_modify -> {
+                        it.throttle(1000, TimeUnit.MILLISECONDS){
+                            videoModifyLightViewModel.updateVideoMemo()
+                            val action = videoModifyLightViewModel.mediaMemo.value?.let { it1 ->
+                                VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(
+                                    it1.id)
+                            }
+                            if (action != null) {
+                                findNavController().navigate(action)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

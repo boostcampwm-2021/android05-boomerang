@@ -147,7 +147,7 @@ class HomeFragment : Fragment() {
         dataBinding.tbHome.apply {
             inflateMenu(R.menu.menu_fragment_home)
             setNavigationIcon(R.drawable.ic_menu)
-            setNavigationOnClickListener {
+            throttle(1000,TimeUnit.MILLISECONDS) {
                 dataBinding.drawerLayout.openDrawer(GravityCompat.START)
             }
             menu.forEach {

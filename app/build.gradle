@@ -43,6 +43,7 @@ android {
 dependencies {
     implementation "com.github.ZeroOneZeroR:android_audio_mixer:$audio_mixer"
     implementation "com.jakewharton.rxbinding4:rxbinding:$rxbinding"
+    implementation "com.jakewharton.rxbinding4:rxbinding-appcompat:$rxbinding"
     implementation "io.reactivex.rxjava3:rxjava:$rx_java"
     implementation "io.reactivex.rxjava3:rxandroid:$rx_android"
     implementation "com.leinardi.android:speed-dial:$speed_dial_version"
