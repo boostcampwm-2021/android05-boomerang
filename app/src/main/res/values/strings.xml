@@ -34,4 +34,8 @@
     <string name="fragment_audio_record_et_title_hint">제목</string>
     <string name="menu_delete_title">삭제</string>
     <string name="menu_delete_description">현재 메모를 삭제합니다.</string>
+    <string name="menu_audio_record_mic_title">음성인식</string>
+    <string name="menu_audio_record_mic_description">이 버튼을 누르면 음성 인식이 시작합니다</string>
+    <string name="menu_audio_record_save_title">메모저장</string>
+    <string name="menu_audio_record_save_description">이 아이콘을 누르면 지금까지 작성한 메모가 저장됩니다</string>
 </resources>
