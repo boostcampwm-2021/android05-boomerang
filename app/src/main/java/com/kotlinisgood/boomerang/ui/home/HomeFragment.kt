@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -31,7 +32,12 @@ class HomeFragment : Fragment() {
     private val dataBinding get() = _dataBinding!!
     private val viewModel: HomeViewModel by viewModels()
     private var sglm: StaggeredGridLayoutManager? = null
-    private lateinit var homeRecyclerView : RecyclerView
+    private lateinit var homeRecyclerView: RecyclerView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        loadMediaMemo()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +54,6 @@ class HomeFragment : Fragment() {
         setBinding()
         setAdapter()
         setMenusOnToolbar()
-        loadMediaMemo()
         setSpeedDial()
         setSearchMenu()
     }
@@ -66,7 +71,7 @@ class HomeFragment : Fragment() {
     private fun setAdapter() {
         homeRecyclerView = dataBinding.rvHomeShowMedia
         val adapter = HomeAdapter(viewModel.orderSetting)
-        adapter.setOnItemClickListener(object: HomeAdapter.OnItemClickListener{
+        adapter.setOnItemClickListener(object : HomeAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 val item = adapter.currentList[position]
                 val action = if (item.memoType == AUDIO_MODE) {
@@ -77,7 +82,7 @@ class HomeFragment : Fragment() {
                 findNavController().navigate(action)
             }
         })
-        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
                 getStaggeredGridLayoutManager()
@@ -97,7 +102,7 @@ class HomeFragment : Fragment() {
             }
         })
         homeRecyclerView.adapter = adapter
-        homeRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        homeRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 sglm?.invalidateSpanAssignments()
             }
@@ -119,12 +124,14 @@ class HomeFragment : Fragment() {
                 query?.let { viewModel.searchMedia(it) } ?: run {
                     viewModel.loadMediaMemo()
                 }
-                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(searchView.windowToken, 0)
                 return false
             }
+
             override fun onQueryTextChange(newText: String?): Boolean {
-                newText?: return true
+                newText ?: return true
 //                viewModel.sendQueryToChannel(newText)
 //                viewModel.sendQueryCoroutine(newText)
                 viewModel.sendQueryRxjava(newText)
@@ -139,14 +146,26 @@ class HomeFragment : Fragment() {
         dataBinding.tbHome.setNavigationOnClickListener {
             dataBinding.drawerLayout.openDrawer(GravityCompat.START)
         }
+        dataBinding.navigationView.setCheckedItem(R.id.navigation_drawer_memo_type_all)
         dataBinding.navigationView.setNavigationItemSelectedListener {
 //            오픈소스 라이선스 제외하고 true로 해야함. 현재 선택한 메모 상태를 보여줄 수 있음
-            when(it.itemId) {
+            when (it.itemId) {
+                R.id.navigation_drawer_memo_type_all -> {
+                    viewModel.loadMediaMemo()
+                }
+                R.id.navigation_drawer_memo_type_voice -> {
+                    viewModel.loadMediaMemosByType(AUDIO_MODE)
+                }
+                R.id.navigation_drawer_memo_type_my_video -> {
+                    viewModel.loadMediaMemosByType(VIDEO_MODE_SUB_VIDEO)
+                }
+                R.id.navigation_drawer_memo_type_together_video -> {
+                    viewModel.loadMediaMemosByType(VIDEO_MODE_FRAME)
+                }
                 R.id.navigation_drawer_option_open_source -> {
                     startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
                 }
             }
-//            it.isChecked = true
             dataBinding.drawerLayout.close()
             true
         }

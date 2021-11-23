@@ -29,7 +29,8 @@ class HomeViewModel @Inject constructor(
     private var _mediaMemo = MutableLiveData<List<MediaMemo>>()
     val mediaMemo: LiveData<List<MediaMemo>> = _mediaMemo
 
-    private var _orderSetting = MutableLiveData<OrderState>()
+//
+    private var _orderSetting = MutableLiveData<OrderState>(OrderState.CREATE_RECENT)
     val orderSetting: LiveData<OrderState> get() = _orderSetting
     private var currentQuery: String = ""
 
@@ -121,6 +122,21 @@ class HomeViewModel @Inject constructor(
                 media.sortedBy { it.createTime }
             } else {
                 media.sortedBy { it.createTime }.reversed()
+            }
+        }
+    }
+
+    fun loadMediaMemosByType(memoType: Int) {
+        viewModelScope.launch {
+            val media = withContext(Dispatchers.IO) {
+                repository.getMediaMemosByType(memoType)
+            }
+            _mediaMemo.value = when(orderSetting.value) {
+                OrderState.MODIFY_RECENT -> media.sortedBy { it.modifyTime }.reversed()
+                OrderState.MODIFY_OLD -> media.sortedBy { it.modifyTime }
+                OrderState.CREATE_RECENT -> media.sortedBy { it.createTime }.reversed()
+                OrderState.CREATE_OLD -> media.sortedBy { it.createTime }
+                else -> media
             }
         }
     }

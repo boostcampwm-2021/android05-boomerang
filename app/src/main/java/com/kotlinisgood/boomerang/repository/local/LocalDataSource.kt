@@ -11,6 +11,10 @@ class LocalDataSource @Inject constructor(
         return db.mediaMemoDao().getAll()
     }
 
+    suspend fun getMediaMemosByType(memoType: Int): List<MediaMemo> {
+        return db.mediaMemoDao().getMediaMemoByType(memoType)
+    }
+
     suspend fun saveMediaMemo(memo: MediaMemo) {
         db.mediaMemoDao().insertAll(memo)
     }
