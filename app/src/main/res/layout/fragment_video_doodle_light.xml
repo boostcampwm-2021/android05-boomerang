@@ -105,7 +105,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/toggle_btn_doodle"
-            app:layout_constraintBottom_toTopOf="@id/rv_subVideos">
+            app:layout_constraintBottom_toTopOf="@id/rv_subVideos"
             app:layout_constraintTop_toBottomOf="@id/pcv_video_doodle_light">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
