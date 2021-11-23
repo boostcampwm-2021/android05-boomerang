@@ -20,10 +20,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
-import com.kotlinisgood.boomerang.util.AUDIO_MODE
-import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
-import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
-import com.kotlinisgood.boomerang.util.throttle
+import com.kotlinisgood.boomerang.util.*
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
@@ -36,6 +33,7 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
     private var sglm: StaggeredGridLayoutManager? = null
     private lateinit var homeRecyclerView: RecyclerView
+    private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +57,17 @@ class HomeFragment : Fragment() {
         setMenusOnToolbar()
         setSpeedDial()
         setSearchMenu()
+        setLoadingObserver()
+    }
+
+    private fun setLoadingObserver() {
+        viewModel.isLoading.observe(viewLifecycleOwner){ loading ->
+            if(loading){
+                loadingDialog.show()
+            } else {
+                loadingDialog.dismiss()
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -108,6 +117,7 @@ class HomeFragment : Fragment() {
         homeRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 sglm?.invalidateSpanAssignments()
+                println("===========================${homeRecyclerView}=============================")
             }
         })
     }

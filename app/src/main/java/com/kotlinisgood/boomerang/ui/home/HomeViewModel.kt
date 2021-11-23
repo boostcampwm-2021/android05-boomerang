@@ -12,7 +12,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -33,6 +35,9 @@ class HomeViewModel @Inject constructor(
     private var _orderSetting = MutableLiveData<OrderState>(OrderState.CREATE_RECENT)
     val orderSetting: LiveData<OrderState> get() = _orderSetting
     private var currentQuery: String = ""
+
+    private var _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading : LiveData<Boolean> get() = _isLoading
 
     init {
         getOrderState()
@@ -113,6 +118,7 @@ class HomeViewModel @Inject constructor(
 
     fun loadMediaMemo() {
         viewModelScope.launch {
+            _isLoading.value = true
             val media = repository.getMediaMemos()
             _mediaMemo.value = if (orderSetting.value == OrderState.MODIFY_RECENT) {
                 media.sortedBy { it.modifyTime }.reversed()
@@ -123,6 +129,7 @@ class HomeViewModel @Inject constructor(
             } else {
                 media.sortedBy { it.createTime }.reversed()
             }
+            _isLoading.value = false
         }
     }
 
