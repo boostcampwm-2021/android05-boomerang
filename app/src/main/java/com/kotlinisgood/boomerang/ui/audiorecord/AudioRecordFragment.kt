@@ -143,7 +143,11 @@ class AudioRecordFragment : Fragment() {
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_audio_record_mic -> {
-                        checkPermissions()
+                        it.clicks()
+                            .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                            .subscribe {
+                                checkPermissions()
+                            }
                         true
                     }
                     R.id.menu_audio_record_save -> {
