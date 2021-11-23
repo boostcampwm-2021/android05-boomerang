@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
@@ -19,8 +20,10 @@ import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.util.UriUtil
+import com.kotlinisgood.boomerang.util.throttle
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
@@ -97,7 +100,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             binding.btnPlay.isEnabled = true
         }
 
-        binding.btnPlay.setOnClickListener {
+        binding.btnPlay.throttle(1000, TimeUnit.MILLISECONDS) {
             playVideo()
         }
 
@@ -126,7 +129,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             }
         }
 
-        binding.btnErase.setOnClickListener {
+        binding.btnErase.throttle(500, TimeUnit.MILLISECONDS) {
             currentPoint.forEach {
                 GLES20.glClearColor(0f, 0f, 0f, 1f)
                 GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
@@ -141,13 +144,13 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             requireActivity().onBackPressed()
         }
 
-        binding.tbVideoDoodle.setOnMenuItemClickListener {
+        binding.tbVideoDoodle.menu.forEach {
             when (it.itemId) {
                 R.id.menu_video_selection_completion -> {
-                    saveCompleted(circularEncoder.saveVideo(outputVideo))
-                    true
-                }
-                else -> false
+                    it.throttle(1000, TimeUnit.MILLISECONDS) {
+                        saveCompleted(circularEncoder.saveVideo(outputVideo))
+                    }
+                 }
             }
         }
     }
