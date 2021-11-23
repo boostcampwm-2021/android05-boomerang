@@ -144,19 +144,25 @@ class VideoModifyLightFragment : Fragment() {
                 drawView?.setColor(doodleColor.toInt())
             }
 
-            btnMoveToResult.setOnClickListener {
-                videoModifyLightViewModel.updateVideoMemo()
-                val action = videoModifyLightViewModel.mediaMemo.value?.let { it1 ->
-                    VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(
-                        it1.id)
-                }
-                if (action != null) {
-                    findNavController().navigate(action)
-                }
+            tbVideoDoodle.setNavigationOnClickListener {
+                showDialog()
             }
 
-            btnGoBack.setOnClickListener {
-                showDialog()
+            tbVideoDoodle.setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.menu_video_modify -> {
+                        videoModifyLightViewModel.updateVideoMemo()
+                        val action = videoModifyLightViewModel.mediaMemo.value?.let { it1 ->
+                            VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(
+                                it1.id)
+                        }
+                        if (action != null) {
+                            findNavController().navigate(action)
+                        }
+                        true
+                    }
+                    else -> false
+                }
             }
         }
     }
