@@ -25,9 +25,11 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class VideoEditFragment : Fragment() {
@@ -91,12 +93,12 @@ class VideoEditFragment : Fragment() {
             viewModel.setTitle(text.toString())
         }
 
-        binding.btnSaveMemo.setOnClickListener {
+        binding.btnSaveMemo.throttle(1000, TimeUnit.MILLISECONDS) {
             viewModel.saveMemo()
             findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
         }
 
-        binding.btnShareMemo.setOnClickListener {
+        binding.btnShareMemo.throttle(1000, TimeUnit.MILLISECONDS) {
             val fileName = args.baseVideo.split('/').last()
             println(fileName)
             val file = File(requireContext().filesDir, fileName)
