@@ -20,6 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding4.view.clicks
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
+import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -36,6 +37,8 @@ class AudioMemoFragment : Fragment() {
     private val args: AudioMemoFragmentArgs by navArgs()
     private val audioMemoAdapter = AudioMemoAdapter()
     private lateinit var player: ExoPlayer
+
+    private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,6 +57,7 @@ class AudioMemoFragment : Fragment() {
         setMenusOnToolbar()
         viewModel.getMediaMemo(args.mediaMemoId)
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -86,6 +90,13 @@ class AudioMemoFragment : Fragment() {
     private fun setObservers() {
         viewModel.mediaMemo.observe(viewLifecycleOwner) {
             setPlayer(it.mediaUri)
+        }
+        viewModel.isLoading.observe(viewLifecycleOwner){ loading ->
+            if(loading){
+                loadingDialog.show()
+            } else {
+                loadingDialog.dismiss()
+            }
         }
     }
 

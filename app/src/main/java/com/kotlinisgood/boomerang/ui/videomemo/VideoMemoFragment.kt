@@ -24,6 +24,7 @@ import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoMemoBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.ui.videoedit.AlphaViewFactory
+import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -31,6 +32,8 @@ import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class VideoMemoFragment : Fragment() {
+
+    private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
 
     private lateinit var binding: FragmentVideoMemoBinding
     private val viewModelVideo: VideoMemoViewModel by viewModels()
@@ -58,6 +61,17 @@ class VideoMemoFragment : Fragment() {
         setViewModel()
         setPlayer()
         setMenuOnToolBar()
+        setObserver()
+    }
+
+    private fun setObserver() {
+        viewModelVideo.isLoading.observe(viewLifecycleOwner){ loading ->
+            if(loading){
+                loadingDialog.show()
+            } else {
+                loadingDialog.dismiss()
+            }
+        }
     }
 
     private fun setMenuOnToolBar() {

@@ -22,8 +22,12 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
     val timeSeriesTextList: LiveData<List<TimeSeriesText>> get() = _timeSeriesTextList
     private var _selected = -1
 
+    private var _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading : LiveData<Boolean> get() = _isLoading
+
     fun getMediaMemo(id: Int) {
         viewModelScope.launch {
+            _isLoading.value = true
             _mediaMemo.value = withContext(Dispatchers.IO) {
                 repository.getMediaMemo(id)
             }
@@ -32,6 +36,7 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
                     TimeSeriesText(idx, it.timeList[idx], text)
                 }.toList()
             }
+            _isLoading.value = false
         }
     }
 

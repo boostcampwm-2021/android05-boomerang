@@ -20,6 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class VideoMemoViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
 
+    private var _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading : LiveData<Boolean> get() = _isLoading
+
     private var _mediaMemo: MutableLiveData<MediaMemo> = MutableLiveData()
     val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
     private var subVideos = listOf<SubVideo>()
@@ -28,9 +31,11 @@ class VideoMemoViewModel @Inject constructor(private val repository: AppReposito
 
     fun loadMediaMemo(id: Int) {
         viewModelScope.launch {
+            _isLoading.value = true
             _mediaMemo.value = repository.getMediaMemo(id)
             subVideos = mediaMemo.value?.memoList!!
             repeat(subVideos.size) { subVideosStates.add(false) }
+            _isLoading.value = false
         }
     }
 
