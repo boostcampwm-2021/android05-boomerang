@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_home_sd_video"
-        android:title="@string/menu_home_sd_video"
-        android:icon="@drawable/image_our_memo"
-        android:contentDescription="@string/menu_home_sd_video_description" />
+        android:contentDescription="@string/menu_home_sd_video_description"
+        android:icon="@drawable/ic_people"
+        android:title="@string/menu_home_sd_video" />
 
     <item
         android:id="@+id/menu_home_sd_video_light"
-        android:title="@string/menu_home_sd_video_light"
-        android:icon="@drawable/image_my_memo"
-        android:contentDescription="@string/menu_home_sd_video_light_description" />
+        android:contentDescription="@string/menu_home_sd_video_light_description"
+        android:icon="@drawable/ic_person"
+        android:title="@string/menu_home_sd_video_light" />
 
     <item
         android:id="@+id/menu_home_sd_audio"
-        android:title="@string/menu_home_sd_audio"
-        android:icon="@drawable/image_audio"
-        android:contentDescription="@string/menu_home_sd_audio_description" />
-
+        android:contentDescription="@string/menu_home_sd_audio_description"
+        android:icon="@drawable/ic_voice"
+        android:title="@string/menu_home_sd_audio" />
 </menu>

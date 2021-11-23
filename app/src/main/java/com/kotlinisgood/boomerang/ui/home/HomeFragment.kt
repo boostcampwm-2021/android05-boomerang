@@ -183,22 +183,22 @@ class HomeFragment : Fragment() {
     private fun setSpeedDial() {
         dataBinding.sdHomeShowItems.addAllActionItems(
             listOf(
-                SpeedDialActionItem.Builder(R.id.menu_home_sd_video, R.drawable.image_our_memo)
-                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                SpeedDialActionItem.Builder(R.id.menu_home_sd_video, R.drawable.ic_people)
+//                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                     .setLabel(R.string.menu_home_sd_video)
                     .create(),
                 SpeedDialActionItem.Builder(
                     R.id.menu_home_sd_video_light,
-                    R.drawable.image_my_memo
+                    R.drawable.ic_person
                 )
-                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+//                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                     .setLabel(R.string.menu_home_sd_video_light)
                     .create(),
                 SpeedDialActionItem.Builder(
                     R.id.menu_home_sd_audio,
-                    R.drawable.image_audio
+                    R.drawable.ic_voice
                 )
-                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+//                    .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                     .setLabel(R.string.menu_home_sd_audio)
                     .create()
             )
