@@ -29,6 +29,7 @@
                 android:resource="@xml/filepaths" />
         </provider>
         <activity
+            android:theme="@style/Theme.App.Starting"
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
