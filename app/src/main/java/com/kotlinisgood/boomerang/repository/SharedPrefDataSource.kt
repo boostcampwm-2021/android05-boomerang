@@ -25,7 +25,7 @@ class SharedPrefDataSource @Inject constructor(context: Context) {
             "create_old" -> {OrderState.CREATE_OLD}
             "modify_recent" -> { OrderState.MODIFY_RECENT }
             "modify_old" -> {OrderState.MODIFY_OLD}
-            else -> { OrderState.NONE }
+            else -> { OrderState.CREATE_RECENT }
         }
     }
 }
