@@ -140,7 +140,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             currentPoint.clear()
         }
 
-        binding.tbVideoDoodle.throttle(1000,TimeUnit.MILLISECONDS) {
+        binding.tbVideoDoodle.throttle(1000, TimeUnit.MILLISECONDS) {
             findNavController().popBackStack()
         }
 
@@ -150,7 +150,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                     it.throttle(1000, TimeUnit.MILLISECONDS) {
                         saveCompleted(circularEncoder.saveVideo(outputVideo))
                     }
-                 }
+                }
             }
         }
     }
@@ -217,8 +217,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         displaySurface = EglWindowSurface(egl, p0.surface)
         displaySurface.makeCurrent()
 
-        fullFrameBlit =
-            FullFrameRect(Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT))
+        fullFrameBlit = FullFrameRect(Texture2dProgram())
         textureId = fullFrameBlit.createTextureObject()
         surfaceTexture = SurfaceTexture(textureId)
         surfaceTexture.setOnFrameAvailableListener(this)
