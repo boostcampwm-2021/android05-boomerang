@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
@@ -119,19 +120,38 @@ class VideoEditFragment : Fragment() {
                 R.id.menu_video_edit_save -> {
                     it.throttle(1000, TimeUnit.MILLISECONDS) {
                         if(args.memoType) {
-                            viewModel.saveMemo()
-                        } else {
-                            val uri = if (Build.VERSION.SDK_INT >= 29 ) {
-                                args.baseVideo.toUri()
+                            if(viewModel.getTitle().isEmpty()){
+                                Toast.makeText(requireContext(),"제목을 입력해주세요", Toast.LENGTH_SHORT).show()
                             } else {
-                                Uri.fromFile(File(UriUtil.getPathFromUri(requireActivity().contentResolver, args.baseVideo.toUri())))
+                                viewModel.saveMemo()
+                                findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
                             }
-                            val file = File(requireContext().filesDir,System.currentTimeMillis().toString())
-                            val video = File(URI.create(uri.toString()))
-                            video.copyTo(file)
-                            viewModel.saveMemo(file.toUri().toString())
+                        } else {
+                            if (viewModel.getTitle().isEmpty()){
+                                Toast.makeText(requireContext(),"제목을 입력해주세요", Toast.LENGTH_SHORT).show()
+                            } else {
+                                val uri = if (Build.VERSION.SDK_INT >= 29) {
+                                    args.baseVideo.toUri()
+                                } else {
+                                    Uri.fromFile(
+                                        File(
+                                            UriUtil.getPathFromUri(
+                                                requireActivity().contentResolver,
+                                                args.baseVideo.toUri()
+                                            )
+                                        )
+                                    )
+                                }
+                                val file = File(
+                                    requireContext().filesDir,
+                                    System.currentTimeMillis().toString()
+                                )
+                                val video = File(URI.create(uri.toString()))
+                                video.copyTo(file)
+                                viewModel.saveMemo(file.toUri().toString())
+                                findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
+                            }
                         }
-                        findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
                     }
                 }
             }
