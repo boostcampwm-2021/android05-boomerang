@@ -290,6 +290,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
 //        SurfaceView에 그리기
         GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
+        GLES20.glClearColor(0f, 0f, 0f, 1f)
         fullFrameBlit.drawFrame(textureId, mTmpMatrix)
         drawLine(currentPoint, height)
 
