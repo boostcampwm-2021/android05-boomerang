@@ -1,7 +1,8 @@
 package com.kotlinisgood.boomerang.ui.videoedit
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.view.forEach
@@ -23,6 +26,7 @@ import com.alphamovie.lib.AlphaMovieView
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.kotlinisgood.boomerang.MainActivity
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
@@ -31,7 +35,8 @@ import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.io.File
-import java.net.URI
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -130,26 +135,34 @@ class VideoEditFragment : Fragment() {
                             if (viewModel.getTitle().isEmpty()){
                                 Toast.makeText(requireContext(),"제목을 입력해주세요", Toast.LENGTH_SHORT).show()
                             } else {
-                                val uri = if (Build.VERSION.SDK_INT >= 29) {
-                                    args.baseVideo.toUri()
-                                } else {
-                                    Uri.fromFile(
-                                        File(
-                                            UriUtil.getPathFromUri(
-                                                requireActivity().contentResolver,
-                                                args.baseVideo.toUri()
-                                            )
-                                        )
-                                    )
-                                }
+
                                 val file = File(
                                     requireContext().filesDir,
                                     System.currentTimeMillis().toString()
                                 )
-                                val video = File(URI.create(uri.toString()))
-                                video.copyTo(file)
+                                if (Build.VERSION.SDK_INT == 29) {
+                                    try {
+                                        val input = requireActivity().contentResolver.openInputStream(args.baseVideo.toUri())
+                                        val output = FileOutputStream(file)
+
+                                        val bytes = ByteArray(1024)
+                                        var read = input?.read(bytes)!!
+                                        while (read != -1) {
+                                            output.write(bytes, 0, read)
+                                            read = input.read(bytes)
+                                        }
+                                        input.close()
+                                        output.close()
+                                    } catch (e: IOException) {
+                                        e.printStackTrace()
+                                    }
+                                } else {
+                                    val videoFile = File(UriUtil.getPathFromUri(requireContext().contentResolver, args.baseVideo.toUri()))
+                                    videoFile.copyTo(file)
+                                }
                                 viewModel.saveMemo(file.toUri().toString())
                                 findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
+
                             }
                         }
                     }

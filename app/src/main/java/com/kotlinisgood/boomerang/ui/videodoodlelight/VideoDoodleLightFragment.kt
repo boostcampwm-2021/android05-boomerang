@@ -105,12 +105,12 @@ class VideoDoodleLightFragment : Fragment() {
         player = ExoPlayer.Builder(requireContext()).build()
         binding.exoplayer.player = player
         binding.pcvVideoDoodleLight.player = player
-        val uri = if (Build.VERSION.SDK_INT >= 29 ) {
-            uriString.toUri()
-        } else {
-            Uri.fromFile(File(UriUtil.getPathFromUri(requireActivity().contentResolver, uriString.toUri())))
-        }
-
+//        val uri = if (Build.VERSION.SDK_INT >= 29 ) {
+//            uriString.toUri()
+//        } else {
+//            Uri.fromFile(File(UriUtil.getPathFromUri(requireActivity().contentResolver, uriString.toUri())))
+//        }
+        val uri = uriString.toUri()
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
         player.addListener(playerListener)

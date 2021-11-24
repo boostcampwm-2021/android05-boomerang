@@ -7,6 +7,7 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
@@ -81,19 +82,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         val currentUnixTime = System.currentTimeMillis()
         outputVideo = File(requireContext().filesDir, "${currentUnixTime}.mp4")
 
-        val uri = if (Build.VERSION.SDK_INT >= 30) {
-            uriString.toUri()
-        } else {
-            Uri.fromFile(
-                File(
-                    UriUtil.getPathFromUri(
-                        requireActivity().contentResolver,
-                        uriString.toUri()
-                    )
-                )
-            )
-        }
-
+        val uri = uriString.toUri()
         mediaPlayer = MediaPlayer.create(context, uri)
 
         mediaPlayer.setOnPreparedListener {
@@ -177,7 +166,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             Log.d(TAG, "Save Completed")
             val action =
                 VideoDoodleFragmentDirections.actionVideoDoodleFragmentToVideoEditLightFragment(
-                    outputVideo.absolutePath,
+                    outputVideo.toUri().toString(),
                     mutableListOf<SubVideo>().toTypedArray(),
                     true
                 )
