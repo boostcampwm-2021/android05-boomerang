@@ -11,16 +11,8 @@ import java.nio.FloatBuffer
 /**
  * GL program and supporting functions for textured 2D shapes.
  */
-class Texture2dProgram(
-    /**
-     * Returns the program type.
-     */
-    programType: ProgramType
-) {
-    enum class ProgramType {
-        TEXTURE_2D, TEXTURE_EXT, TEXTURE_EXT_BW, TEXTURE_EXT_FILT
-    }
-
+class Texture2dProgram
+{
     // Handles to the GL program and various components of it.
     private var mProgramHandle = 0
     private val muMVPMatrixLoc: Int
@@ -30,10 +22,8 @@ class Texture2dProgram(
     private var muColorAdjustLoc = 0
     private val maPositionLoc: Int
     private val maTextureCoordLoc: Int
-    private var mTextureTarget = 0
-    private val mKernel = FloatArray(KERNEL_SIZE)
+    private var mTextureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES
     private lateinit var mTexOffset: FloatArray
-    private var mColorAdjust = 0f
 
     /**
      * Releases the program.
@@ -61,13 +51,13 @@ class Texture2dProgram(
         val texId = textures[0]
         GLES20.glBindTexture(mTextureTarget, texId)
         GlUtil.checkGlError("glBindTexture $texId")
-        GLES20.glTexParameterf(
+        GLES20.glTexParameteri(
             GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER,
-            GLES20.GL_NEAREST.toFloat()
+            GLES20.GL_NEAREST
         )
-        GLES20.glTexParameterf(
+        GLES20.glTexParameteri(
             GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
-            GLES20.GL_LINEAR.toFloat()
+            GLES20.GL_LINEAR
         )
         GLES20.glTexParameteri(
             GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
@@ -81,22 +71,6 @@ class Texture2dProgram(
         return texId
     }
 
-    /**
-     * Configures the convolution filter values.
-     *
-     * @param values Normalized filter values; must be KERNEL_SIZE elements.
-     */
-    fun setKernel(values: FloatArray, colorAdj: Float) {
-        if (values.size != KERNEL_SIZE) {
-            throw IllegalArgumentException(
-                "Kernel size is " + values.size +
-                        " vs. " + KERNEL_SIZE
-            )
-        }
-        System.arraycopy(values, 0, mKernel, 0, KERNEL_SIZE)
-        mColorAdjust = colorAdj
-        //Log.d(TAG, "filt kernel: " + Arrays.toString(mKernel) + ", adj=" + colorAdj);
-    }
 
     /**
      * Sets the size of the texture.  This is used to find adjacent texels when filtering.
@@ -174,13 +148,6 @@ class Texture2dProgram(
         )
         GlUtil.checkGlError("glVertexAttribPointer")
 
-        // Populate the convolution kernel, if present.
-        if (muKernelLoc >= 0) {
-            GLES20.glUniform1fv(muKernelLoc, KERNEL_SIZE, mKernel, 0)
-            GLES20.glUniform2fv(muTexOffsetLoc, KERNEL_SIZE, mTexOffset, 0)
-            GLES20.glUniform1f(muColorAdjustLoc, mColorAdjust)
-        }
-
         // Draw the rect.
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, firstVertex, vertexCount)
         GlUtil.checkGlError("glDrawArrays")
@@ -193,7 +160,7 @@ class Texture2dProgram(
     }
 
     companion object {
-        private const val TAG = "Texture2dProgramTAG"
+        private const val TAG = "Texture2dProgram"
 
         // Simple vertex shader, used for all programs.
 //        attribute로 들어간 aPostition과 aTextureCoord는 위에서 순서대로 넣어준 것이다
@@ -225,83 +192,20 @@ class Texture2dProgram(
                 "void main() {\n" +
                 "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
                 "}\n")
-
-        // Fragment shader that converts color to black & white with a simple transformation.
-        private val FRAGMENT_SHADER_EXT_BW = ("#extension GL_OES_EGL_image_external : require\n" +
-                "precision mediump float;\n" +
-                "varying vec2 vTextureCoord;\n" +
-                "uniform samplerExternalOES sTexture;\n" +
-                "void main() {\n" +
-                "    vec4 tc = texture2D(sTexture, vTextureCoord);\n" +
-                "    float color = tc.r * 0.3 + tc.g * 0.59 + tc.b * 0.11;\n" +
-                "    gl_FragColor = vec4(color, color, color, 1.0);\n" +
-                "}\n")
-
-        // Fragment shader with a convolution filter.  The upper-left half will be drawn normally,
-        // the lower-right half will have the filter applied, and a thin red line will be drawn
-        // at the border.
-        //
-        // This is not optimized for performance.  Some things that might make this faster:
-        // - Remove the conditionals.  They're used to present a half & half view with a red
-        //   stripe across the middle, but that's only useful for a demo.
-        // - Unroll the loop.  Ideally the compiler does this for you when it's beneficial.
-        // - Bake the filter kernel into the shader, instead of passing it through a uniform
-        //   array.  That, combined with loop unrolling, should reduce memory accesses.
-        val KERNEL_SIZE = 9
-        private val FRAGMENT_SHADER_EXT_FILT = ("#extension GL_OES_EGL_image_external : require\n" +
-                "#define KERNEL_SIZE " + KERNEL_SIZE + "\n" +
-                "precision highp float;\n" +
-                "varying vec2 vTextureCoord;\n" +
-                "uniform samplerExternalOES sTexture;\n" +
-                "uniform float uKernel[KERNEL_SIZE];\n" +
-                "uniform vec2 uTexOffset[KERNEL_SIZE];\n" +
-                "uniform float uColorAdjust;\n" +
-                "void main() {\n" +
-                "    int i = 0;\n" +
-                "    vec4 sum = vec4(0.0);\n" +
-                "    if (vTextureCoord.x < vTextureCoord.y - 0.005) {\n" +
-                "        for (i = 0; i < KERNEL_SIZE; i++) {\n" +
-                "            vec4 texc = texture2D(sTexture, vTextureCoord + uTexOffset[i]);\n" +
-                "            sum += texc * uKernel[i];\n" +
-                "        }\n" +
-                "    sum += uColorAdjust;\n" +
-                "    } else if (vTextureCoord.x > vTextureCoord.y + 0.005) {\n" +
-                "        sum = texture2D(sTexture, vTextureCoord);\n" +
-                "    } else {\n" +
-                "        sum.r = 1.0;\n" +
-                "    }\n" +
-                "    gl_FragColor = sum;\n" +
-                "}\n")
     }
 
     /**
      * Prepares the program in the current EGL context.
      */
     init {
-        when (programType) {
-            ProgramType.TEXTURE_2D -> {
-                mTextureTarget = GLES20.GL_TEXTURE_2D
-                mProgramHandle = GlUtil.createProgram(VERTEX_SHADER, FRAGMENT_SHADER_2D)
-            }
-            ProgramType.TEXTURE_EXT -> {
-                mTextureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES
-                mProgramHandle = GlUtil.createProgram(VERTEX_SHADER, FRAGMENT_SHADER_EXT)
-            }
-            ProgramType.TEXTURE_EXT_BW -> {
-                mTextureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES
-                mProgramHandle = GlUtil.createProgram(VERTEX_SHADER, FRAGMENT_SHADER_EXT_BW)
-            }
-            ProgramType.TEXTURE_EXT_FILT -> {
-                mTextureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES
-                mProgramHandle = GlUtil.createProgram(VERTEX_SHADER, FRAGMENT_SHADER_EXT_FILT)
-            }
-        }
+        mProgramHandle = GlUtil.createProgram(VERTEX_SHADER, FRAGMENT_SHADER_EXT)
+
         if (mProgramHandle == 0) {
             throw RuntimeException("Unable to create program")
         }
         Log.d(
             TAG,
-            "Created program $mProgramHandle ($programType)"
+            "Created program $mProgramHandle"
         )
 
         // get locations of attributes and uniforms
@@ -327,7 +231,6 @@ class Texture2dProgram(
             GlUtil.checkLocation(muColorAdjustLoc, "uColorAdjust")
 
             // initialize default values
-            setKernel(floatArrayOf(0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f), 0f)
             setTexSize(256, 256)
         }
     }
