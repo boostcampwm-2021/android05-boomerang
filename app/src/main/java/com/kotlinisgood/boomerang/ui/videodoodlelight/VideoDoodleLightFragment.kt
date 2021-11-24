@@ -126,12 +126,12 @@ class VideoDoodleLightFragment : Fragment() {
                     val currentTime = player.currentPosition
                     var canMemo = true
                     videoDoodleLightViewModel.subVideos.value!!.forEach {
-                        if (it.startingTime < currentTime && currentTime < it.endingTime) {
+                        if (it.startingTime <= currentTime && currentTime <= it.endingTime) {
                             canMemo = false
                         }
                     }
                     when {
-                        playerEnded || currentTime > player.duration - 300-> {
+                        playerEnded || currentTime > player.duration - 300 -> {
                             toggleBtnDoodle.uncheck(R.id.btn_doodle)
                             Toast.makeText(context,"영상이 끝났습니다.",Toast.LENGTH_SHORT).show()
                         }
@@ -329,6 +329,7 @@ class VideoDoodleLightFragment : Fragment() {
                     }
                 }
                 Player.STATE_READY -> {
+                    playerEnded = false
                     videoDoodleLightViewModel.setDuration(player.duration)
                 }
             }

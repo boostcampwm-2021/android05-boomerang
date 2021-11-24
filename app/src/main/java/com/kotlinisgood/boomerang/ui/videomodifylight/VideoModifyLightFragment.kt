@@ -111,7 +111,7 @@ class VideoModifyLightFragment : Fragment() {
                     val currentTime = player.currentPosition
                     var canMemo = true
                     videoModifyLightViewModel.subVideos.value!!.forEach {
-                        if (it.startingTime < currentTime && currentTime < it.endingTime) {
+                        if (it.startingTime <= currentTime && currentTime <= it.endingTime) {
                             canMemo = false
                         }
                     }
@@ -308,6 +308,7 @@ class VideoModifyLightFragment : Fragment() {
                     }
                 }
                 Player.STATE_READY -> {
+                    playerEnded = false
                     videoModifyLightViewModel.setDuration(player.duration)
                 }
             }
