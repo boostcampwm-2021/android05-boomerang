@@ -28,6 +28,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+        <activity android:name="com.kotlinisgood.boomerang.ui.appintro.BoomerangIntro"
+            android:exported="true">
+        </activity>
         <activity
             android:theme="@style/Theme.App.Starting"
             android:name=".MainActivity"
