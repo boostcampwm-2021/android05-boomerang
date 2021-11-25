@@ -49,17 +49,31 @@
 
         </com.kotlinisgood.boomerang.ui.videodoodle.AspectFrameLayout>
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/btn_play"
-            android:layout_width="@dimen/dp64"
-            android:layout_height="@dimen/dp64"
-            android:layout_marginTop="@dimen/dp16"
-            android:background="@drawable/ic_baseline_play_arrow_24"
-            android:enabled="false"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/frame_movie" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container_video_doodle_media_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#CC00006E"
+            android:layout_marginStart="@dimen/dp16"
+            android:layout_marginEnd="@dimen/dp16"
+            app:layout_constraintTop_toBottomOf="@id/frame_movie"
+            app:layout_constraintStart_toStartOf="@id/frame_movie"
+            app:layout_constraintEnd_toEndOf="@id/frame_movie" >
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_doodle_play"
+                android:enabled="false"
+                android:scaleType="centerCrop"
+                android:layout_margin="@dimen/dp8"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RadioGroup
             android:id="@+id/rg_doodle_color"
@@ -69,7 +83,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_play">
+            app:layout_constraintTop_toBottomOf="@id/container_video_doodle_media_button">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rb_red"

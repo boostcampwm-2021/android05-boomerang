@@ -243,7 +243,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             binding.btnPlay.setBackgroundDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.ic_baseline_play_arrow_24
+                    R.drawable.ic_doodle_play
                 )
             )
             isPlaying = false
@@ -252,7 +252,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             binding.btnPlay.setBackgroundDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.ic_baseline_pause_24
+                    R.drawable.ic_doodle_pause
                 )
             )
             isPlaying = true
