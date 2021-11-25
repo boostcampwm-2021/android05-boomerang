@@ -2,12 +2,9 @@ package com.kotlinisgood.boomerang.ui.videodoodle
 
 import android.graphics.SurfaceTexture
 import android.media.MediaPlayer
-import android.net.Uri
 import android.opengl.GLES20
 import android.opengl.GLES30
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
@@ -20,17 +17,17 @@ import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
-import com.kotlinisgood.boomerang.util.UriUtil
 import com.kotlinisgood.boomerang.util.throttle
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     SurfaceTexture.OnFrameAvailableListener {
 
-    private lateinit var binding: FragmentVideoDoodleBinding
+    private var _dataBinding: FragmentVideoDoodleBinding? = null
+    private val dataBinding get() = _dataBinding!!
 
     private val args: VideoDoodleFragmentArgs by navArgs()
     private val uriString by lazy { args.videoPath }
@@ -65,18 +62,20 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var isPlaying = false
     private var isSurfaceDestroyed = false
 
+    private val compositeDisposable by lazy { CompositeDisposable() }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding =
+        _dataBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_video_doodle, container, false)
-        return binding.root
+        return dataBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        surfaceView = binding.svMovie
+        surfaceView = dataBinding.svMovie
         surfaceView.holder.addCallback(this)
 
         val currentUnixTime = System.currentTimeMillis()
@@ -86,14 +85,14 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         mediaPlayer = MediaPlayer.create(context, uri)
 
         mediaPlayer.setOnPreparedListener {
-            binding.btnPlay.isEnabled = true
+            dataBinding.btnPlay.isEnabled = true
         }
 
-        binding.btnPlay.throttle(1000, TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.btnPlay.throttle(1000, TimeUnit.MILLISECONDS) {
             playVideo()
-        }
+        })
 
-        binding.svMovie.setOnTouchListener { _, motionEvent ->
+        dataBinding.svMovie.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
                     if (isPlaying) drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
@@ -104,12 +103,12 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                 MotionEvent.ACTION_UP -> {
                 }
             }
-            binding.svMovie.performClick()
+            dataBinding.svMovie.performClick()
             true
         }
 
-        binding.rbRed.isChecked = true
-        binding.rgDoodleColor.setOnCheckedChangeListener { _, checkedId ->
+        dataBinding.rbRed.isChecked = true
+        dataBinding.rgDoodleColor.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rb_red -> drawColor = DrawColor(red = 1f, green = 0f, blue = 0f)
                 R.id.rb_green -> drawColor = DrawColor(red = 0f, green = 1f, blue = 0f)
@@ -118,7 +117,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             }
         }
 
-        binding.btnErase.throttle(500, TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.btnErase.throttle(500, TimeUnit.MILLISECONDS) {
             currentPoint.forEach {
                 GLES20.glClearColor(0f, 0f, 0f, 1f)
                 GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
@@ -127,18 +126,18 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                 GLES20.glDisable(GLES20.GL_SCISSOR_TEST)
             }
             currentPoint.clear()
-        }
+        })
 
-        binding.tbVideoDoodle.throttle(1000, TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.tbVideoDoodle.throttle(1000, TimeUnit.MILLISECONDS) {
             findNavController().popBackStack()
-        }
+        })
 
-        binding.tbVideoDoodle.menu.forEach {
+        dataBinding.tbVideoDoodle.menu.forEach {
             when (it.itemId) {
                 R.id.menu_video_selection_completion -> {
-                    it.throttle(1000, TimeUnit.MILLISECONDS) {
+                    compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
                         saveCompleted(circularEncoder.saveVideo(outputVideo))
-                    }
+                    })
                 }
             }
         }
@@ -179,7 +178,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     override fun onPause() {
         super.onPause()
         mediaPlayer.pause()
-        binding.btnPlay.setBackgroundDrawable(
+        dataBinding.btnPlay.setBackgroundDrawable(
             ContextCompat.getDrawable(
                 requireContext(),
                 R.drawable.ic_baseline_play_arrow_24
@@ -188,8 +187,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         isPlaying = false
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         mediaPlayer.release()
         surfaceTexture.release()
         circularEncoder.shutdown()
@@ -197,6 +196,12 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         displaySurface.release()
         fullFrameBlit.release(false)
         egl.release()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
+        _dataBinding = null
     }
 
     override fun surfaceCreated(p0: SurfaceHolder) {
@@ -216,8 +221,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         videoWidth = mediaPlayer.videoWidth
         videoHeight = mediaPlayer.videoHeight
 
-        width = binding.svMovie.width
-        height = binding.svMovie.height
+        width = dataBinding.svMovie.width
+        height = dataBinding.svMovie.height
 
         if (videoWidth > videoHeight) {
             val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
@@ -240,7 +245,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private fun playVideo() {
         if (isPlaying) {
             mediaPlayer.pause()
-            binding.btnPlay.setBackgroundDrawable(
+            dataBinding.btnPlay.setBackgroundDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
                     R.drawable.ic_doodle_play
@@ -249,7 +254,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             isPlaying = false
         } else {
             mediaPlayer.start()
-            binding.btnPlay.setBackgroundDrawable(
+            dataBinding.btnPlay.setBackgroundDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
                     R.drawable.ic_doodle_pause

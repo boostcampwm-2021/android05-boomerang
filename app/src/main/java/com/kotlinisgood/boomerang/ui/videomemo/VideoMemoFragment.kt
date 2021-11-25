@@ -27,6 +27,7 @@ import com.kotlinisgood.boomerang.ui.videoedit.AlphaViewFactory
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 
@@ -35,7 +36,8 @@ class VideoMemoFragment : Fragment() {
 
     private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
 
-    private lateinit var binding: FragmentVideoMemoBinding
+    private var _dataBinding: FragmentVideoMemoBinding? = null
+    private val dataBinding get() = _dataBinding!!
     private val viewModelVideo: VideoMemoViewModel by viewModels()
     private val args: VideoMemoFragmentArgs by navArgs()
 
@@ -47,12 +49,14 @@ class VideoMemoFragment : Fragment() {
     private var currentAlpha: AlphaMovieView? = null
     private var currentSubVideo: SubVideo? = null
 
+    private val compositeDisposable by lazy { CompositeDisposable() }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentVideoMemoBinding.inflate(inflater, container, false)
-        return binding.root
+        _dataBinding = FragmentVideoMemoBinding.inflate(inflater, container, false)
+        return dataBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,19 +79,19 @@ class VideoMemoFragment : Fragment() {
     }
 
     private fun setMenuOnToolBar() {
-        binding.tbMemo.apply {
+        dataBinding.tbMemo.apply {
             inflateMenu(R.menu.menu_fragment_video_memo)
             setNavigationIcon(R.drawable.ic_arrow_back)
-            throttle(1000,TimeUnit.MILLISECONDS) {
+            compositeDisposable.add(throttle(1000,TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
-            }
+            })
             menu.forEach {
                 when (it.itemId) {
                     R.id.menu_memo_modify -> {
-                        it.throttle(1000, TimeUnit.MILLISECONDS) { checkModifyAndMove()}
+                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { checkModifyAndMove()})
                     }
                     R.id.menu_video_memo_delete -> {
-                        it.throttle(1000, TimeUnit.MILLISECONDS) { showDeleteDialog() }
+                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { showDeleteDialog() })
                     }
                 }
             }
@@ -130,8 +134,8 @@ class VideoMemoFragment : Fragment() {
     }
 
     fun setViewModel() {
-        binding.viewModel = viewModelVideo
-        binding.lifecycleOwner = viewLifecycleOwner
+        dataBinding.viewModel = viewModelVideo
+        dataBinding.lifecycleOwner = viewLifecycleOwner
         viewModelVideo.loadMediaMemo(args.id)
     }
 
@@ -143,8 +147,8 @@ class VideoMemoFragment : Fragment() {
                 addListener(onPlayStateChangeListener)
                 prepare()
             }.also {
-                binding.exoplayer.player = it
-                binding.pcvVideoMemo.player = it
+                dataBinding.exoplayer.player = it
+                dataBinding.pcvVideoMemo.player = it
             }
 
             mediaMemo.memoList.forEach {
@@ -193,7 +197,7 @@ class VideoMemoFragment : Fragment() {
                                     )
                                     currentAlpha!!.mediaPlayer.start()
                                 } else {
-                                    binding.alphaView.removeAllViews()
+                                    dataBinding.alphaView.removeAllViews()
                                     // 현재 재생 중이던 AlphaView 가 있을 시
                                     if (currentSubVideo != null) {
                                         resetAlphaView(currentSubVideo!!)
@@ -206,13 +210,13 @@ class VideoMemoFragment : Fragment() {
                                     currentSubVideo = subVideo
                                     currentAlpha = alphaMovieView
 
-                                    binding.alphaView.addView(alphaMovieView)
+                                    dataBinding.alphaView.addView(alphaMovieView)
                                     alphaMovieView.start()
                                     alphaMovieView.setOnVideoStartedListener {
                                         alphaMovieView.seekTo((currentTime - subVideo.startingTime.toLong()).toInt())
                                     }
                                     alphaMovieView.setOnVideoEndedListener {
-                                        binding.alphaView.removeAllViews()
+                                        dataBinding.alphaView.removeAllViews()
                                         resetAlphaView(currentSubVideo!!)
                                         currentSubVideo = null
                                         currentAlpha = null
@@ -224,7 +228,7 @@ class VideoMemoFragment : Fragment() {
                     if(!viewModelVideo.getSubVideoStates().contains(true)) {
                         withContext(Dispatchers.Main) {
                             if (currentSubVideo != null) {
-                                binding.alphaView.removeAllViews()
+                                dataBinding.alphaView.removeAllViews()
                                 resetAlphaView(currentSubVideo!!)
                                 currentSubVideo = null
                                 currentAlpha = null
@@ -261,5 +265,11 @@ class VideoMemoFragment : Fragment() {
             stop()
             release()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
+        _dataBinding = null
     }
 }

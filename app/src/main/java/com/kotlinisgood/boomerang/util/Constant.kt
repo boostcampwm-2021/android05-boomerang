@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.widget.Toolbar
 import com.jakewharton.rxbinding4.appcompat.navigationClicks
 import com.jakewharton.rxbinding4.view.clicks
+import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
 const val DEFAULT_HEIGHT_WIDTH = -1
@@ -15,24 +16,24 @@ const val PREF_NAME = "SETTING"
 const val ORDER_STATE = "orderState"
 
 
-fun View.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit) {
-    this.clicks()
+fun View.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit): Disposable {
+    return this.clicks()
         .throttleFirst(duration, timeUnit)
         .subscribe {
             method()
         }
 }
 
-fun MenuItem.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit) {
-    this.clicks()
+fun MenuItem.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit): Disposable {
+    return this.clicks()
         .throttleFirst(duration, timeUnit)
         .subscribe {
             method()
         }
 }
 
-fun Toolbar.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit) {
-    this.navigationClicks()
+fun Toolbar.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit): Disposable {
+    return this.navigationClicks()
         .throttleFirst(duration, timeUnit)
         .subscribe {
             method()

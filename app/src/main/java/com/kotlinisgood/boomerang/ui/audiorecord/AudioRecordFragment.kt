@@ -30,6 +30,7 @@ import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,7 +46,7 @@ class AudioRecordFragment : Fragment() {
     private val audioListWarning = "인식된 음성이 존재하지 않습니다"
     private val STTWarning = "구글앱 사용을 활성화해주시거나 구글 앱의 데이터를 삭제한 후 다시 시도해주세요. \n이동하시겠습니까?"
     private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
-
+    private val compositeDisposable by lazy { CompositeDisposable() }
     private var _dataBinding: FragmentAudioRecordBinding? = null
     val dataBinding get() = _dataBinding!!
 
@@ -109,6 +110,7 @@ class AudioRecordFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _dataBinding = null
+        compositeDisposable.dispose()
     }
 
     private fun setObserver() {
@@ -136,16 +138,16 @@ class AudioRecordFragment : Fragment() {
 
     private fun setTbSetting() {
         dataBinding.tbAudioRecord.apply {
-            throttle(1000,TimeUnit.MILLISECONDS) {
+            compositeDisposable.add(throttle(1000,TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
-            }
+            })
             menu.forEach {
                 when (it.itemId) {
                     R.id.menu_audio_record_mic -> {
-                        it.throttle(1000, TimeUnit.MILLISECONDS) { checkPermissions() }
+                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { checkPermissions() })
                     }
                     R.id.menu_audio_record_save -> {
-                        it.throttle(1000, TimeUnit.MILLISECONDS) { checkAudioAndSave() }
+                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { checkAudioAndSave() })
                     }
                 }
             }

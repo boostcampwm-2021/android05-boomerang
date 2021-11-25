@@ -21,6 +21,7 @@ import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -30,6 +31,7 @@ class VideoSelectionFragment : Fragment() {
     private val args : VideoSelectionFragmentArgs by navArgs()
     private val videoMode by lazy { args.memoType }
     private val viewModel: VideoSelectionViewModel by viewModels()
+    private val compositeDisposable by lazy { CompositeDisposable() }
     private val videoSelectionAdapter by lazy {
         VideoSelectionAdapter()
     }
@@ -92,19 +94,20 @@ class VideoSelectionFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _dataBinding = null
+        compositeDisposable.dispose()
     }
 
     private fun setTbNavigationIconClickListener() {
-        dataBinding.tbVideoSelection.throttle(1000,TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.tbVideoSelection.throttle(1000,TimeUnit.MILLISECONDS) {
             findNavController().popBackStack()
-        }
+        })
     }
 
     private fun setOnMenuItemClickListener() {
         dataBinding.tbVideoSelection.menu.forEach {
             when(it.itemId) {
                 R.id.menu_video_selection_completion ->
-                    it.throttle(1000, TimeUnit.MILLISECONDS) { checkConditionAndNavigate() }
+                    compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { checkConditionAndNavigate() })
             }
         }
     }
