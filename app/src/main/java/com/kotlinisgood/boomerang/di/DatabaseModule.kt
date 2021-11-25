@@ -6,6 +6,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kotlinisgood.boomerang.database.AppDatabase
 import com.kotlinisgood.boomerang.database.dao.MediaMemoDao
+import com.kotlinisgood.boomerang.util.DEFAULT_HEIGHT_WIDTH
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,8 +23,8 @@ object DatabaseModule {
 
         val migration_1to2 = object: Migration(1,2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE media_memo ADD COLUMN memo_height INTEGER DEFAULT -1 NOT NULL")
-                database.execSQL("ALTER TABLE media_memo ADD COLUMN memo_width INTEGER DEFAULT -1 NOT NULL")
+                database.execSQL("ALTER TABLE media_memo ADD COLUMN memo_height INTEGER DEFAULT $DEFAULT_HEIGHT_WIDTH NOT NULL")
+                database.execSQL("ALTER TABLE media_memo ADD COLUMN memo_width INTEGER DEFAULT $DEFAULT_HEIGHT_WIDTH NOT NULL")
             }
         }
 

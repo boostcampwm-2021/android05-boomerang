@@ -4,6 +4,7 @@ import android.media.MediaMetadataRetriever
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -48,7 +49,12 @@ class HomeAdapter (private val homeViewModel: HomeViewModel) :
             is VideoMemoViewHolder -> {
                 if (currentList[position].memoHeight == DEFAULT_HEIGHT_WIDTH && currentList[position].memoWidth == DEFAULT_HEIGHT_WIDTH) {
                     val mmr = MediaMetadataRetriever()
-                    mmr.setDataSource(currentList[position].mediaUri)
+                    val uri = currentList[position].mediaUri
+                    if (uri.startsWith("content")) {
+                        mmr.setDataSource(UriUtil.getPathFromUri(holder.itemView.context.contentResolver, currentList[position].mediaUri.toUri()))
+                    } else {
+                        mmr.setDataSource(uri)
+                    }
                     val height =
                         mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
                             ?.toInt()!!
@@ -71,16 +77,6 @@ class HomeAdapter (private val homeViewModel: HomeViewModel) :
             }
             is AudioMemoViewHolder -> holder.bind(getItem(position))
         }
-    }
-
-    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
-        super.onViewRecycled(holder)
-        val lp = (holder as VideoMemoViewHolder).binding.itemIvHomeVideoThumbnail.layoutParams
-        lp.height = 100
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
     }
 
     override fun getItemViewType(position: Int): Int {
