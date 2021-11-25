@@ -10,6 +10,7 @@ import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.repository.SharedPrefDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,7 @@ class HomeViewModel @Inject constructor(
 
     //    private val queryChannel = BroadcastChannel<String>(Channel.CONFLATED)
     private val searchText: PublishSubject<String> = PublishSubject.create()
+    private lateinit var searchTextDisposable: Disposable
 
     //    private val kotlinDebounceText = debounce(500L, viewModelScope, ::searchVideos)
     private var _mediaMemo = MutableLiveData<List<MediaMemo>>()
@@ -44,8 +46,13 @@ class HomeViewModel @Inject constructor(
         setQueryDebounceRxJava(searchText)
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        searchTextDisposable.dispose()
+    }
+
     private fun setQueryDebounceRxJava(searchText: PublishSubject<String>) {
-        searchText
+        searchTextDisposable = searchText
             .debounce(500, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

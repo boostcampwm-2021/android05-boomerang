@@ -29,6 +29,7 @@ import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.util.UriUtil
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
@@ -38,7 +39,8 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 class VideoEditFragment : Fragment() {
 
-    private lateinit var binding: FragmentVideoEditBinding
+    private var _dataBinding: FragmentVideoEditBinding? = null
+    private val dataBinding get() = _dataBinding!!
     private val viewModel: VideoEditViewModel by viewModels()
     private val args: VideoEditFragmentArgs by navArgs()
 
@@ -51,17 +53,19 @@ class VideoEditFragment : Fragment() {
     private var currentAlpha: AlphaMovieView? = null
     private var currentSubVideo: SubVideo? = null
 
+    private val compositeDisposable by lazy { CompositeDisposable() }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(
+        _dataBinding = DataBindingUtil.inflate(
             layoutInflater,
             R.layout.fragment_video_edit,
             container,
             false
         )
-        return binding.root
+        return dataBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -89,17 +93,17 @@ class VideoEditFragment : Fragment() {
     }
 
     private fun setListener() {
-        binding.tbVideoDoodle.throttle(1000,TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.tbVideoDoodle.throttle(1000,TimeUnit.MILLISECONDS) {
             findNavController().popBackStack()
-        }
+        })
 
-        binding.tbVideoDoodle.inflateMenu(R.menu.menu_fragment_video_edit)
+        dataBinding.tbVideoDoodle.inflateMenu(R.menu.menu_fragment_video_edit)
 
-        binding.tbVideoDoodle.menu.findItem(R.id.menu_video_edit_share).isVisible = args.memoType
-        binding.tbVideoDoodle.menu.forEach {
+        dataBinding.tbVideoDoodle.menu.findItem(R.id.menu_video_edit_share).isVisible = args.memoType
+        dataBinding.tbVideoDoodle.menu.forEach {
             when (it.itemId) {
                 R.id.menu_video_edit_share -> {
-                    it.throttle(1000, TimeUnit.MILLISECONDS) {
+                    compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
                         val fileName = args.baseVideo.split('/').last()
                         println(fileName)
                         val file = File(requireContext().filesDir, fileName)
@@ -116,10 +120,10 @@ class VideoEditFragment : Fragment() {
                         }
                         val shareIntent = Intent.createChooser(sendIntent, null)
                         startActivity(shareIntent)
-                    }
+                    })
                 }
                 R.id.menu_video_edit_save -> {
-                    it.throttle(1000, TimeUnit.MILLISECONDS) {
+                    compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
                         if(args.memoType) {
                             if(viewModel.getTitle().isEmpty()){
                                 Toast.makeText(requireContext(),"제목을 입력해주세요", Toast.LENGTH_SHORT).show()
@@ -171,11 +175,11 @@ class VideoEditFragment : Fragment() {
 
                             }
                         }
-                    }
+                    })
                 }
             }
         }
-        binding.etVideoMemoTitle.doOnTextChanged { text, start, before, count ->
+        dataBinding.etVideoMemoTitle.doOnTextChanged { text, start, before, count ->
             viewModel.setTitle(text.toString())
         }
     }
@@ -184,8 +188,8 @@ class VideoEditFragment : Fragment() {
         player = ExoPlayer.Builder(requireContext()).build().apply {
             setMediaItem(MediaItem.fromUri(viewModel.getVideoUri()))
         }.also {
-            binding.pcvVideoEdit.player = it
-            binding.exoplayer.player = it
+            dataBinding.pcvVideoEdit.player = it
+            dataBinding.exoplayer.player = it
         }
     }
 
@@ -219,7 +223,7 @@ class VideoEditFragment : Fragment() {
                                     )
                                     currentAlpha!!.mediaPlayer.start()
                                 } else {
-                                    binding.alphaView.removeAllViews()
+                                    dataBinding.alphaView.removeAllViews()
                                     // 현재 재생 중이던 AlphaView 가 있을 시
                                     if (currentSubVideo != null) {
                                         resetAlphaView(currentSubVideo!!)
@@ -232,13 +236,13 @@ class VideoEditFragment : Fragment() {
                                     currentSubVideo = subVideo
                                     currentAlpha = alphaMovieView
 
-                                    binding.alphaView.addView(alphaMovieView)
+                                    dataBinding.alphaView.addView(alphaMovieView)
                                     alphaMovieView.start()
                                     alphaMovieView.setOnVideoStartedListener {
                                         alphaMovieView.seekTo((currentTime - subVideo.startingTime.toLong()).toInt())
                                     }
                                     alphaMovieView.setOnVideoEndedListener {
-                                        binding.alphaView.removeAllViews()
+                                        dataBinding.alphaView.removeAllViews()
                                         resetAlphaView(currentSubVideo!!)
                                         currentSubVideo = null
                                         currentAlpha = null
@@ -250,7 +254,7 @@ class VideoEditFragment : Fragment() {
                     if(!viewModel.getSubVideoStates().contains(true)) {
                         withContext(Dispatchers.Main) {
                             if (currentSubVideo != null) {
-                                binding.alphaView.removeAllViews()
+                                dataBinding.alphaView.removeAllViews()
                                 resetAlphaView(currentSubVideo!!)
                                 currentSubVideo = null
                                 currentAlpha = null
@@ -303,5 +307,7 @@ class VideoEditFragment : Fragment() {
             player.removeListener(onPlayStateChangeListener)
             release()
         }
+        compositeDisposable.dispose()
+        _dataBinding = null
     }
 }

@@ -23,6 +23,7 @@ import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -37,6 +38,7 @@ class AudioMemoFragment : Fragment() {
     private val args: AudioMemoFragmentArgs by navArgs()
     private val audioMemoAdapter = AudioMemoAdapter()
     private lateinit var player: ExoPlayer
+    private val compositeDisposable by lazy { CompositeDisposable() }
 
     private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
 
@@ -76,10 +78,11 @@ class AudioMemoFragment : Fragment() {
         player.stop()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         player.release()
         _dataBinding = null
+        compositeDisposable.dispose()
     }
 
     private fun setBinding() {
@@ -141,18 +144,17 @@ class AudioMemoFragment : Fragment() {
     private fun setMenusOnToolbar() {
         dataBinding.tbAudioMemo.apply {
             inflateMenu(R.menu.menu_fragment_audio_memo)
-            throttle(1000, TimeUnit.MILLISECONDS) {
+            compositeDisposable.add(throttle(1000, TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
-            }
+            })
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_audio_memo_delete -> {
-
-                        it.clicks()
+                        compositeDisposable.add(it.clicks()
                             .throttleFirst(1000, TimeUnit.MILLISECONDS)
                             .subscribe {
                                 showDeleteDialog()
-                            }
+                            })
                         true
                     }
                     else -> false
@@ -161,7 +163,7 @@ class AudioMemoFragment : Fragment() {
             menu.forEach {
                 when (it.itemId) {
                     R.id.menu_audio_memo_delete -> {
-                        it.throttle(1000, TimeUnit.MILLISECONDS) { showDeleteDialog() }
+                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { showDeleteDialog() })
                     }
                 }
             }

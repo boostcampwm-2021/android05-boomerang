@@ -23,6 +23,8 @@ import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
 import com.kotlinisgood.boomerang.util.*
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
 
@@ -34,7 +36,7 @@ class HomeFragment : Fragment() {
     private var sglm: StaggeredGridLayoutManager? = null
     private lateinit var homeRecyclerView: RecyclerView
     private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
-
+    private val compositeDisposable by lazy { CompositeDisposable() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadMediaMemo()
@@ -55,10 +57,6 @@ class HomeFragment : Fragment() {
         setBinding()
         setAdapter()
         setMenuInflate()
-    }
-
-    override fun onStart() {
-        super.onStart()
         setMenusOnToolbar()
         setSpeedDial()
         setSearchMenu()
@@ -85,6 +83,7 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _dataBinding = null
+        compositeDisposable.dispose()
     }
 
     private fun setBinding() {
@@ -125,12 +124,8 @@ class HomeFragment : Fragment() {
                 homeRecyclerView.layoutManager?.scrollToPosition(0)
             }
         })
+        homeRecyclerView.itemAnimator = null
         homeRecyclerView.adapter = adapter
-        homeRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                sglm?.invalidateSpanAssignments()
-            }
-        })
     }
 
     private fun loadMediaMemo() {
@@ -171,15 +166,15 @@ class HomeFragment : Fragment() {
     private fun setMenusOnToolbar() {
         dataBinding.tbHome.apply {
             setNavigationIcon(R.drawable.ic_menu)
-            throttle(1000,TimeUnit.MILLISECONDS) {
+            compositeDisposable.add(throttle(1000,TimeUnit.MILLISECONDS) {
                 dataBinding.drawerLayout.openDrawer(GravityCompat.START)
-            }
+            })
             menu.forEach {
                 when(it.itemId) {
                     R.id.menu_home_order -> {
-                        it.throttle(1000, TimeUnit.MILLISECONDS) {
+                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
                             findNavController().navigate(R.id.action_homeFragment_to_bottomSheetFragment)
-                        }
+                        })
                     }
                 }
             }
