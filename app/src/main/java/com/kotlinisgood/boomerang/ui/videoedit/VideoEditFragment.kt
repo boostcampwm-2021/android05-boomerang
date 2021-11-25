@@ -1,7 +1,6 @@
 package com.kotlinisgood.boomerang.ui.videoedit
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -10,8 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.view.forEach
@@ -26,7 +23,6 @@ import com.alphamovie.lib.AlphaMovieView
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.kotlinisgood.boomerang.MainActivity
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
@@ -128,7 +124,12 @@ class VideoEditFragment : Fragment() {
                             if(viewModel.getTitle().isEmpty()){
                                 Toast.makeText(requireContext(),"제목을 입력해주세요", Toast.LENGTH_SHORT).show()
                             } else {
-                                viewModel.saveMemo()
+                                val mmr = MediaMetadataRetriever()
+                                mmr.setDataSource(viewModel.getVideoUri().path)
+                                val height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                                    ?.toInt()!!
+                                val width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt()!!
+                                viewModel.saveMemo(height,width)
                                 findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
                             }
                         } else {
@@ -160,7 +161,12 @@ class VideoEditFragment : Fragment() {
                                     val videoFile = File(UriUtil.getPathFromUri(requireContext().contentResolver, args.baseVideo.toUri()))
                                     videoFile.copyTo(file)
                                 }
-                                viewModel.saveMemo(file.toUri().toString())
+                                val mmr = MediaMetadataRetriever()
+                                mmr.setDataSource(file.path)
+                                val height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                                    ?.toInt()!!
+                                val width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt()!!
+                                viewModel.saveMemo(file.toUri().toString(), height, width)
                                 findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
 
                             }
