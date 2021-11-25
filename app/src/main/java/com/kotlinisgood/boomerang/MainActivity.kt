@@ -1,13 +1,17 @@
 package com.kotlinisgood.boomerang
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.kotlinisgood.boomerang.database.dao.MediaMemoDao
+import com.kotlinisgood.boomerang.ui.appintro.BoomerangIntro
+import com.kotlinisgood.boomerang.ui.appintro.IntroViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -16,10 +20,26 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var dao: MediaMemoDao
 
+    private val viewModel : IntroViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         setContentView(R.layout.activity_main)
+        setObserver()
+        viewModel.loadIsFirst()
+    }
+
+    private fun setObserver(){
+        viewModel.isFirst.observe(this){
+            if(it){
+                startIntroActivity()
+                finish()
+            }
+        }
+    }
+    private fun startIntroActivity(){
+        startActivity(Intent(this, BoomerangIntro::class.java))
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
