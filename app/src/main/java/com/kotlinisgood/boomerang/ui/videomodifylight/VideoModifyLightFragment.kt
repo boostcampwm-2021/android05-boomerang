@@ -298,6 +298,10 @@ class VideoModifyLightFragment : Fragment() {
             removeListener(playerListener)
             release()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         _dataBinding = null
         compositeDisposable.dispose()
     }

@@ -107,8 +107,8 @@ class AudioRecordFragment : Fragment() {
         setObserver()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         _dataBinding = null
         compositeDisposable.dispose()
     }

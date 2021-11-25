@@ -78,8 +78,8 @@ class AudioMemoFragment : Fragment() {
         player.stop()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         player.release()
         _dataBinding = null
         compositeDisposable.dispose()

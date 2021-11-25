@@ -265,6 +265,10 @@ class VideoMemoFragment : Fragment() {
             stop()
             release()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         compositeDisposable.dispose()
         _dataBinding = null
     }

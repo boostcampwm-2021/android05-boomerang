@@ -315,6 +315,10 @@ class VideoDoodleLightFragment : Fragment() {
             removeListener(playerListener)
             release()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         compositeDisposable.dispose()
         _dataBinding = null
     }

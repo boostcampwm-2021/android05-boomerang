@@ -196,6 +196,10 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         displaySurface.release()
         fullFrameBlit.release(false)
         egl.release()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         compositeDisposable.dispose()
         _dataBinding = null
     }
