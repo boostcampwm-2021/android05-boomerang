@@ -15,6 +15,8 @@ data class MediaMemo(
     @ColumnInfo(name = "memo_list") var memoList: List<SubVideo>,
     @ColumnInfo(name = "text_list") val textList: List<String>,
     @ColumnInfo(name = "time_list") val timeList: List<Int>,
+    @ColumnInfo(name = "memo_height") var memoHeight: Int,
+    @ColumnInfo(name = "memo_width") var memoWidth: Int
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

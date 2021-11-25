@@ -20,23 +20,10 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase {
 
-        val migration_1_2 = object : Migration(1, 2) {
+        val migration_1to2 = object: Migration(1,2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE video_memo ADD COLUMN memo_type INTEGER")
-                database.execSQL("UPDATE video_memo SET memo_type = '10000000' WHERE memos = '[]'")
-                database.execSQL("UPDATE video_memo SET memo_type = '10000001' WHERE memos != '[]'")
-            }
-        }
-
-        val migration_2_3 = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE IF NOT EXISTS `audio_memo` (`id` INTEGER NOT NULL, `title` TEXT NOT NULL, `audio_path` TEXT NOT NULL, `create_date` INTEGER NOT NULL, `text_list` TEXT NOT NULL, `time_list` TEXT NOT NULL, PRIMARY KEY(`id`))")
-            }
-        }
-
-        val migration_3_4 = object : Migration(3, 4) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE video_memo RENAME COLUMN edit_date TO edit_date")
+                database.execSQL("ALTER TABLE media_memo ADD COLUMN memo_height INTEGER DEFAULT -1 NOT NULL")
+                database.execSQL("ALTER TABLE media_memo ADD COLUMN memo_width INTEGER DEFAULT -1 NOT NULL")
             }
         }
 
@@ -45,6 +32,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "media_memo.db"
         )
+            .addMigrations(migration_1to2)
             .build()
     }
 
