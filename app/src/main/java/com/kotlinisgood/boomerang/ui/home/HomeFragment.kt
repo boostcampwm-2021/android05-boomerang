@@ -54,6 +54,7 @@ class HomeFragment : Fragment() {
         setHasOptionsMenu(true)
         setBinding()
         setAdapter()
+        setMenuInflate()
     }
 
     override fun onStart() {
@@ -70,9 +71,13 @@ class HomeFragment : Fragment() {
                 loadingDialog.show()
             } else {
                 loadingDialog.dismiss()
-                if(viewModel.mediaMemo.value.isNullOrEmpty()){
-                    dataBinding.layoutEmptyAnimation.visibility = View.VISIBLE
-                }
+            }
+        }
+        viewModel.mediaMemo.observe(viewLifecycleOwner) { memoList ->
+            if (memoList.isNullOrEmpty()) {
+                dataBinding.layoutEmptyAnimation.visibility = View.VISIBLE
+            } else {
+                dataBinding.layoutEmptyAnimation.visibility = View.GONE
             }
         }
     }
@@ -159,9 +164,12 @@ class HomeFragment : Fragment() {
         })
     }
 
+    private fun setMenuInflate() {
+        dataBinding.tbHome.inflateMenu(R.menu.menu_fragment_home)
+    }
+
     private fun setMenusOnToolbar() {
         dataBinding.tbHome.apply {
-            inflateMenu(R.menu.menu_fragment_home)
             setNavigationIcon(R.drawable.ic_menu)
             throttle(1000,TimeUnit.MILLISECONDS) {
                 dataBinding.drawerLayout.openDrawer(GravityCompat.START)
