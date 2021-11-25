@@ -54,6 +54,10 @@ class HomeFragment : Fragment() {
         setHasOptionsMenu(true)
         setBinding()
         setAdapter()
+    }
+
+    override fun onStart() {
+        super.onStart()
         setMenusOnToolbar()
         setSpeedDial()
         setSearchMenu()
