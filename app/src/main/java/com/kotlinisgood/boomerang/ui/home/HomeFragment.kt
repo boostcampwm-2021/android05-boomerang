@@ -82,7 +82,7 @@ class HomeFragment : Fragment() {
 
     private fun setAdapter() {
         homeRecyclerView = dataBinding.rvHomeShowMedia
-        val adapter = HomeAdapter(viewModel.orderSetting)
+        val adapter = HomeAdapter(viewModel)
         adapter.setOnItemClickListener(object : HomeAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 val item = adapter.currentList[position]
@@ -117,7 +117,6 @@ class HomeFragment : Fragment() {
         homeRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 sglm?.invalidateSpanAssignments()
-                println("===========================${homeRecyclerView}=============================")
             }
         })
     }
@@ -264,7 +263,7 @@ class HomeFragment : Fragment() {
 
     fun getStaggeredGridLayoutManager() {
         sglm = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL).apply {
-            gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+//            gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
         }.also {
             dataBinding.rvHomeShowMedia.layoutManager = it
         }

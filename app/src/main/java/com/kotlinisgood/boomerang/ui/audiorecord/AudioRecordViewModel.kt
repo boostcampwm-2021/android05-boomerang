@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.util.AUDIO_MODE
+import com.kotlinisgood.boomerang.util.DEFAULT_HEIGHT_WIDTH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -56,7 +57,8 @@ class AudioRecordViewModel
                                 _loading.postValue(false)
                                 _audioMemo.postValue(MediaMemo(
                                     title, outputPath, createTime, createTime,
-                                    AUDIO_MODE, emptyList(), textList, timeList
+                                    AUDIO_MODE, emptyList(), textList, timeList,
+                                    DEFAULT_HEIGHT_WIDTH, DEFAULT_HEIGHT_WIDTH
                                 ).also {
                                     viewModelScope.launch {
                                         repository.saveMediaMemo(it)

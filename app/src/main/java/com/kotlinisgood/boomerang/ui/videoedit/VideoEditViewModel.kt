@@ -25,7 +25,7 @@ class VideoEditViewModel @Inject constructor(
     var alphaMovieViews: MutableList<AlphaMovieView> = mutableListOf<AlphaMovieView>()
     private var subVideosStates = mutableListOf<Boolean>()
 
-    fun saveMemo() {
+    fun saveMemo(height: Int, width: Int) {
         val memo = MediaMemo(
             memoTitle,
             videoUri.toString(),
@@ -34,14 +34,16 @@ class VideoEditViewModel @Inject constructor(
             VIDEO_MODE_FRAME,
             subVideos,
             emptyList(),
-            emptyList()
+            emptyList(),
+            height,
+            width
         )
         viewModelScope.launch {
             repository.saveMediaMemo(memo)
         }
     }
 
-    fun saveMemo(uri: String) {
+    fun saveMemo(uri: String, height: Int, width: Int) {
         val memo = MediaMemo(
             memoTitle,
             uri,
@@ -50,7 +52,9 @@ class VideoEditViewModel @Inject constructor(
             VIDEO_MODE_SUB_VIDEO,
             subVideos,
             emptyList(),
-            emptyList()
+            emptyList(),
+            height,
+            width
         )
         viewModelScope.launch {
             repository.saveMediaMemo(memo)

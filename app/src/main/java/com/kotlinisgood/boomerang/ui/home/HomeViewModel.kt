@@ -162,4 +162,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun updateMediaMemo(mediaMemo: MediaMemo){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                repository.updateMediaMemo(mediaMemo)
+            }
+        }
+    }
+
 }

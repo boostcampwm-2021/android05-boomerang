@@ -7,6 +7,7 @@ import com.jakewharton.rxbinding4.appcompat.navigationClicks
 import com.jakewharton.rxbinding4.view.clicks
 import java.util.concurrent.TimeUnit
 
+const val DEFAULT_HEIGHT_WIDTH = -1
 const val VIDEO_MODE_FRAME = 10000000
 const val VIDEO_MODE_SUB_VIDEO = 10000001
 const val AUDIO_MODE = 10000002
