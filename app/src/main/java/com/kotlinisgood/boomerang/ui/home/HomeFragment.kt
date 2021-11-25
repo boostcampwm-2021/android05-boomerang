@@ -70,6 +70,9 @@ class HomeFragment : Fragment() {
                 loadingDialog.show()
             } else {
                 loadingDialog.dismiss()
+                if(viewModel.mediaMemo.value.isNullOrEmpty()){
+                    dataBinding.layoutEmptyAnimation.visibility = View.VISIBLE
+                }
             }
         }
     }
