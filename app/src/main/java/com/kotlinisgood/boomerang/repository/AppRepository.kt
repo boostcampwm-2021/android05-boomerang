@@ -35,4 +35,8 @@ class AppRepository @Inject constructor(
         localDataSource.deleteMemo(mediaMemo)
     }
 
+    suspend fun deleteMemoById(id: Int) {
+        localDataSource.deleteMemoById(id)
+    }
+
 }

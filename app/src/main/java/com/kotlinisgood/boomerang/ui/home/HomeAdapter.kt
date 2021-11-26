@@ -1,5 +1,6 @@
 package com.kotlinisgood.boomerang.ui.home
 
+import android.database.CursorIndexOutOfBoundsException
 import android.media.MediaMetadataRetriever
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,8 @@ import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.databinding.ItemRvHomeShowAudioBinding
 import com.kotlinisgood.boomerang.databinding.ItemRvHomeShowVideosBinding
 import com.kotlinisgood.boomerang.util.*
+import java.lang.Exception
+import java.lang.NullPointerException
 
 
 class HomeAdapter (private val homeViewModel: HomeViewModel) :
@@ -47,33 +50,56 @@ class HomeAdapter (private val homeViewModel: HomeViewModel) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is VideoMemoViewHolder -> {
-                if (currentList[position].memoHeight == DEFAULT_HEIGHT_WIDTH && currentList[position].memoWidth == DEFAULT_HEIGHT_WIDTH) {
-                    val mmr = MediaMetadataRetriever()
-                    val uri = currentList[position].mediaUri
-                    if (uri.startsWith("content")) {
-                        mmr.setDataSource(UriUtil.getPathFromUri(holder.itemView.context.contentResolver, currentList[position].mediaUri.toUri()))
-                    } else {
-                        mmr.setDataSource(uri)
-                    }
-                    val height =
-                        mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-                            ?.toInt()!!
-                    val width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-                        ?.toInt()!!
-                    currentList[position].memoHeight = height
-                    currentList[position].memoWidth = width
-                    homeViewModel.updateMediaMemo(currentList[position])
-                }
-                val vh = holder
-                val item = currentList.get(position)
-                val lp = vh.binding.itemIvHomeVideoThumbnail.layoutParams
+                try {
+                    if (currentList[position].memoHeight == DEFAULT_HEIGHT_WIDTH && currentList[position].memoWidth == DEFAULT_HEIGHT_WIDTH) {
+                        val mmr = MediaMetadataRetriever()
+                        val uri = currentList[position].mediaUri
 
-                val ratio = item.memoHeight / item.memoWidth
-                lp.height = lp.width * ratio
-                vh.binding.itemIvHomeVideoThumbnail.layoutParams = lp
-                Glide.with(vh.itemView.context).load(item.mediaUri)
-                    .into(vh.binding.itemIvHomeVideoThumbnail)
-                holder.bind(getItem(position))
+                        if (uri.startsWith("content")) {
+                            mmr.setDataSource(
+                                UriUtil.getPathFromUri(
+                                    holder.itemView.context.contentResolver,
+                                    currentList[position].mediaUri.toUri()
+                                )
+                            )
+                        } else {
+                            mmr.setDataSource(uri)
+                        }
+                        val height =
+                            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                                ?.toInt()!!
+                        val width =
+                            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                                ?.toInt()!!
+                        currentList[position].memoHeight = height
+                        currentList[position].memoWidth = width
+                        homeViewModel.updateMediaMemo(currentList[position])
+                    }
+                    val vh = holder
+                    val item = currentList.get(position)
+                    val lp = vh.binding.itemIvHomeVideoThumbnail.layoutParams
+
+                    val ratio = item.memoHeight / item.memoWidth
+                    lp.height = lp.width * ratio
+                    vh.binding.itemIvHomeVideoThumbnail.layoutParams = lp
+                    Glide.with(vh.itemView.context).load(item.mediaUri)
+                        .into(vh.binding.itemIvHomeVideoThumbnail)
+                    holder.bind(getItem(position))
+                } catch (e: Exception) {
+                    when (e) {
+                        is CursorIndexOutOfBoundsException -> {
+                            e.printStackTrace()
+                            homeViewModel.deleteMediaMemo(currentList[position])
+                            submitList(currentList.toMutableList().apply { removeAt(position) })
+                        }
+                        is NullPointerException -> {
+                            e.printStackTrace()
+                            homeViewModel.deleteMediaMemo(currentList[position].id)
+                            submitList(currentList.toMutableList().apply { removeAt(position) })
+                        }
+                    }
+
+                }
             }
             is AudioMemoViewHolder -> holder.bind(getItem(position))
         }

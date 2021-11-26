@@ -35,4 +35,8 @@ class LocalDataSource @Inject constructor(
         db.mediaMemoDao().delete(mediaMemo)
     }
 
+    suspend fun deleteMemoById(id: Int) {
+        db.mediaMemoDao().deleteById(id)
+    }
+
 }

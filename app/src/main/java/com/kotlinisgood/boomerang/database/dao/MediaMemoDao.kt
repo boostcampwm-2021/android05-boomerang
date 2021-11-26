@@ -26,4 +26,7 @@ interface MediaMemoDao {
     @Query("SELECT * FROM media_memo WHERE title LIKE '%' || :query || '%'")
     suspend fun search(query: String): List<MediaMemo>
 
+    @Query("DELETE FROM media_memo WHERE id = :id")
+    suspend fun deleteById(id: Int)
+
 }
