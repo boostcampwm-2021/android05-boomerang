@@ -8,7 +8,6 @@ import android.view.Surface
 class Egl {
     private lateinit var eglDisplay: EGLDisplay
 
-    //    private var eglContext = EGL14.EGL_NO_CONTEXT
     private lateinit var eglContext: EGLContext
     private var eglConfig: EGLConfig? = null
 
@@ -53,23 +52,6 @@ class Egl {
         }
         eglDisplay = EGL14.EGL_NO_DISPLAY
         eglContext = EGL14.EGL_NO_CONTEXT
-//        eglConfig = null
-    }
-
-    @Throws(Throwable::class)
-    protected fun finalize() {
-        try {
-            if (eglDisplay !== EGL14.EGL_NO_DISPLAY) {
-                // We're limited here -- finalizers don't run on the thread that holds
-                // the EGL state, so if a surface or context is still current on another
-                // thread we can't fully release it here.  Exceptions thrown from here
-                // are quietly discarded.  Complain in the log file.
-                Log.w(TAG, "WARNING: EglCore was not explicitly released -- state may be leaked")
-                release()
-            }
-        } finally {
-//            super.finalize()
-        }
     }
 
     /**
@@ -107,26 +89,6 @@ class Egl {
     }
 
     /**
-     * Creates an EGL surface associated with an offscreen buffer.
-     */
-    fun createOffscreenSurface(width: Int, height: Int): EGLSurface {
-        val surfaceAttribs = intArrayOf(
-            EGL14.EGL_WIDTH, width,
-            EGL14.EGL_HEIGHT, height,
-            EGL14.EGL_NONE
-        )
-        val eglSurface = EGL14.eglCreatePbufferSurface(
-            eglDisplay, eglConfig,
-            surfaceAttribs, 0
-        )
-        checkEglError("eglCreatePbufferSurface")
-        if (eglSurface == null) {
-            throw Exception("surface was null")
-        }
-        return eglSurface
-    }
-
-    /**
      * Makes our EGL context current, using the supplied surface for both "draw" and "read".
      */
     fun makeCurrent(eglSurface: EGLSurface?) {
@@ -134,7 +96,13 @@ class Egl {
             // called makeCurrent() before create?
             Log.d(TAG, "NOTE: makeCurrent w/o display")
         }
-        if (!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) throw Exception("EGL Current 설정 실패")
+        if (!EGL14.eglMakeCurrent(
+                eglDisplay,
+                eglSurface,
+                eglSurface,
+                eglContext
+            )
+        ) throw Exception("EGL Current 설정 실패")
     }
 
     /**
@@ -147,19 +115,6 @@ class Egl {
         }
         if (!EGL14.eglMakeCurrent(eglDisplay, drawSurface, readSurface, eglContext)) {
             throw Exception("eglMakeCurrent(draw,read) failed")
-        }
-    }
-
-    /**
-     * Makes no context current.
-     */
-    fun makeNothingCurrent() {
-        if (!EGL14.eglMakeCurrent(
-                eglDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE,
-                EGL14.EGL_NO_CONTEXT
-            )
-        ) {
-            throw Exception("eglMakeCurrent failed")
         }
     }
 
@@ -198,13 +153,6 @@ class Egl {
     }
 
     /**
-     * Queries a string value.
-     */
-    fun queryString(what: Int): String {
-        return EGL14.eglQueryString(eglDisplay, what)
-    }
-
-    /**
      * Checks for EGL errors.  Throws an exception if an error has been raised.
      */
     private fun checkEglError(msg: String) {
@@ -214,41 +162,6 @@ class Egl {
         }
     }
 
-    companion object {
-        private const val TAG: String = "EglCoreTAG"
-
-        /**
-         * Constructor flag: surface must be recordable.  This discourages EGL from using a
-         * pixel format that cannot be converted efficiently to something usable by the video
-         * encoder.
-         */
-        const val FLAG_RECORDABLE = 0x01
-
-        /**
-         * Constructor flag: ask for GLES3, fall back to GLES2 if not available.  Without this
-         * flag, GLES2 is used.
-         */
-        const val FLAG_TRY_GLES3 = 0x02
-
-        // Android-specific extension.
-        private const val EGL_RECORDABLE_ANDROID = 0x3142
-
-        /**
-         * Writes the current display, context, and surface to the log.
-         */
-        fun logCurrent(msg: String) {
-            val display: EGLDisplay
-            val context: EGLContext
-            val surface: EGLSurface
-            display = EGL14.eglGetCurrentDisplay()
-            context = EGL14.eglGetCurrentContext()
-            surface = EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW)
-            Log.i(
-                TAG, "Current EGL (" + msg + "): display=" + display + ", context=" + context +
-                        ", surface=" + surface
-            )
-        }
-    }
 
     /**
      * EGLDisplay 가져오기
@@ -296,14 +209,12 @@ class Egl {
             EGL14.EGL_RED_SIZE, 8,
             EGL14.EGL_GREEN_SIZE, 8,
             EGL14.EGL_BLUE_SIZE, 8,
-            EGL14.EGL_ALPHA_SIZE, 8,  //EGL14.EGL_DEPTH_SIZE, 16,
-            //EGL14.EGL_STENCIL_SIZE, 8,
+            EGL14.EGL_ALPHA_SIZE, 8,
             EGL14.EGL_RENDERABLE_TYPE, renderableType,
-            EGL14.EGL_NONE, 0,  // placeholder for recordable [@-3]
+            EGL_RECORDABLE_ANDROID, 1,
             EGL14.EGL_NONE
         )
-        attribList[attribList.size - 3] = EGL_RECORDABLE_ANDROID
-        attribList[attribList.size - 2] = 1
+
         val configs = arrayOfNulls<EGLConfig>(1)
         val numConfigs = IntArray(1)
         if (!EGL14.eglChooseConfig(
@@ -312,17 +223,14 @@ class Egl {
                 0,
                 configs,
                 0,
-                configs.size,
+                1,
                 numConfigs,
                 0
             )
         ) {
             Log.d(TAG, "$version EGLConfig 실패")
-            eglConfig = null
         }
         eglConfig = configs[0]
-//        return configs[0]
-//        if (eglConfig == null) getEglConfig(2)
     }
 
     /**
@@ -347,7 +255,7 @@ class Egl {
             }
         } else {
             getEglConfig(2)
-            if(eglConfig == null) throw Exception("Unable to find a suitable EGLConfig")
+            if (eglConfig == null) throw Exception("Unable to find a suitable EGLConfig")
             val attrib2_list = intArrayOf(
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL14.EGL_NONE
@@ -361,5 +269,11 @@ class Egl {
             eglContext = context
             glVersion = 2
         }
+    }
+
+    companion object {
+        private const val TAG: String = "EglCoreTAG"
+
+        private const val EGL_RECORDABLE_ANDROID = 0x3142
     }
 }

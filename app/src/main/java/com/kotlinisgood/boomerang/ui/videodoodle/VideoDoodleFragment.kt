@@ -1,6 +1,7 @@
 package com.kotlinisgood.boomerang.ui.videodoodle
 
 import android.graphics.SurfaceTexture
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.opengl.GLES20
 import android.opengl.GLES30
@@ -17,6 +18,7 @@ import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import com.kotlinisgood.boomerang.util.UriUtil
 import com.kotlinisgood.boomerang.util.throttle
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
@@ -75,6 +77,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         surfaceView = dataBinding.svMovie
         surfaceView.holder.addCallback(this)
 
@@ -87,6 +90,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         mediaPlayer.setOnPreparedListener {
             dataBinding.btnPlay.isEnabled = true
         }
+
+        dataBinding.frameMovie.setAspectRatio(mediaPlayer.videoWidth/mediaPlayer.videoHeight.toDouble())
 
         compositeDisposable.add(dataBinding.btnPlay.throttle(1000, TimeUnit.MILLISECONDS) {
             playVideo()
@@ -238,7 +243,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             viewportHeight = height
         }
 
-        circularEncoder = Encoder(width, width, 6000000, 30, 60)
+        circularEncoder = Encoder(width, height, 6000000, 30, 60)
         encoderSurface = EglWindowSurface(egl, circularEncoder.inputSurface)
     }
 
@@ -283,7 +288,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture.getTransformMatrix(mTmpMatrix)
 
 //        SurfaceView에 그리기
-        GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
+        GLES20.glViewport(0, 0, width, height)
         GLES20.glClearColor(0f, 0f, 0f, 1f)
         fullFrameBlit.drawFrame(textureId, mTmpMatrix)
         drawLine(currentPoint, height)
@@ -314,7 +319,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             displaySurface.swapBuffers()
 
             encoderSurface.makeCurrent()
-            GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
+            GLES20.glViewport(0, 0, width, height)
             fullFrameBlit.drawFrame(textureId, mTmpMatrix)
             drawLine(currentPoint, height)
             circularEncoder.transferBuffer()

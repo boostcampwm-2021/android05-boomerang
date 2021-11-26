@@ -11,11 +11,10 @@ import android.widget.FrameLayout
 class AspectFrameLayout : FrameLayout {
     private var mTargetAspect = -1.0 // initially use default window size
 
-    constructor(context: Context?) : super(context!!) {}
+    constructor(context: Context?) : super(context!!)
     constructor(context: Context?, attrs: AttributeSet?) : super(
         context!!, attrs
-    ) {
-    }
+    )
 
     /**
      * Sets the desired aspect ratio.  The value is `width / height`.
@@ -83,10 +82,11 @@ class AspectFrameLayout : FrameLayout {
 
         //Log.d(TAG, "set width=[" + MeasureSpec.toString(widthMeasureSpec) +
         //        "] height=[" + View.MeasureSpec.toString(heightMeasureSpec) + "]");
+//        super.onMeasure(exactWidthMeasureSpec, exactHeightMeasureSpec)
         super.onMeasure(exactWidthMeasureSpec, exactHeightMeasureSpec)
     }
 
     companion object {
-        private const val TAG: String = "AspectFrameLayoutTAG"
+        private const val TAG: String = "AspectFrameLayout"
     }
 }
