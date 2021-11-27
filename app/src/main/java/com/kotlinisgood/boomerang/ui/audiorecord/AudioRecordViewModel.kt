@@ -79,7 +79,7 @@ class AudioRecordViewModel
         }
     }
 
-    private fun deleteAudios() {
+    fun deleteAudios() {
         fileList.forEach {
             it.delete()
         }
