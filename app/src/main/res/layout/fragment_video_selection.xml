@@ -26,7 +26,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorSurface"
-                app:navigationIcon="@drawable/ic_close"
+                app:navigationIcon="@drawable/ic_baseline_close_24"
+                app:navigationIconTint="?attr/colorOnSurface"
                 app:title="@string/fragment_video_selection_title"
                 app:titleTextAppearance="?attr/textAppearanceTitleLarge"
                 app:menu="@menu/menu_fragment_video_selection">

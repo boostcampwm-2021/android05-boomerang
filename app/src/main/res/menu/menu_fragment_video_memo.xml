@@ -5,12 +5,14 @@
         android:id="@+id/menu_memo_modify"
         android:icon="@drawable/ic_baseline_edit_24"
         app:showAsAction="ifRoom"
+        app:iconTint="?attr/colorOnSurface"
         android:title="@string/menu_memo_modify" />
 
     <item
         android:id="@+id/menu_video_memo_delete"
         android:title="@string/menu_delete_title"
-        android:icon="@drawable/ic_dark_trashcan"
+        android:icon="@drawable/ic_baseline_delete_24"
         android:contentDescription="@string/menu_delete_description"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="always" />
 </menu>

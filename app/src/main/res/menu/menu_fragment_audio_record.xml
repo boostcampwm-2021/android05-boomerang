@@ -4,14 +4,15 @@
     <item
         android:id="@+id/menu_audio_record_mic"
         android:title="@string/menu_audio_record_mic_title"
-        android:icon="@drawable/ic_mic"
+        android:icon="@drawable/ic_baseline_mic_24"
         android:contentDescription="@string/menu_audio_record_mic_description"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_audio_record_save"
         android:title="@string/menu_audio_record_save_title"
-        android:icon="@drawable/ic_save"
+        android:icon="@drawable/ic_baseline_save_24"
         android:contentDescription="@string/menu_audio_record_save_description"
         app:showAsAction="always" />
 </menu>

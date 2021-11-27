@@ -11,24 +11,28 @@
                 android:checkable="true"
                 android:icon="@drawable/ic_all"
                 android:title="전체 메모"
+                app:iconTint="?attr/colorOnSurface"
                 app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/navigation_drawer_memo_type_voice"
                 android:checkable="true"
                 android:icon="@drawable/ic_voice"
                 android:title="음성 메모"
+                app:iconTint="?attr/colorOnSurface"
                 app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/navigation_drawer_memo_type_my_video"
                 android:checkable="true"
                 android:icon="@drawable/ic_person"
                 android:title="나만의 메모"
+                app:iconTint="?attr/colorOnSurface"
                 app:showAsAction="ifRoom" />
             <item
                 android:id="@+id/navigation_drawer_memo_type_together_video"
                 android:checkable="true"
                 android:icon="@drawable/ic_people"
                 android:title="모두의 메모"
+                app:iconTint="?attr/colorOnSurface"
                 app:showAsAction="ifRoom" />
         </menu>
     </item>
@@ -39,8 +43,9 @@
             <item
                 android:id="@+id/navigation_drawer_option_open_source"
                 android:checkable="true"
-                android:icon="@drawable/ic_code"
+                android:icon="@drawable/ic_baseline_code_24"
                 android:title="오픈소스 라이선스"
+                app:iconTint="?attr/colorOnSurface"
                 app:showAsAction="ifRoom" />
         </menu>
     </item>
