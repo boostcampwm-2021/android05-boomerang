@@ -23,6 +23,7 @@ import com.kotlinisgood.boomerang.util.throttle
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlin.math.floor
 
 
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
@@ -72,6 +73,16 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     ): View {
         _dataBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_video_doodle, container, false)
+//        val mmr = MediaMetadataRetriever()
+//        mmr.setDataSource(UriUtil.getPathFromUri(requireContext().contentResolver, uriString.toUri()))
+//        val testHeight =
+//            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+//                ?.toInt()!!
+//        val testWidth = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+//            ?.toInt()!!
+//        val ratio = testWidth/testHeight.toDouble()
+//        println("Before: $ratio")
+//        dataBinding.frameMovie.setAspectRatio("%.4f".format(ratio).toDouble())
         return dataBinding.root
     }
 
@@ -91,7 +102,12 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             dataBinding.btnPlay.isEnabled = true
         }
 
-        dataBinding.frameMovie.setAspectRatio(mediaPlayer.videoWidth/mediaPlayer.videoHeight.toDouble())
+//        실수부 값이 너무 커지지 않도록 끊어줘야 함
+//        val ratio = floor(mediaPlayer.videoWidth.toDouble()/mediaPlayer.videoHeight*10000)/10000.0
+        val ratio = 1.0000
+        println("Before: $ratio")
+//        dataBinding.frameMovie.setAspectRatio("%.4f".format(ratio).toDouble())
+        dataBinding.frameMovie.setAspectRatio(ratio)
 
         compositeDisposable.add(dataBinding.btnPlay.throttle(1000, TimeUnit.MILLISECONDS) {
             playVideo()
@@ -141,7 +157,10 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             when (it.itemId) {
                 R.id.menu_video_selection_completion -> {
                     compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
-                        saveCompleted(circularEncoder.saveVideo(outputVideo))
+//                        saveCompleted(circularEncoder.saveVideo(outputVideo))
+//                        saveCompleted(circularEncoder.saveVideo(outputVideo))
+                        circularEncoder.muxerStop()
+                        saveCompleted(0)
                     })
                 }
             }
@@ -243,7 +262,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             viewportHeight = height
         }
 
-        circularEncoder = Encoder(width, height, 6000000, 30, 60)
+        circularEncoder = Encoder(width, height, 6000000, 30, outputVideo)
         encoderSurface = EglWindowSurface(egl, circularEncoder.inputSurface)
     }
 

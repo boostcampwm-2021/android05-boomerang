@@ -14,15 +14,18 @@ class Encoder(
     height: Int,
     bitrate: Int,
     frameRate: Int,
-    desiredSpanSec: Int,
+    outputVideo: File?
 ) {
     val inputSurface: Surface
     private var encoder: MediaCodec
     private val bufferInfo: MediaCodec.BufferInfo
-    private var encodedFormat: MediaFormat? = null
-    private val encoderBuffer: CircularEncoderBuffer =
-        CircularEncoderBuffer(bitrate, frameRate, desiredSpanSec)
+    private lateinit var encodedFormat: MediaFormat
     private var scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+    private val mediaMuxer =
+        MediaMuxer(outputVideo!!.path, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
+    private var videoTrack = -1
+    private var isMuxerStart = false
+
 
     init {
         val format = MediaFormat.createVideoFormat("video/avc", width, height)
@@ -35,6 +38,9 @@ class Encoder(
         format.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
 
+//        에러 나면 먼저 주석 풀기
+//        encodedFormat = format
+
         encoder = MediaCodec.createEncoderByType("video/avc")
         encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
         inputSurface = encoder.createInputSurface()
@@ -46,31 +52,33 @@ class Encoder(
     fun transferBuffer() {
         scope = CoroutineScope(Dispatchers.Default)
         scope.launch {
-            var encoderOutputBuffers = encoder.outputBuffers
             while (true) {
                 when (val encoderStatus = encoder.dequeueOutputBuffer(bufferInfo, 0)) {
                     MediaCodec.INFO_TRY_AGAIN_LATER -> break
-                    MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED -> {
-                        encoderOutputBuffers = encoder.outputBuffers
-                    }
                     MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
+                        println("FORMAT_CHANGED")
                         encodedFormat = encoder.outputFormat
+                        videoTrack = mediaMuxer.addTrack(encodedFormat)
+                        mediaMuxer.start()
+                        isMuxerStart = true
                     }
                     in Int.MIN_VALUE until 0 -> {
+//                        에러 값들 음수로 되어있음. 여기서 에러 발생시 세부적으로 에러값 받아오자
                         Log.d("Encoder", "dequeOutputBufferError")
                     }
                     else -> {
-                        val encodedData = encoderOutputBuffers[encoderStatus]
+                        val encoderOutputBuffers = encoder.getOutputBuffer(encoderStatus)
+                        val encodedData = encoderOutputBuffers
                             ?: throw Exception("encoderOutputBuffer[encoderStatus] is null")
                         if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) bufferInfo.size =
                             0
                         if (bufferInfo.size != 0) {
                             encodedData.position(bufferInfo.offset)
                             encodedData.limit(bufferInfo.offset + bufferInfo.size)
-                            encoderBuffer.add(
+                            if (isMuxerStart) mediaMuxer.writeSampleData(
+                                videoTrack,
                                 encodedData,
-                                bufferInfo.flags,
-                                bufferInfo.presentationTimeUs
+                                bufferInfo
                             )
                         }
                         encoder.releaseOutputBuffer(encoderStatus, false)
@@ -81,39 +89,17 @@ class Encoder(
         }
     }
 
-    fun saveVideo(outputFile: File?): Int {
-        var index = encoderBuffer.firstIndex
-        if (index < 0) {
-            return 1
-        } else {
-            val info = MediaCodec.BufferInfo()
-            lateinit var muxer: MediaMuxer
-            var result = -1
-            try {
-                muxer =
-                    MediaMuxer(outputFile!!.path, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
-                val videoTrack = muxer.addTrack(encodedFormat!!)
-                muxer.start()
-                do {
-                    val buffer = encoderBuffer.getChunk(index, info)
-                    muxer.writeSampleData(videoTrack, buffer, info)
-                    index = encoderBuffer.getNextIndex(index)
-                } while (index >= 0)
-                result = 0
-            } catch (e: Exception) {
-                Log.w("Encoder", "saveVideo", e)
-                result = 2
-            } finally {
-                muxer.stop()
-                muxer.release()
-            }
-            return result
-        }
+    fun muxerStop() {
+        isMuxerStart = false
+        mediaMuxer.stop()
+        mediaMuxer.release()
     }
 
     fun shutdown() {
         scope.cancel()
         encoder.stop()
         encoder.release()
+//        mediaMuxer.stop()
+//        mediaMuxer.release()
     }
 }
