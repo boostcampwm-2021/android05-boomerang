@@ -26,6 +26,7 @@ import com.google.android.exoplayer2.Player
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
+import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.UriUtil
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,6 +55,8 @@ class VideoEditFragment : Fragment() {
     private var currentSubVideo: SubVideo? = null
 
     private val compositeDisposable by lazy { CompositeDisposable() }
+
+    private val loadingDialog by lazy { CustomLoadingDialog(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -140,7 +143,7 @@ class VideoEditFragment : Fragment() {
                             if (viewModel.getTitle().isEmpty()){
                                 Toast.makeText(requireContext(),"제목을 입력해주세요", Toast.LENGTH_SHORT).show()
                             } else {
-
+                                loadingDialog.show()
                                 val file = File(
                                     requireContext().filesDir,
                                     System.currentTimeMillis().toString()
@@ -171,6 +174,7 @@ class VideoEditFragment : Fragment() {
                                     ?.toInt()!!
                                 val width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt()!!
                                 viewModel.saveMemo(file.toUri().toString(), height, width)
+                                loadingDialog.dismiss()
                                 findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
 
                             }
