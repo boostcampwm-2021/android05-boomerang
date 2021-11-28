@@ -1,7 +1,6 @@
 package com.kotlinisgood.boomerang.ui.videodoodle
 
 import android.graphics.SurfaceTexture
-import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.opengl.GLES20
 import android.opengl.GLES30
@@ -13,17 +12,16 @@ import androidx.core.net.toUri
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
-import com.kotlinisgood.boomerang.util.UriUtil
 import com.kotlinisgood.boomerang.util.throttle
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
 import java.util.concurrent.TimeUnit
-import kotlin.math.floor
 
 
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
@@ -31,6 +29,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     private var _dataBinding: FragmentVideoDoodleBinding? = null
     private val dataBinding get() = _dataBinding!!
+
+    private val viewModel: VideoDoodleViewModel by viewModels()
 
     private val args: VideoDoodleFragmentArgs by navArgs()
     private val uriString by lazy { args.videoPath }
@@ -45,7 +45,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var textureId = 0
     private lateinit var fullFrameBlit: FullFrameRect
     private val mTmpMatrix = FloatArray(16)
-    private lateinit var circularEncoder: Encoder
+//    private lateinit var encoder: Encoder
 
     private lateinit var mediaPlayer: MediaPlayer
     private var videoWidth = 0
@@ -159,7 +159,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                     compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
 //                        saveCompleted(circularEncoder.saveVideo(outputVideo))
 //                        saveCompleted(circularEncoder.saveVideo(outputVideo))
-                        circularEncoder.muxerStop()
+                        viewModel.encoder.muxerStop()
                         saveCompleted(0)
                     })
                 }
@@ -215,7 +215,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         super.onDestroyView()
         mediaPlayer.release()
         surfaceTexture.release()
-        circularEncoder.shutdown()
+//        viewModel.encoder.shutdown()
         encoderSurface.release()
         displaySurface.release()
         fullFrameBlit.release(false)
@@ -262,8 +262,11 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             viewportHeight = height
         }
 
-        circularEncoder = Encoder(width, height, 6000000, 30, outputVideo)
-        encoderSurface = EglWindowSurface(egl, circularEncoder.inputSurface)
+        if (!viewModel.isEncoderWorking) {
+            viewModel.encoder = Encoder(width, height, 6000000, 30, outputVideo)
+            encoderSurface = EglWindowSurface(egl, viewModel.encoder.inputSurface)
+        }
+        viewModel.isEncoderWorking = true
     }
 
     private fun playVideo() {
@@ -327,7 +330,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                 GLES30.GL_COLOR_BUFFER_BIT,
                 GLES30.GL_NEAREST
             )
-            circularEncoder.transferBuffer()
+            viewModel.encoder.transferBuffer()
             encoderSurface.setPresentationTime(surfaceTexture.timestamp)
             encoderSurface.swapBuffers()
 
@@ -341,7 +344,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             GLES20.glViewport(0, 0, width, height)
             fullFrameBlit.drawFrame(textureId, mTmpMatrix)
             drawLine(currentPoint, height)
-            circularEncoder.transferBuffer()
+            viewModel.encoder.transferBuffer()
             encoderSurface.setPresentationTime(surfaceTexture.timestamp)
             encoderSurface.swapBuffers()
             displaySurface.makeCurrent()

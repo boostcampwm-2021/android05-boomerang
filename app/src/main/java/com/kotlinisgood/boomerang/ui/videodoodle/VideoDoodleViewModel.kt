@@ -4,4 +4,7 @@ import androidx.lifecycle.ViewModel
 
 class VideoDoodleViewModel : ViewModel() {
 
+    var isEncoderWorking = false
+    lateinit var encoder: Encoder
+
 }
