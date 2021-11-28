@@ -65,7 +65,7 @@
             app:cardCornerRadius="@dimen/audio_record_memo_corner"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/container_et_title"
-            app:strokeColor="@color/audio_record_memo_stroke"
+            app:strokeColor="?attr/colorOnSurface"
             app:strokeWidth="@dimen/audio_record_card_view_stroke_width">
 
             <androidx.constraintlayout.widget.ConstraintLayout

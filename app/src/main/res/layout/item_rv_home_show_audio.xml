@@ -16,7 +16,6 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/item_card_home_audio"
         style="?attr/materialCardViewFilledStyle"
-        android:backgroundTint="@color/boomerang_secondary_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/dp8">
