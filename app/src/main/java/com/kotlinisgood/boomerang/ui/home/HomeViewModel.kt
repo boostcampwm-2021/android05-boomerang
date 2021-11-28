@@ -177,4 +177,18 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun deleteMediaMemo(mediaMemo: MediaMemo?) {
+        mediaMemo?.let { it ->
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.deleteMemo(it)
+            }
+        } ?: return
+    }
+
+    fun deleteMediaMemo(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteMemoById(id)
+        }
+    }
+
 }

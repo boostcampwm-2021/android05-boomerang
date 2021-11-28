@@ -26,7 +26,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorSurface"
-                app:navigationIcon="@drawable/ic_arrow_back"
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:navigationIconTint="?attr/colorOnSurface"
                 app:title="메모 확인"
                 app:titleTextAppearance="?attr/textAppearanceTitleLarge">
 

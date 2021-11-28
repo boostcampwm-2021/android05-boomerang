@@ -100,7 +100,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:sdMainFabClosedBackgroundColor="@color/boomerang_main_color"
                     app:sdMainFabClosedIconColor="@color/white"
-                    app:sdMainFabClosedSrc="@drawable/ic_add"
+                    app:sdMainFabClosedSrc="@drawable/ic_baseline_add_24"
                     app:sdMainFabOpenedBackgroundColor="@color/boomerang_main_color"
                     app:sdMainFabOpenedIconColor="@color/white" />
 

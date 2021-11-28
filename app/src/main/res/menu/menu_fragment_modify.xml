@@ -5,5 +5,6 @@
         android:id="@+id/menu_video_modify"
         android:title="@string/menu_video_modify_title"
         android:contentDescription="@string/menu_video_modify_description"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="always" />
 </menu>

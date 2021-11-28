@@ -29,7 +29,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorSurface"
-                app:navigationIcon="@drawable/ic_arrow_back"
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:navigationIconTint="?attr/colorOnSurface"
                 app:title="나만의 메모 작성"
                 app:titleTextAppearance="?attr/textAppearanceTitleLarge"
                 app:menu="@menu/menu_fragment_doodle">

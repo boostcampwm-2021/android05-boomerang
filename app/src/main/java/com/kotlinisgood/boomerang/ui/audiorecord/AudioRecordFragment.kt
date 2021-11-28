@@ -110,6 +110,7 @@ class AudioRecordFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _dataBinding = null
+        if (!viewModel.isFileListEmpty()) { viewModel.deleteAudios() }
         compositeDisposable.dispose()
     }
 

@@ -9,7 +9,7 @@ object UriUtil {
     @SuppressLint("Range")
     fun getPathFromUri(contentResolver: ContentResolver, uri: Uri): String {
         val cursor = contentResolver.query(uri, null, null, null, null) ?: return ""
-        cursor.moveToNext()
+        cursor.moveToFirst()
         val path = cursor.getString(cursor.getColumnIndex("_data"))
         cursor.close()
         return path

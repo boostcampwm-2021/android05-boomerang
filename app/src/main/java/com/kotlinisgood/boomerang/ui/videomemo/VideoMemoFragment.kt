@@ -81,7 +81,7 @@ class VideoMemoFragment : Fragment() {
     private fun setMenuOnToolBar() {
         dataBinding.tbMemo.apply {
             inflateMenu(R.menu.menu_fragment_video_memo)
-            setNavigationIcon(R.drawable.ic_arrow_back)
+            setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
             compositeDisposable.add(throttle(1000,TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
             })

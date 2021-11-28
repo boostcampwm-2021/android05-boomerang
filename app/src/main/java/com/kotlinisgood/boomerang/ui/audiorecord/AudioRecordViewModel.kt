@@ -1,6 +1,5 @@
 package com.kotlinisgood.boomerang.ui.audiorecord
 
-import android.view.Menu
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,16 +9,12 @@ import com.kotlinisgood.boomerang.repository.AppRepository
 import com.kotlinisgood.boomerang.util.AUDIO_MODE
 import com.kotlinisgood.boomerang.util.DEFAULT_HEIGHT_WIDTH
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import zeroonezero.android.audio_mixer.AudioMixer
 import zeroonezero.android.audio_mixer.input.GeneralAudioInput
 import java.io.File
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -79,7 +74,7 @@ class AudioRecordViewModel
         }
     }
 
-    private fun deleteAudios() {
+    fun deleteAudios() {
         fileList.forEach {
             it.delete()
         }

@@ -4,14 +4,16 @@
     <item
         android:id="@+id/menu_video_edit_share"
         android:title="@string/menu_video_edit_share_title"
-        android:icon="@drawable/ic_share"
+        android:icon="@drawable/ic_baseline_share_24"
         android:contentDescription="@string/menu_video_edit_share_description"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_video_edit_save"
         android:title="@string/menu_video_edit_save_title"
-        android:icon="@drawable/ic_save"
+        android:icon="@drawable/ic_baseline_save_24"
         android:contentDescription="@string/menu_video_edit_save_description"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="ifRoom" />
 </menu>

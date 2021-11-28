@@ -28,7 +28,8 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorSurface"
                 app:menu="@menu/menu_fragment_audio_record"
-                app:navigationIcon="@drawable/ic_arrow_back"
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:navigationIconTint="?attr/colorOnSurface"
                 app:title="@string/tb_audio_record_title"
                 app:titleTextAppearance="?attr/textAppearanceTitleSmall">
 
@@ -64,7 +65,7 @@
             app:cardCornerRadius="@dimen/audio_record_memo_corner"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/container_et_title"
-            app:strokeColor="@color/audio_record_memo_stroke"
+            app:strokeColor="?attr/colorOnSurface"
             app:strokeWidth="@dimen/audio_record_card_view_stroke_width">
 
             <androidx.constraintlayout.widget.ConstraintLayout
