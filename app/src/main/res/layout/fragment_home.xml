@@ -65,6 +65,7 @@
                             app:lottie_autoPlay="true"
                             app:lottie_loop="true"
                             app:lottie_rawRes="@raw/boomerang_empty_memo"
+                            app:lottie_colorFilter="?attr/colorOnSurface"
                             app:layout_constraintBottom_toTopOf="@id/tv_empty_description"
                             app:layout_constraintVertical_chainStyle="packed"/>
                         <TextView
