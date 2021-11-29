@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.FrameLayout
+import kotlin.math.abs
 
 /**
  * Layout that adjusts to maintain a specific aspect ratio.
@@ -31,6 +32,11 @@ class AspectFrameLayout : FrameLayout {
         }
     }
 
+    override fun performClick(): Boolean {
+        super.performClick()
+        return true
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var exactWidthMeasureSpec = widthMeasureSpec
         var exactHeightMeasureSpec = heightMeasureSpec
@@ -55,7 +61,7 @@ class AspectFrameLayout : FrameLayout {
             initialHeight -= vertPadding
             val viewAspectRatio = initialWidth.toDouble() / initialHeight
             val aspectDiff = mTargetAspect / viewAspectRatio - 1
-            if (Math.abs(aspectDiff) < 0.01) {
+            if (abs(aspectDiff) < 0.01) {
                 // We're very close already.  We don't want to risk switching from e.g. non-scaled
                 // 1280x720 to scaled 1280x719 because of some floating-point round-off error,
                 // so if we're really close just leave it alone.

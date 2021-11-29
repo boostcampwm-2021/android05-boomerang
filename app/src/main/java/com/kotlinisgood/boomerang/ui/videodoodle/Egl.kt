@@ -240,32 +240,32 @@ class Egl {
     private fun getEglContext() {
         getEglConfig(3)
         if (eglConfig != null) {
-            val attrib3_list = intArrayOf(
+            val gl3Setup = intArrayOf(
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 3,
                 EGL14.EGL_NONE
             )
             val context = EGL14.eglCreateContext(
                 eglDisplay, eglConfig, EGL14.EGL_NO_CONTEXT,
-                attrib3_list, 0
+                gl3Setup, 0
             )
             if (EGL14.eglGetError() == EGL14.EGL_SUCCESS) {
-                Log.d(TAG, "Got GLES 3 config");
+                Log.d(TAG, "Got GLES 3 config")
                 eglContext = context
                 glVersion = 3
             }
         } else {
             getEglConfig(2)
             if (eglConfig == null) throw Exception("Unable to find a suitable EGLConfig")
-            val attrib2_list = intArrayOf(
+            val gl2Setup = intArrayOf(
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL14.EGL_NONE
             )
             val context = EGL14.eglCreateContext(
                 eglDisplay, eglConfig, EGL14.EGL_NO_CONTEXT,
-                attrib2_list, 0
+                gl2Setup, 0
             )
             checkEglError("eglCreateContext")
-            Log.d(TAG, "Got GLES 2 config");
+            Log.d(TAG, "Got GLES 2 config")
             eglContext = context
             glVersion = 2
         }

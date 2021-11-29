@@ -3,7 +3,6 @@ package com.kotlinisgood.boomerang.ui.videodoodle
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.util.Log
-import java.lang.IllegalArgumentException
 import java.lang.RuntimeException
 import java.nio.FloatBuffer
 
@@ -165,7 +164,7 @@ class Texture2dProgram
         // Simple vertex shader, used for all programs.
 //        attribute로 들어간 aPostition과 aTextureCoord는 위에서 순서대로 넣어준 것이다
 //        varying은 fragment shader로 연결된다
-        private val VERTEX_SHADER = ("uniform mat4 uMVPMatrix;\n" +
+        private const val VERTEX_SHADER = ("uniform mat4 uMVPMatrix;\n" +
                 "uniform mat4 uTexMatrix;\n" +
                 "attribute vec4 aPosition;\n" +
                 "attribute vec4 aTextureCoord;\n" +
@@ -175,17 +174,9 @@ class Texture2dProgram
                 "    vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n" +
                 "}\n")
 
-        // Simple fragment shader for use with "normal" 2D textures.
-        private val FRAGMENT_SHADER_2D = ("precision mediump float;\n" +
-                "varying vec2 vTextureCoord;\n" +
-                "uniform sampler2D sTexture;\n" +
-                "void main() {\n" +
-                "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
-                "}\n")
-
         // Simple fragment shader for use with external 2D textures (e.g. what we get from
         // SurfaceTexture).
-        private val FRAGMENT_SHADER_EXT = ("#extension GL_OES_EGL_image_external : require\n" +
+        private const val FRAGMENT_SHADER_EXT = ("#extension GL_OES_EGL_image_external : require\n" +
                 "precision mediump float;\n" +
                 "varying vec2 vTextureCoord;\n" +
                 "uniform samplerExternalOES sTexture;\n" +
