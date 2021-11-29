@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,6 +20,7 @@ import com.jakewharton.rxbinding4.view.clicks
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
+import com.kotlinisgood.boomerang.util.Util.showSnackBar
 import com.kotlinisgood.boomerang.util.throttle
 import com.kotlinisgood.boomerang.util.throttle1000
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +34,7 @@ class AudioMemoFragment : Fragment() {
 
     private var _dataBinding: FragmentAudioMemoBinding? = null
     val dataBinding get() = _dataBinding!!
+    private val fragmentContainer by lazy { dataBinding.containerFragmentAudioMemo }
 
     private val audioMemoViewModel: AudioMemoViewModel by viewModels()
     private val args: AudioMemoFragmentArgs by navArgs()
@@ -187,7 +188,7 @@ class AudioMemoFragment : Fragment() {
                         dialog.dismiss()
                         findNavController().navigate(AudioMemoFragmentDirections.actionAudioMemoFragmentToHomeFragment())
                     } else {
-                        Toast.makeText(requireContext(), getString(R.string.fragment_audio_memo_dialog_deletion_positive), Toast.LENGTH_SHORT).show()
+                        fragmentContainer.showSnackBar(getString(R.string.fragment_audio_memo_dialog_deletion_positive))
                     }
                 }
             }
