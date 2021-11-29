@@ -73,7 +73,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         savedInstanceState: Bundle?
     ): View {
         _dataBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_video_doodle, container, false)
+            FragmentVideoDoodleBinding.inflate(inflater, container, false)
 //        val mmr = MediaMetadataRetriever()
 //        mmr.setDataSource(UriUtil.getPathFromUri(requireContext().contentResolver, uriString.toUri()))
 //        val testHeight =
