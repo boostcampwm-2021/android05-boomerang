@@ -1,4 +1,5 @@
-package com.kotlinisgood.boomerang.ui.videoedit
+package com.kotlinisgood.boomerang.ui.videosave
+
 import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
@@ -7,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
@@ -24,10 +24,11 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.kotlinisgood.boomerang.R
-import com.kotlinisgood.boomerang.databinding.FragmentVideoEditBinding
+import com.kotlinisgood.boomerang.databinding.FragmentVideoSaveBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.UriUtil
+import com.kotlinisgood.boomerang.util.Util.showSnackBar
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -38,21 +39,22 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
-class VideoEditFragment : Fragment() {
+class VideoSaveFragment : Fragment() {
 
-    private var _dataBinding: FragmentVideoEditBinding? = null
+    private var _dataBinding: FragmentVideoSaveBinding? = null
     private val dataBinding get() = _dataBinding!!
-    private val viewModel: VideoEditViewModel by viewModels()
-    private val args: VideoEditFragmentArgs by navArgs()
+    private val videoSaveViewModel: VideoSaveViewModel by viewModels()
+    private val args: VideoSaveFragmentArgs by navArgs()
 
     @Volatile
     private var currentTime = 0L
-    private lateinit var player: ExoPlayer
-    lateinit var jobScanner: Job
 
-    private lateinit var alphaViewFactory: AlphaViewFactory
+    private lateinit var player: ExoPlayer
+    private lateinit var jobScanner: Job
+
     private var currentAlpha: AlphaMovieView? = null
     private var currentSubVideo: SubVideo? = null
+    private val alphaViewFactory by lazy { AlphaViewFactory(requireContext()) }
 
     private val compositeDisposable by lazy { CompositeDisposable() }
 
@@ -64,7 +66,7 @@ class VideoEditFragment : Fragment() {
     ): View {
         _dataBinding = DataBindingUtil.inflate(
             layoutInflater,
-            R.layout.fragment_video_edit,
+            R.layout.fragment_video_save,
             container,
             false
         )
@@ -73,42 +75,36 @@ class VideoEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setAlphaViewFactory()
         setViewModel()
-        setVideoView()
-        setPlayer()
         setListener()
-    }
-
-    private fun setAlphaViewFactory() {
-        alphaViewFactory = AlphaViewFactory(requireContext())
+        setVideoView()
     }
 
     private fun setViewModel() {
-        viewModel.setSubVideo(args.subVideos.toMutableList())
-        viewModel.setVideoUri(args.baseVideo.toUri())
-        viewModel.getSubVideo().forEach {
+        videoSaveViewModel.setSubVideo(args.subVideos.toMutableList())
+        videoSaveViewModel.setVideoUri(args.baseVideo.toUri())
+        videoSaveViewModel.setMemoType(args.memoType)
+        videoSaveViewModel.getSubVideo().forEach {
             val alphaView = alphaViewFactory.create()
             alphaView.setVideoFromUri(requireContext(), it.uri.toUri())
-            viewModel.addAlphaMovieView(alphaView)
+            videoSaveViewModel.addAlphaMovieView(alphaView)
         }
-        viewModel.setMemoType(args.memoType)
     }
 
     private fun setListener() {
-        compositeDisposable.add(dataBinding.tbVideoDoodle.throttle(1000,TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.tbVideoDoodle.throttle(1000, TimeUnit.MILLISECONDS) {
             findNavController().popBackStack()
         })
 
         dataBinding.tbVideoDoodle.inflateMenu(R.menu.menu_fragment_video_edit)
 
-        dataBinding.tbVideoDoodle.menu.findItem(R.id.menu_video_edit_share).isVisible = args.memoType
+        dataBinding.tbVideoDoodle.menu.findItem(R.id.menu_video_edit_share).isVisible =
+            args.memoType
         dataBinding.tbVideoDoodle.menu.forEach {
             when (it.itemId) {
                 R.id.menu_video_edit_share -> {
                     compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
                         val fileName = args.baseVideo.split('/').last()
-                        println(fileName)
                         val file = File(requireContext().filesDir, fileName)
                         val uri = FileProvider.getUriForFile(
                             requireContext(),
@@ -127,21 +123,18 @@ class VideoEditFragment : Fragment() {
                 }
                 R.id.menu_video_edit_save -> {
                     compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
-                        if(args.memoType) {
-                            if(viewModel.getTitle().isEmpty()){
-                                Toast.makeText(requireContext(),"제목을 입력해주세요", Toast.LENGTH_SHORT).show()
+                        if (args.memoType) {
+                            if (videoSaveViewModel.getTitle().isEmpty()) {
+                                dataBinding.containerVideoSave.showSnackBar(getString(R.string.snackbar_video_save_enter_title))
                             } else {
-                                val mmr = MediaMetadataRetriever()
-                                mmr.setDataSource(viewModel.getVideoUri().path)
-                                val height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-                                    ?.toInt()!!
-                                val width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt()!!
-                                viewModel.saveMemo(height,width)
+                                val heightWidth =
+                                    getMediaSize(videoSaveViewModel.getVideoUri().path!!)
+                                videoSaveViewModel.saveMemo(heightWidth.first, heightWidth.second)
                                 findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
                             }
                         } else {
-                            if (viewModel.getTitle().isEmpty()){
-                                Toast.makeText(requireContext(),"제목을 입력해주세요", Toast.LENGTH_SHORT).show()
+                            if (videoSaveViewModel.getTitle().isEmpty()) {
+                                dataBinding.containerVideoSave.showSnackBar(getString(R.string.snackbar_video_save_enter_title))
                             } else {
                                 loadingDialog.show()
                                 val file = File(
@@ -150,7 +143,8 @@ class VideoEditFragment : Fragment() {
                                 )
                                 if (Build.VERSION.SDK_INT == 29) {
                                     try {
-                                        val input = requireActivity().contentResolver.openInputStream(args.baseVideo.toUri())
+                                        val input =
+                                            requireActivity().contentResolver.openInputStream(args.baseVideo.toUri())
                                         val output = FileOutputStream(file)
 
                                         val bytes = ByteArray(1024)
@@ -165,69 +159,81 @@ class VideoEditFragment : Fragment() {
                                         e.printStackTrace()
                                     }
                                 } else {
-                                    val videoFile = File(UriUtil.getPathFromUri(requireContext().contentResolver, args.baseVideo.toUri()))
+                                    val videoFile = File(
+                                        UriUtil.getPathFromUri(
+                                            requireContext().contentResolver,
+                                            args.baseVideo.toUri()
+                                        )
+                                    )
                                     videoFile.copyTo(file)
                                 }
-                                val mmr = MediaMetadataRetriever()
-                                mmr.setDataSource(file.path)
-                                val height = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-                                    ?.toInt()!!
-                                val width = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt()!!
-                                viewModel.saveMemo(file.toUri().toString(), height, width)
+                                val heightWidth = getMediaSize(file.path)
+                                videoSaveViewModel.saveMemo(
+                                    file.toUri().toString(),
+                                    heightWidth.first,
+                                    heightWidth.second
+                                )
                                 loadingDialog.dismiss()
                                 findNavController().navigate(R.id.action_videoEditFragment_to_homeFragment)
-
                             }
                         }
                     })
                 }
             }
         }
-        dataBinding.etVideoMemoTitle.doOnTextChanged { text, start, before, count ->
-            viewModel.setTitle(text.toString())
+        dataBinding.etVideoMemoTitle.doOnTextChanged { text, _, _, _ ->
+            videoSaveViewModel.setTitle(text.toString())
         }
     }
 
     private fun setVideoView() {
         player = ExoPlayer.Builder(requireContext()).build().apply {
-            setMediaItem(MediaItem.fromUri(viewModel.getVideoUri()))
+            setMediaItem(MediaItem.fromUri(videoSaveViewModel.getVideoUri()))
+            addListener(onPlayStateChangeListener)
+            prepare()
         }.also {
             dataBinding.pcvVideoEdit.player = it
             dataBinding.exoplayer.player = it
         }
     }
 
-    private fun setPlayer() {
-        player.apply {
-            addListener(onPlayStateChangeListener)
-            prepare()
-        }
+    private fun getMediaSize(path: String): Pair<Int, Int> {
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(path)
+        val height =
+            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                ?.toInt()!!
+        val width =
+            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                ?.toInt()!!
+        return Pair(height, width)
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun scan() {
         withContext(Dispatchers.Default) {
             while (true) {
-                viewModel.getSubVideo().forEachIndexed { index, subVideo ->
+                videoSaveViewModel.getSubVideo().forEachIndexed { index, subVideo ->
                     withContext(Dispatchers.Main) {
                         currentTime = player.currentPosition
                     }
+                    // 현재 재생 위치에서 subVideo 가 재생 되어야할 때
                     if ((subVideo.startingTime).toLong() <= currentTime &&
-                        (subVideo.endingTime).toLong() >= currentTime
+                        currentTime <= (subVideo.endingTime).toLong()
                     ) {
-                        if (!viewModel.getSubVideoStates()[index]) {
+                        // 해당 subVideo 가 재생중이지 않을 때
+                        if (!videoSaveViewModel.getSubVideoStates()[index]) {
                             withContext(Dispatchers.Main) {
-                                // 현재 재생 중이던 영상과 subVideo 가 같을 때
+                                // 현재 subVideo 와 해당 subVideo 가 같을 때
                                 if (subVideo == currentSubVideo) {
-                                    viewModel.getSubVideoStates()[index] = true
+                                    videoSaveViewModel.getSubVideoStates()[index] = true
                                     currentAlpha!!.mediaPlayer.seekTo(
                                         (player.currentPosition - subVideo.startingTime.toLong()),
                                         MediaPlayer.SEEK_CLOSEST
                                     )
                                     currentAlpha!!.mediaPlayer.start()
                                 } else {
-                                    dataBinding.alphaView.removeAllViews()
+                                    dataBinding.containerAlphaView.removeAllViews()
                                     // 현재 재생 중이던 AlphaView 가 있을 시
                                     if (currentSubVideo != null) {
                                         resetAlphaView(currentSubVideo!!)
@@ -235,18 +241,20 @@ class VideoEditFragment : Fragment() {
                                         currentAlpha = null
                                     }
 
-                                    val alphaMovieView = viewModel.alphaMovieViews[index]
-                                    viewModel.getSubVideoStates()[index] = true
+                                    val alphaMovieView = videoSaveViewModel.alphaMovieViews[index]
+
+                                    videoSaveViewModel.getSubVideoStates()[index] = true
                                     currentSubVideo = subVideo
                                     currentAlpha = alphaMovieView
 
-                                    dataBinding.alphaView.addView(alphaMovieView)
+                                    dataBinding.containerAlphaView.addView(alphaMovieView)
                                     alphaMovieView.start()
                                     alphaMovieView.setOnVideoStartedListener {
                                         alphaMovieView.seekTo((currentTime - subVideo.startingTime.toLong()).toInt())
                                     }
+
                                     alphaMovieView.setOnVideoEndedListener {
-                                        dataBinding.alphaView.removeAllViews()
+                                        dataBinding.containerAlphaView.removeAllViews()
                                         resetAlphaView(currentSubVideo!!)
                                         currentSubVideo = null
                                         currentAlpha = null
@@ -254,14 +262,16 @@ class VideoEditFragment : Fragment() {
                                 }
                             }
                         }
-                    }
-                    if(!viewModel.getSubVideoStates().contains(true)) {
-                        withContext(Dispatchers.Main) {
-                            if (currentSubVideo != null) {
-                                dataBinding.alphaView.removeAllViews()
-                                resetAlphaView(currentSubVideo!!)
-                                currentSubVideo = null
-                                currentAlpha = null
+                    } else {
+                        // 현재 재생중인 subVideo 가 없는데 재생 표시가 있는 경우
+                        if (!videoSaveViewModel.getSubVideoStates().contains(true)) {
+                            withContext(Dispatchers.Main) {
+                                if (currentSubVideo != null) {
+                                    dataBinding.containerAlphaView.removeAllViews()
+                                    resetAlphaView(currentSubVideo!!)
+                                    currentSubVideo = null
+                                    currentAlpha = null
+                                }
                             }
                         }
                     }
@@ -281,8 +291,10 @@ class VideoEditFragment : Fragment() {
                 if (currentAlpha != null && currentAlpha!!.isPlaying) {
                     currentAlpha!!.mediaPlayer.pause()
                 }
-                viewModel.getSubVideoStates()
-                    .forEachIndexed { index, _ -> viewModel.getSubVideoStates()[index] = false }
+                videoSaveViewModel.getSubVideoStates()
+                    .forEachIndexed { index, _ ->
+                        videoSaveViewModel.getSubVideoStates()[index] = false
+                    }
             }
         }
     }
@@ -293,8 +305,9 @@ class VideoEditFragment : Fragment() {
             requireContext(),
             currentSubVideo.uri.toUri()
         )
-        val index = viewModel.getSubVideo().indexOf(currentSubVideo)
-        viewModel.alphaMovieViews[index] = alphaView
+        val index = videoSaveViewModel.getSubVideo().indexOf(currentSubVideo)
+        videoSaveViewModel.getSubVideoStates()[index] = false
+        videoSaveViewModel.alphaMovieViews[index] = alphaView
     }
 
     override fun onPause() {
@@ -306,7 +319,7 @@ class VideoEditFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        player.run{
+        player.run {
             stop()
             player.removeListener(onPlayStateChangeListener)
             release()

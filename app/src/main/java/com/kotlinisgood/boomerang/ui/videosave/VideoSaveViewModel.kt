@@ -1,4 +1,4 @@
-package com.kotlinisgood.boomerang.ui.videoedit
+package com.kotlinisgood.boomerang.ui.videosave
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -14,15 +14,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class VideoEditViewModel @Inject constructor(
+class VideoSaveViewModel @Inject constructor(
     private val repository: AppRepository,
 ) : ViewModel() {
 
     private var memoType = false
     private var memoTitle = ""
+
     private var videoUri: Uri = Uri.EMPTY
     private var subVideos = mutableListOf<SubVideo>()
-    var alphaMovieViews: MutableList<AlphaMovieView> = mutableListOf<AlphaMovieView>()
+
+    var alphaMovieViews: MutableList<AlphaMovieView> = mutableListOf()
     private var subVideosStates = mutableListOf<Boolean>()
 
     fun saveMemo(height: Int, width: Int) {
@@ -97,8 +99,4 @@ class VideoEditViewModel @Inject constructor(
     fun setMemoType(memoType: Boolean) {
         this.memoType = memoType
     }
-
-//    fun getAlphaMovieViews(): MutableList<AlphaMovieView> {
-//        return alphaMovieViews
-//    }
 }

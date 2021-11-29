@@ -1,9 +1,8 @@
-package com.kotlinisgood.boomerang.ui.videoedit
+package com.kotlinisgood.boomerang.ui.videosave
 
 import android.content.Context
 import android.util.Xml
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import com.alphamovie.lib.AlphaMovieView
 import com.kotlinisgood.boomerang.R
 
@@ -22,5 +21,4 @@ class AlphaViewFactory(val context: Context) {
         alphaMovieView.setLooping(false)
         return alphaMovieView
     }
-
 }
