@@ -31,10 +31,10 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 class AudioMemoFragment : Fragment() {
 
-    private val TAG = "AudioMemoFragment"
     private var _dataBinding: FragmentAudioMemoBinding? = null
     val dataBinding get() = _dataBinding!!
-    private val viewModel: AudioMemoViewModel by viewModels()
+
+    private val audioMemoViewModel: AudioMemoViewModel by viewModels()
     private val args: AudioMemoFragmentArgs by navArgs()
     private val audioMemoAdapter = AudioMemoAdapter()
     private lateinit var player: ExoPlayer
@@ -57,13 +57,13 @@ class AudioMemoFragment : Fragment() {
         setObservers()
         setAdapters()
         setMenusOnToolbar()
-        viewModel.getMediaMemo(args.mediaMemoId)
+        audioMemoViewModel.getMediaMemo(args.mediaMemoId)
     }
 
 
     override fun onStart() {
         super.onStart()
-        if (viewModel.mediaMemo.value != null) {
+        if (audioMemoViewModel.mediaMemo.value != null) {
             player.prepare()
         }
     }
@@ -86,15 +86,17 @@ class AudioMemoFragment : Fragment() {
     }
 
     private fun setBinding() {
-        dataBinding.viewModel = viewModel
-        dataBinding.lifecycleOwner = viewLifecycleOwner
+        dataBinding.apply {
+            viewModel = audioMemoViewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
     }
 
     private fun setObservers() {
-        viewModel.mediaMemo.observe(viewLifecycleOwner) {
-            setPlayer(it.mediaUri)
+        audioMemoViewModel.mediaMemo.observe(viewLifecycleOwner) {
+            setAudioPlayer(it.mediaUri)
         }
-        viewModel.isLoading.observe(viewLifecycleOwner){ loading ->
+        audioMemoViewModel.isLoading.observe(viewLifecycleOwner){ loading ->
             if(loading){
                 loadingDialog.show()
             } else {
@@ -103,7 +105,7 @@ class AudioMemoFragment : Fragment() {
         }
     }
 
-    private fun setPlayer(path: String) {
+    private fun setAudioPlayer(path: String) {
         player = ExoPlayer.Builder(requireContext()).build()
             .apply {
                 setMediaItem(MediaItem.fromUri(Uri.fromFile(File(path))))
@@ -115,7 +117,7 @@ class AudioMemoFragment : Fragment() {
                         reason: Int
                     ) {
                         super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                        viewModel.modifyFocusedTextOrNot(newPosition.positionMs, audioMemoAdapter.currentList.toList())
+                        audioMemoViewModel.modifyFocusedTextOrNot(newPosition.positionMs, audioMemoAdapter.currentList.toList())
                     }
                 })
                 prepare()
@@ -123,7 +125,7 @@ class AudioMemoFragment : Fragment() {
                 dataBinding.pcvAudioMemoControlAudio.player = it
             }
         dataBinding.pcvAudioMemoControlAudio.setProgressUpdateListener { position, _ ->
-            viewModel.modifyFocusedTextOrNot(position, audioMemoAdapter.currentList.toList())
+            audioMemoViewModel.modifyFocusedTextOrNot(position, audioMemoAdapter.currentList.toList())
         }
     }
 
@@ -179,7 +181,7 @@ class AudioMemoFragment : Fragment() {
             }
             .setPositiveButton("삭제") { dialog, _ ->
                 lifecycleScope.launch {
-                    val result = viewModel.deleteMemo()
+                    val result = audioMemoViewModel.deleteMemo()
                     if (result) {
                         dialog.dismiss()
                         findNavController().navigate(AudioMemoFragmentDirections.actionAudioMemoFragmentToHomeFragment())
