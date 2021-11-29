@@ -72,10 +72,12 @@ class AspectFrameLayout : FrameLayout {
             } else {
                 if (aspectDiff > 0) {
                     // limited by narrow width; restrict height
-                    initialHeight = (initialWidth / mTargetAspect).toInt()
+                    val preHeight = (initialWidth / mTargetAspect).toInt()
+                    initialHeight = preHeight - (preHeight % 16)
                 } else {
                     // limited by short height; restrict width
-                    initialWidth = (initialHeight * mTargetAspect).toInt()
+                    val preWidth = (initialHeight * mTargetAspect).toInt()
+                    initialWidth = preWidth - (preWidth % 16)
                 }
                 Log.d(
                     TAG, "new size=" + initialWidth + "x" + initialHeight + " + padding " +
@@ -83,8 +85,10 @@ class AspectFrameLayout : FrameLayout {
                 )
                 initialWidth += horizPadding
                 initialHeight += vertPadding
-                exactWidthMeasureSpec = MeasureSpec.makeMeasureSpec(initialWidth, MeasureSpec.EXACTLY)
-                exactHeightMeasureSpec = MeasureSpec.makeMeasureSpec(initialHeight, MeasureSpec.EXACTLY)
+                exactWidthMeasureSpec =
+                    MeasureSpec.makeMeasureSpec(initialWidth, MeasureSpec.EXACTLY)
+                exactHeightMeasureSpec =
+                    MeasureSpec.makeMeasureSpec(initialHeight, MeasureSpec.EXACTLY)
             }
         }
 

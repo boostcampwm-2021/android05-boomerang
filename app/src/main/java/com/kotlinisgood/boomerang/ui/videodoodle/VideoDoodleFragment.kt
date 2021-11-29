@@ -22,6 +22,7 @@ import com.kotlinisgood.boomerang.util.throttle
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlin.math.floor
 
 
 class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
@@ -103,11 +104,11 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
 
 //        실수부 값이 너무 커지지 않도록 끊어줘야 함
-//        val ratio = floor(mediaPlayer.videoWidth.toDouble()/mediaPlayer.videoHeight*10000)/10000.0
+        val ratio = floor(mediaPlayer.videoWidth.toDouble()/mediaPlayer.videoHeight*10000)/10000.0
 //        val ratio = 1.0000
-//        println("Before: $ratio")
+        println("Before: $ratio")
 //        dataBinding.frameMovie.setAspectRatio("%.4f".format(ratio).toDouble())
-//        dataBinding.frameMovie.setAspectRatio(ratio)
+        dataBinding.frameMovie.setAspectRatio(ratio)
 
         compositeDisposable.add(dataBinding.btnPlay.throttle(1000, TimeUnit.MILLISECONDS) {
             playVideo()
