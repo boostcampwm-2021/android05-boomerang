@@ -176,8 +176,8 @@ class AudioMemoFragment : Fragment() {
 
     private fun showDeleteDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.fragment_audio_memo_dialog_deletion_title))
-            .setMessage(getString(R.string.fragment_audio_memo_dialog_deletion_message))
+            .setTitle(getString(R.string.dialog_memo_deletion_title))
+            .setMessage(getString(R.string.dialog_memo_deletion_message))
             .setNegativeButton(getString(R.string.dialog_negative_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
