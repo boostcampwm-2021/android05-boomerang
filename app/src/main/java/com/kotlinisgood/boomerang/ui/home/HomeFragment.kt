@@ -211,7 +211,7 @@ class HomeFragment : Fragment() {
                     .setFabBackgroundColor(
                         ContextCompat.getColor(
                             requireContext(),
-                            R.color.md_theme_dark_primary
+                            R.color.md_theme_primary
                         )
                     )
                     .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.black))
@@ -224,7 +224,7 @@ class HomeFragment : Fragment() {
                     .setFabBackgroundColor(
                         ContextCompat.getColor(
                             requireContext(),
-                            R.color.md_theme_dark_primary
+                            R.color.md_theme_primary
                         )
                     )
                     .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.black))
@@ -237,7 +237,7 @@ class HomeFragment : Fragment() {
                     .setFabBackgroundColor(
                         ContextCompat.getColor(
                             requireContext(),
-                            R.color.md_theme_dark_primary
+                            R.color.md_theme_primary
                         )
                     )
                     .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.black))
