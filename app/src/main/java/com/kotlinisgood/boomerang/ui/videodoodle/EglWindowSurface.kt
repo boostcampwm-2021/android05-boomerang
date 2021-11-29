@@ -105,6 +105,8 @@ class EglWindowSurface(private val egl: Egl, private var surface: Surface?) {
         val result = egl.swapBuffers(eglSurface)
         if (!result) {
             Log.d(TAG, "WARNING: swapBuffers() failed")
+        } else {
+            println("SUCCESS!!!!!")
         }
         return result
     }

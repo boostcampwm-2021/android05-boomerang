@@ -1,5 +1,6 @@
 package com.kotlinisgood.boomerang.ui.videomemo
 
+import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
@@ -25,10 +27,12 @@ import com.kotlinisgood.boomerang.databinding.FragmentVideoMemoBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.ui.videoedit.AlphaViewFactory
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.*
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -81,12 +85,32 @@ class VideoMemoFragment : Fragment() {
     private fun setMenuOnToolBar() {
         dataBinding.tbMemo.apply {
             inflateMenu(R.menu.menu_fragment_video_memo)
+            if(args.memoType == VIDEO_MODE_SUB_VIDEO) menu.findItem(R.id.menu_video_memo_share).isVisible = false
             setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
             compositeDisposable.add(throttle(1000,TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
             })
             menu.forEach {
                 when (it.itemId) {
+                    R.id.menu_video_memo_share -> {
+                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
+                            val fileName = viewModelVideo.mediaMemo.value!!.mediaUri.split('/').last()
+                            val file = File(requireContext().filesDir, fileName)
+                            val uri = FileProvider.getUriForFile(
+                                requireContext(),
+                                "com.kotlinisgood.boomerang.fileprovider",
+                                file
+                            )
+                            val sendIntent: Intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                type = "video/mp4"
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            val shareIntent = Intent.createChooser(sendIntent, null)
+                            startActivity(shareIntent)
+                        })
+                    }
                     R.id.menu_memo_modify -> {
                         compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { checkModifyAndMove()})
                     }

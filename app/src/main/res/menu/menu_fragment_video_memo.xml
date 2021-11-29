@@ -2,6 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menu_video_memo_share"
+        android:title="@string/menu_video_edit_share_title"
+        android:icon="@drawable/ic_baseline_share_24"
+        android:contentDescription="@string/menu_video_edit_share_description"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/menu_memo_modify"
         android:icon="@drawable/ic_baseline_edit_24"
         app:showAsAction="ifRoom"

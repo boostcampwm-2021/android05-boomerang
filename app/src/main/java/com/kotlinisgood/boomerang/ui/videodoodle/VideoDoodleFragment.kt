@@ -12,6 +12,7 @@ import androidx.core.net.toUri
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
@@ -29,6 +30,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var _dataBinding: FragmentVideoDoodleBinding? = null
     private val dataBinding get() = _dataBinding!!
 
+    private val viewModel: VideoDoodleViewModel by viewModels()
+
     private val args: VideoDoodleFragmentArgs by navArgs()
     private val uriString by lazy { args.videoPath }
 
@@ -42,7 +45,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var textureId = 0
     private lateinit var fullFrameBlit: FullFrameRect
     private val mTmpMatrix = FloatArray(16)
-    private lateinit var circularEncoder: Encoder
+//    private lateinit var encoder: Encoder
 
     private lateinit var mediaPlayer: MediaPlayer
     private var videoWidth = 0
@@ -70,11 +73,22 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     ): View {
         _dataBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_video_doodle, container, false)
+//        val mmr = MediaMetadataRetriever()
+//        mmr.setDataSource(UriUtil.getPathFromUri(requireContext().contentResolver, uriString.toUri()))
+//        val testHeight =
+//            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+//                ?.toInt()!!
+//        val testWidth = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+//            ?.toInt()!!
+//        val ratio = testWidth/testHeight.toDouble()
+//        println("Before: $ratio")
+//        dataBinding.frameMovie.setAspectRatio("%.4f".format(ratio).toDouble())
         return dataBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         surfaceView = dataBinding.svMovie
         surfaceView.holder.addCallback(this)
 
@@ -87,6 +101,13 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         mediaPlayer.setOnPreparedListener {
             dataBinding.btnPlay.isEnabled = true
         }
+
+//        실수부 값이 너무 커지지 않도록 끊어줘야 함
+//        val ratio = floor(mediaPlayer.videoWidth.toDouble()/mediaPlayer.videoHeight*10000)/10000.0
+//        val ratio = 1.0000
+//        println("Before: $ratio")
+//        dataBinding.frameMovie.setAspectRatio("%.4f".format(ratio).toDouble())
+//        dataBinding.frameMovie.setAspectRatio(ratio)
 
         compositeDisposable.add(dataBinding.btnPlay.throttle(1000, TimeUnit.MILLISECONDS) {
             playVideo()
@@ -136,7 +157,10 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             when (it.itemId) {
                 R.id.menu_video_selection_completion -> {
                     compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
-                        saveCompleted(circularEncoder.saveVideo(outputVideo))
+//                        saveCompleted(circularEncoder.saveVideo(outputVideo))
+//                        saveCompleted(circularEncoder.saveVideo(outputVideo))
+                        viewModel.encoder.muxerStop()
+                        saveCompleted(0)
                     })
                 }
             }
@@ -191,7 +215,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         super.onDestroyView()
         mediaPlayer.release()
         surfaceTexture.release()
-        circularEncoder.shutdown()
+//        viewModel.encoder.shutdown()
         encoderSurface.release()
         displaySurface.release()
         fullFrameBlit.release(false)
@@ -238,8 +262,11 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             viewportHeight = height
         }
 
-        circularEncoder = Encoder(width, width, 6000000, 30, 60)
-        encoderSurface = EglWindowSurface(egl, circularEncoder.inputSurface)
+        if (!viewModel.isEncoderWorking) {
+            viewModel.encoder = Encoder(width, height, 6000000, 30, outputVideo)
+            encoderSurface = EglWindowSurface(egl, viewModel.encoder.inputSurface)
+        }
+        viewModel.isEncoderWorking = true
     }
 
     private fun playVideo() {
@@ -283,7 +310,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         surfaceTexture.getTransformMatrix(mTmpMatrix)
 
 //        SurfaceView에 그리기
-        GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
+        GLES20.glViewport(0, 0, width, height)
         GLES20.glClearColor(0f, 0f, 0f, 1f)
         fullFrameBlit.drawFrame(textureId, mTmpMatrix)
         drawLine(currentPoint, height)
@@ -303,7 +330,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                 GLES30.GL_COLOR_BUFFER_BIT,
                 GLES30.GL_NEAREST
             )
-            circularEncoder.transferBuffer()
+            viewModel.encoder.transferBuffer()
             encoderSurface.setPresentationTime(surfaceTexture.timestamp)
             encoderSurface.swapBuffers()
 
@@ -314,10 +341,10 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             displaySurface.swapBuffers()
 
             encoderSurface.makeCurrent()
-            GLES20.glViewport(viewportX, viewportY, viewportWidth, viewportHeight)
+            GLES20.glViewport(0, 0, width, height)
             fullFrameBlit.drawFrame(textureId, mTmpMatrix)
             drawLine(currentPoint, height)
-            circularEncoder.transferBuffer()
+            viewModel.encoder.transferBuffer()
             encoderSurface.setPresentationTime(surfaceTexture.timestamp)
             encoderSurface.swapBuffers()
             displaySurface.makeCurrent()

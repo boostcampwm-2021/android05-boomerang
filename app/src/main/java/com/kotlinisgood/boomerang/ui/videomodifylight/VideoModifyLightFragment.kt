@@ -27,6 +27,7 @@ import com.kotlinisgood.boomerang.ui.videodoodlelight.DrawView
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideoAdapter
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
+import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -162,7 +163,7 @@ class VideoModifyLightFragment : Fragment() {
                             videoModifyLightViewModel.updateVideoMemo()
                             val action = videoModifyLightViewModel.mediaMemo.value?.let { it1 ->
                                 VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(
-                                    it1.id)
+                                    it1.id, VIDEO_MODE_SUB_VIDEO)
                             }
                             if (action != null) {
                                 findNavController().navigate(action)
@@ -257,7 +258,7 @@ class VideoModifyLightFragment : Fragment() {
                 dialog.dismiss()
             }
             .setPositiveButton("나가기") { dialog, which ->
-                val action = VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(videoModifyLightViewModel.mediaMemo.value!!.id)
+                val action = VideoModifyLightFragmentDirections.actionVideoModifyLightFragmentToMemoFragment(videoModifyLightViewModel.mediaMemo.value!!.id, VIDEO_MODE_SUB_VIDEO)
                 findNavController().navigate(action)
             }
             .show()
