@@ -10,6 +10,7 @@ import kotlinx.coroutines.*
 class VideoDoodleLightViewModel : ViewModel() {
 
     private var duration = 0L
+    private var recordStartTime = 0L
 
     private val _subVideos: MutableLiveData<List<SubVideo>> =
         MutableLiveData(listOf())
@@ -17,7 +18,6 @@ class VideoDoodleLightViewModel : ViewModel() {
 
     private var currentSubVideo: SubVideo? = null
 
-    private var recordStartTime = 0L
     var timer: Job? = null
     private val _timeOver: MutableLiveData<Boolean> = MutableLiveData(false)
     val timeOver: LiveData<Boolean> get() = _timeOver
@@ -40,8 +40,6 @@ class VideoDoodleLightViewModel : ViewModel() {
             while(isActive) {
                 val currentTime = System.currentTimeMillis()
                 if(currentSubVideo!!.startingTime + currentTime - recordStartTime > duration){
-                    println(currentSubVideo!!.startingTime + currentTime - recordStartTime)
-                    println(duration)
                     _timeOver.value = true
                     break
                 }
