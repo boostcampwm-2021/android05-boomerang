@@ -64,9 +64,8 @@ class VideoSaveFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _dataBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.fragment_video_save,
+        _dataBinding = FragmentVideoSaveBinding.inflate(
+            inflater,
             container,
             false
         )
@@ -213,6 +212,7 @@ class VideoSaveFragment : Fragment() {
     private suspend fun scan() {
         withContext(Dispatchers.Default) {
             while (true) {
+                var containsTrue = false
                 videoSaveViewModel.getSubVideo().forEachIndexed { index, subVideo ->
                     withContext(Dispatchers.Main) {
                         currentTime = player.currentPosition
@@ -221,6 +221,7 @@ class VideoSaveFragment : Fragment() {
                     if ((subVideo.startingTime).toLong() <= currentTime &&
                         currentTime <= (subVideo.endingTime).toLong()
                     ) {
+                        containsTrue = true
                         // 해당 subVideo 가 재생중이지 않을 때
                         if (!videoSaveViewModel.getSubVideoStates()[index]) {
                             withContext(Dispatchers.Main) {
@@ -263,16 +264,16 @@ class VideoSaveFragment : Fragment() {
                             }
                         }
                     } else {
-                        // 현재 재생중인 subVideo 가 없는데 재생 표시가 있는 경우
-                        if (!videoSaveViewModel.getSubVideoStates().contains(true)) {
-                            withContext(Dispatchers.Main) {
-                                if (currentSubVideo != null) {
-                                    dataBinding.containerAlphaView.removeAllViews()
-                                    resetAlphaView(currentSubVideo!!)
-                                    currentSubVideo = null
-                                    currentAlpha = null
-                                }
-                            }
+                        videoSaveViewModel.getSubVideoStates()[index] = false
+                    }
+                }
+                if (!containsTrue){
+                    withContext(Dispatchers.Main){
+                        currentSubVideo?.let {
+                            dataBinding.containerAlphaView.removeAllViews()
+                            resetAlphaView(it)
+                            currentSubVideo = null
+                            currentAlpha = null
                         }
                     }
                 }
@@ -291,10 +292,11 @@ class VideoSaveFragment : Fragment() {
                 if (currentAlpha != null && currentAlpha!!.isPlaying) {
                     currentAlpha!!.mediaPlayer.pause()
                 }
-                videoSaveViewModel.getSubVideoStates()
-                    .forEachIndexed { index, _ ->
-                        videoSaveViewModel.getSubVideoStates()[index] = false
+                currentSubVideo?.let {
+                    videoSaveViewModel.getSubVideo().indexOf(it).also { idx ->
+                        videoSaveViewModel.getSubVideoStates()[idx] = false
                     }
+                }
             }
         }
     }

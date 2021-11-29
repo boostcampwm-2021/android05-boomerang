@@ -327,8 +327,8 @@ class VideoMemoFragment : Fragment() {
                         }
                     }
                 }
+                delay(10)
             }
-            delay(10)
         }
     }
 }
