@@ -34,6 +34,8 @@ class AspectFrameLayout : FrameLayout {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var exactWidthMeasureSpec = widthMeasureSpec
         var exactHeightMeasureSpec = heightMeasureSpec
+        println(exactWidthMeasureSpec)
+        println(exactHeightMeasureSpec)
         Log.d(
             TAG, "onMeasure target=" + mTargetAspect +
                     " width=[" + MeasureSpec.toString(exactWidthMeasureSpec) +
