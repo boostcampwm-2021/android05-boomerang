@@ -8,9 +8,10 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container_video_save"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.videoedit.VideoEditFragment">
+        tools:context=".ui.videosave.VideoSaveFragment">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/container_video_edit_appbar"
@@ -28,16 +29,13 @@
                 android:background="?attr/colorSurface"
                 app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
                 app:navigationIconTint="?attr/colorOnSurface"
-                app:title="메모 확인"
-                app:titleTextAppearance="?attr/textAppearanceTitleLarge">
-
-            </com.google.android.material.appbar.MaterialToolbar>
+                app:title="@string/menu_title_video_save"
+                app:titleTextAppearance="?attr/textAppearanceTitleLarge" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
-
         <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
-            android:id="@+id/frame_video"
+            android:id="@+id/container_exo_player"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="@dimen/dp16"
@@ -59,19 +57,19 @@
             android:id="@+id/pcv_video_edit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:show_timeout="0"
-            app:layout_constraintTop_toBottomOf="@id/frame_video"
-            app:layout_constraintStart_toStartOf="@id/frame_video"
-            app:layout_constraintEnd_toEndOf="@id/frame_video"/>
+            app:layout_constraintEnd_toEndOf="@id/container_exo_player"
+            app:layout_constraintStart_toStartOf="@id/container_exo_player"
+            app:layout_constraintTop_toBottomOf="@id/container_exo_player"
+            app:show_timeout="0" />
 
         <FrameLayout
-            android:id="@+id/alphaView"
+            android:id="@+id/container_alpha_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@id/frame_video"
-            app:layout_constraintEnd_toEndOf="@id/frame_video"
-            app:layout_constraintStart_toStartOf="@id/frame_video"
-            app:layout_constraintTop_toTopOf="@id/frame_video" />
+            app:layout_constraintBottom_toBottomOf="@id/container_exo_player"
+            app:layout_constraintEnd_toEndOf="@id/container_exo_player"
+            app:layout_constraintStart_toStartOf="@id/container_exo_player"
+            app:layout_constraintTop_toTopOf="@id/container_exo_player" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/container_et_title"
