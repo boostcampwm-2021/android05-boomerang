@@ -59,9 +59,8 @@ class VideoDoodleLightFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _dataBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.fragment_video_doodle_light,
+        _dataBinding = FragmentVideoDoodleLightBinding.inflate(
+            inflater,
             container,
             false
         )
@@ -108,7 +107,7 @@ class VideoDoodleLightFragment : Fragment() {
     private fun setListener() {
         with(dataBinding) {
             containerCanvas.isEnabled = false
-            toggleBtnDoodle.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            toggleBtnDoodle.addOnButtonCheckedListener { _, _, isChecked ->
                 if (isChecked) {
                     val currentTime = player.currentPosition
                     var canMemo = true
@@ -143,7 +142,7 @@ class VideoDoodleLightFragment : Fragment() {
             }
 
             rbRed.isChecked = true
-            rgDoodleColor.setOnCheckedChangeListener { group, checkedId ->
+            rgDoodleColor.setOnCheckedChangeListener { _, checkedId ->
                 when (checkedId) {
                     R.id.rb_red -> doodleColor = 0xFFFF0000
                     R.id.rb_green -> doodleColor = 0xFF00FF00
@@ -277,7 +276,8 @@ class VideoDoodleLightFragment : Fragment() {
                     playerEnded = false
                     videoDoodleLightViewModel.setDuration(player.duration)
                 }
-
+                Player.STATE_BUFFERING -> {}
+                Player.STATE_IDLE -> {}
             }
         }
 
@@ -293,10 +293,10 @@ class VideoDoodleLightFragment : Fragment() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.dialog_title_video_doodle_light_stop_memo))
             .setMessage(getString(R.string.dialog_message_video_doodle_light_stop_memo))
-            .setNegativeButton(getString(R.string.dialog_negative_cancel)) { dialog, which ->
+            .setNegativeButton(getString(R.string.dialog_negative_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton(getString(R.string.dialog_positive_delete)) { dialog, which ->
+            .setPositiveButton(getString(R.string.dialog_positive_delete)) { _, _ ->
                 videoDoodleLightViewModel.subVideos.value!!.forEach {
                     val file = File(it.uri.toUri().path!!)
                     file.delete()
@@ -310,10 +310,10 @@ class VideoDoodleLightFragment : Fragment() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.dialog_title_video_doodle_light_delete_subvideo))
             .setMessage(getString(R.string.dialog_message_video_doodle_light_delete_subvideo))
-            .setNegativeButton(R.string.dialog_negative_cancel) { dialog, which ->
+            .setNegativeButton(R.string.dialog_negative_cancel) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton(R.string.dialog_positive_delete) { dialog, which ->
+            .setPositiveButton(R.string.dialog_positive_delete) { _, _ ->
                 videoDoodleLightViewModel.deleteSubVideo(position)
             }
             .show()
