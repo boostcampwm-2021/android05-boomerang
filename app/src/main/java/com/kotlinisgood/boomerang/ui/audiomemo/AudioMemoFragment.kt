@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,7 +20,9 @@ import com.jakewharton.rxbinding4.view.clicks
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
+import com.kotlinisgood.boomerang.util.Util.showSnackBar
 import com.kotlinisgood.boomerang.util.throttle
+import com.kotlinisgood.boomerang.util.throttle1000
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
@@ -31,10 +32,11 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 class AudioMemoFragment : Fragment() {
 
-    private val TAG = "AudioMemoFragment"
     private var _dataBinding: FragmentAudioMemoBinding? = null
     val dataBinding get() = _dataBinding!!
-    private val viewModel: AudioMemoViewModel by viewModels()
+    private val fragmentContainer by lazy { dataBinding.containerFragmentAudioMemo }
+
+    private val audioMemoViewModel: AudioMemoViewModel by viewModels()
     private val args: AudioMemoFragmentArgs by navArgs()
     private val audioMemoAdapter = AudioMemoAdapter()
     private lateinit var player: ExoPlayer
@@ -57,13 +59,13 @@ class AudioMemoFragment : Fragment() {
         setObservers()
         setAdapters()
         setMenusOnToolbar()
-        viewModel.getMediaMemo(args.mediaMemoId)
+        audioMemoViewModel.getMediaMemo(args.mediaMemoId)
     }
 
 
     override fun onStart() {
         super.onStart()
-        if (viewModel.mediaMemo.value != null) {
+        if (audioMemoViewModel.mediaMemo.value != null) {
             player.prepare()
         }
     }
@@ -86,15 +88,17 @@ class AudioMemoFragment : Fragment() {
     }
 
     private fun setBinding() {
-        dataBinding.viewModel = viewModel
-        dataBinding.lifecycleOwner = viewLifecycleOwner
+        dataBinding.apply {
+            viewModel = audioMemoViewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
     }
 
     private fun setObservers() {
-        viewModel.mediaMemo.observe(viewLifecycleOwner) {
-            setPlayer(it.mediaUri)
+        audioMemoViewModel.mediaMemo.observe(viewLifecycleOwner) {
+            setAudioPlayer(it.mediaUri)
         }
-        viewModel.isLoading.observe(viewLifecycleOwner){ loading ->
+        audioMemoViewModel.isLoading.observe(viewLifecycleOwner){ loading ->
             if(loading){
                 loadingDialog.show()
             } else {
@@ -103,7 +107,7 @@ class AudioMemoFragment : Fragment() {
         }
     }
 
-    private fun setPlayer(path: String) {
+    private fun setAudioPlayer(path: String) {
         player = ExoPlayer.Builder(requireContext()).build()
             .apply {
                 setMediaItem(MediaItem.fromUri(Uri.fromFile(File(path))))
@@ -115,7 +119,7 @@ class AudioMemoFragment : Fragment() {
                         reason: Int
                     ) {
                         super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                        viewModel.modifyFocusedTextOrNot(newPosition.positionMs, audioMemoAdapter.currentList.toList())
+                        audioMemoViewModel.modifyFocusedTextOrNot(newPosition.positionMs, audioMemoAdapter.currentList.toList())
                     }
                 })
                 prepare()
@@ -123,7 +127,7 @@ class AudioMemoFragment : Fragment() {
                 dataBinding.pcvAudioMemoControlAudio.player = it
             }
         dataBinding.pcvAudioMemoControlAudio.setProgressUpdateListener { position, _ ->
-            viewModel.modifyFocusedTextOrNot(position, audioMemoAdapter.currentList.toList())
+            audioMemoViewModel.modifyFocusedTextOrNot(position, audioMemoAdapter.currentList.toList())
         }
     }
 
@@ -144,14 +148,14 @@ class AudioMemoFragment : Fragment() {
     private fun setMenusOnToolbar() {
         dataBinding.tbAudioMemo.apply {
             inflateMenu(R.menu.menu_fragment_audio_memo)
-            compositeDisposable.add(throttle(1000, TimeUnit.MILLISECONDS) {
+            compositeDisposable.add(throttle(throttle1000, TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
             })
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_audio_memo_delete -> {
                         compositeDisposable.add(it.clicks()
-                            .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                            .throttleFirst(throttle1000, TimeUnit.MILLISECONDS)
                             .subscribe {
                                 showDeleteDialog()
                             })
@@ -163,7 +167,7 @@ class AudioMemoFragment : Fragment() {
             menu.forEach {
                 when (it.itemId) {
                     R.id.menu_audio_memo_delete -> {
-                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { showDeleteDialog() })
+                        compositeDisposable.add(it.throttle(throttle1000, TimeUnit.MILLISECONDS) { showDeleteDialog() })
                     }
                 }
             }
@@ -172,19 +176,19 @@ class AudioMemoFragment : Fragment() {
 
     private fun showDeleteDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("메모 삭제")
-            .setMessage("메몰를 삭제하시겠습니까?")
-            .setNegativeButton("취소") { dialog, _ ->
+            .setTitle(getString(R.string.fragment_audio_memo_dialog_deletion_title))
+            .setMessage(getString(R.string.fragment_audio_memo_dialog_deletion_message))
+            .setNegativeButton(getString(R.string.dialog_negative_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("삭제") { dialog, _ ->
+            .setPositiveButton(getString(R.string.dialog_positive_delete)) { dialog, _ ->
                 lifecycleScope.launch {
-                    val result = viewModel.deleteMemo()
+                    val result = audioMemoViewModel.deleteMemo()
                     if (result) {
                         dialog.dismiss()
                         findNavController().navigate(AudioMemoFragmentDirections.actionAudioMemoFragmentToHomeFragment())
                     } else {
-                        Toast.makeText(requireContext(), "메모 삭제에 실패하였습니다", Toast.LENGTH_SHORT).show()
+                        fragmentContainer.showSnackBar(getString(R.string.fragment_audio_memo_dialog_deletion_positive))
                     }
                 }
             }

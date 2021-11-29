@@ -3,11 +3,9 @@ package com.kotlinisgood.boomerang.ui.videoselection
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
@@ -17,9 +15,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoSelectionBinding
+import com.kotlinisgood.boomerang.util.Util.showSnackBar
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_FRAME
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.kotlinisgood.boomerang.util.throttle
+import com.kotlinisgood.boomerang.util.throttle1000
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
@@ -28,34 +28,36 @@ import java.util.concurrent.TimeUnit
 class VideoSelectionFragment : Fragment() {
     private var _dataBinding: FragmentVideoSelectionBinding? = null
     private val dataBinding get() = _dataBinding!!
+    private val fragmentContainer by lazy { dataBinding.containerFragmentVideoSelection }
     private val args : VideoSelectionFragmentArgs by navArgs()
     private val videoMode by lazy { args.memoType }
-    private val viewModel: VideoSelectionViewModel by viewModels()
+
+    private val videoSelectionViewModel: VideoSelectionViewModel by viewModels()
     private val compositeDisposable by lazy { CompositeDisposable() }
-    private val videoSelectionAdapter by lazy {
-        VideoSelectionAdapter()
-    }
-    private val permissionResultCallback = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {
-        when (it) {
-            true -> {
-                viewModel.loadVideos()
-            }
-            false -> {
-                Toast.makeText(
-                    requireContext(),
-                    "Permission Not Granted By the User",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+    private val videoSelectionAdapter by lazy { VideoSelectionAdapter() }
+    private val permissionResultCallback by lazy {
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) {
+            when (it) {
+                true -> {
+                    videoSelectionViewModel.loadVideos()
+                }
+                false -> {
+                    dataBinding.containerFragmentVideoSelection.showSnackBar(
+                        getString(R.string.permission_rejected)
+                    )
+                }
             }
         }
     }
 
     private fun setBinds() {
-        dataBinding.viewModel = viewModel
-        dataBinding.lifecycleOwner = viewLifecycleOwner
+        dataBinding.apply {
+            viewModel = videoSelectionViewModel
+            lifecycleOwner = viewLifecycleOwner
+            rvVideoSelectionShowVideos.adapter = videoSelectionAdapter
+        }
     }
 
     private fun checkPermission() {
@@ -68,7 +70,7 @@ class VideoSelectionFragment : Fragment() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             )
         } else {
-            viewModel.loadVideos()
+            videoSelectionViewModel.loadVideos()
         }
     }
 
@@ -84,11 +86,9 @@ class VideoSelectionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         setBinds()
-        dataBinding.rvVideoSelectionShowVideos.adapter = videoSelectionAdapter
         setTbNavigationIconClickListener()
         checkPermission()
         setOnMenuItemClickListener()
-        Log.i("VIDEO SELECTION MODE", "$videoMode")
     }
 
     override fun onDestroy() {
@@ -98,7 +98,7 @@ class VideoSelectionFragment : Fragment() {
     }
 
     private fun setTbNavigationIconClickListener() {
-        compositeDisposable.add(dataBinding.tbVideoSelection.throttle(1000,TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.tbVideoSelection.throttle(throttle1000,TimeUnit.MILLISECONDS) {
             findNavController().popBackStack()
         })
     }
@@ -107,15 +107,14 @@ class VideoSelectionFragment : Fragment() {
         dataBinding.tbVideoSelection.menu.forEach {
             when(it.itemId) {
                 R.id.menu_video_selection_completion ->
-                    compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { checkConditionAndNavigate() })
+                    compositeDisposable.add(it.throttle(throttle1000, TimeUnit.MILLISECONDS) { checkConditionAndNavigate() })
             }
         }
     }
 
     private fun checkConditionAndNavigate() {
         if (videoSelectionAdapter.selectedIndex == -1) {
-            Toast.makeText(requireContext(), "동영상이 선택되지 않았습니다", Toast.LENGTH_SHORT)
-                .show()
+            fragmentContainer.showSnackBar(getString(R.string.fragment_video_selection_select_video))
         } else {
             val uri =
                 videoSelectionAdapter.currentList[videoSelectionAdapter.selectedIndex].uri.toString()

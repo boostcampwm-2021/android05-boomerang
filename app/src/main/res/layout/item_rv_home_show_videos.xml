@@ -5,11 +5,11 @@
 
     <data>
 
-        <import type="com.kotlinisgood.boomerang.model.OrderState" />
+        <import type="com.kotlinisgood.boomerang.ui.home.OrderState" />
 
         <variable
             name="orderState"
-            type="OrderState" />
+            type="com.kotlinisgood.boomerang.ui.home.OrderState" />
 
         <variable
             name="mediaMemo"
