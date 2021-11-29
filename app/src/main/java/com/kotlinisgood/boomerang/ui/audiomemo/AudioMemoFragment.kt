@@ -22,6 +22,7 @@ import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioMemoBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.throttle
+import com.kotlinisgood.boomerang.util.throttle1000
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
@@ -146,14 +147,14 @@ class AudioMemoFragment : Fragment() {
     private fun setMenusOnToolbar() {
         dataBinding.tbAudioMemo.apply {
             inflateMenu(R.menu.menu_fragment_audio_memo)
-            compositeDisposable.add(throttle(1000, TimeUnit.MILLISECONDS) {
+            compositeDisposable.add(throttle(throttle1000, TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
             })
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_audio_memo_delete -> {
                         compositeDisposable.add(it.clicks()
-                            .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                            .throttleFirst(throttle1000, TimeUnit.MILLISECONDS)
                             .subscribe {
                                 showDeleteDialog()
                             })
@@ -165,7 +166,7 @@ class AudioMemoFragment : Fragment() {
             menu.forEach {
                 when (it.itemId) {
                     R.id.menu_audio_memo_delete -> {
-                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { showDeleteDialog() })
+                        compositeDisposable.add(it.throttle(throttle1000, TimeUnit.MILLISECONDS) { showDeleteDialog() })
                     }
                 }
             }
