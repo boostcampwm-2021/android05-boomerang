@@ -25,7 +25,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoMemoBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
-import com.kotlinisgood.boomerang.ui.videoedit.AlphaViewFactory
+import com.kotlinisgood.boomerang.ui.videosave.AlphaViewFactory
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.kotlinisgood.boomerang.util.throttle

@@ -86,7 +86,7 @@
             app:argType="string" />
         <action
             android:id="@+id/action_videoDoodleFragment_to_videoEditLightFragment"
-            app:destination="@id/videoEditFragment">
+            app:destination="@id/videoSaveFragment">
             <argument
                 android:name="baseVideo"
                 app:argType="string" />
@@ -103,7 +103,7 @@
         android:label="VideoDoodleLightFragment" >
         <action
             android:id="@+id/action_videoDoodleLightFragment_to_videoEditLightFragment"
-            app:destination="@id/videoEditFragment">
+            app:destination="@id/videoSaveFragment">
             <argument
                 android:name="baseVideo"
                 app:argType="string" />
@@ -116,9 +116,9 @@
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/videoEditFragment"
-        android:name="com.kotlinisgood.boomerang.ui.videoedit.VideoEditFragment"
-        android:label="VideoEditLightFragment" >
+        android:id="@+id/videoSaveFragment"
+        android:name="com.kotlinisgood.boomerang.ui.videosave.VideoSaveFragment"
+        android:label="VideoSaveFragment" >
         <argument
             android:name="subVideos"
             app:argType="com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo[]" />
