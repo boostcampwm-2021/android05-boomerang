@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp16"
                     android:layout_marginTop="@dimen/dp8"
-                    android:text="메모"
+                    android:text="@string/memo"
                     android:textSize="17sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"

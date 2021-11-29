@@ -66,8 +66,10 @@
     <string name="google_warning_title">구글 앱 문제가 있습니다</string>
     <string name="dialog_negative_close">닫기</string>
     <string name="dialog_positive_move">이동</string>
-    <string name="fragment_audio_memo_dialog_deletion_title">메모 삭제</string>
-    <string name="fragment_audio_memo_dialog_deletion_message">메모를 삭제하시겠습니까</string>
+    <string name="dialog_memo_deletion_title">메모 삭제</string>
+    <string name="dialog_memo_deletion_message">메모를 삭제하시겠습니까</string>
     <string name="fragment_audio_memo_dialog_deletion_positive">메모를 삭제하시겠습니까</string>
     <string name="fragment_video_selection_select_video">동영상을 선택해주세요</string>
+    <string name="dialog_memo_deletion_fail_message">메모를 삭제에 실패하였습니다.</string>
+    <string name="memo">메모</string>
 </resources>

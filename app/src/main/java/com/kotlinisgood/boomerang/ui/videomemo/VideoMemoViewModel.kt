@@ -20,13 +20,13 @@ import javax.inject.Inject
 @HiltViewModel
 class VideoMemoViewModel @Inject constructor(private val repository: AppRepository) : ViewModel() {
 
-    private var _isLoading = MutableLiveData<Boolean>(false)
+    private var _isLoading = MutableLiveData(false)
     val isLoading : LiveData<Boolean> get() = _isLoading
 
     private var _mediaMemo: MutableLiveData<MediaMemo> = MutableLiveData()
     val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
     private var subVideos = listOf<SubVideo>()
-    var alphaMovieViews: MutableList<AlphaMovieView> = mutableListOf<AlphaMovieView>()
+    var alphaMovieViews: MutableList<AlphaMovieView> = mutableListOf()
     private var subVideosStates = mutableListOf<Boolean>()
 
     fun loadMediaMemo(id: Int) {
@@ -62,9 +62,6 @@ class VideoMemoViewModel @Inject constructor(private val repository: AppReposito
                     } else if (it.memoType == VIDEO_MODE_SUB_VIDEO) {
                         it.memoList.forEach { subVideo ->
                             val file = File(subVideo.uri)
-                            println("File abs path is : ${file.absolutePath}")
-                            println("File path is : ${file.path}")
-                            println("File is : ${file.isFile}")
                             File(subVideo.uri).delete()
                         }
                     }
