@@ -27,6 +27,7 @@ import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.Util
+import com.kotlinisgood.boomerang.util.Util.showSnackBar
 import com.kotlinisgood.boomerang.util.throttle
 import com.kotlinisgood.boomerang.util.throttle1000
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,6 +48,7 @@ class AudioRecordFragment : Fragment() {
 
     private var _dataBinding: FragmentAudioRecordBinding? = null
     val dataBinding get() = _dataBinding!!
+    private val fragmentContainer by lazy { dataBinding.containerFragmentAudioRecord }
 
     private val recognizerIntent by lazy { Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH) }
 
@@ -60,7 +62,7 @@ class AudioRecordFragment : Fragment() {
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (it.values.contains(false)) {
-            Toast.makeText(requireContext(), getString(R.string.permission_rejected), Toast.LENGTH_SHORT).show()
+            fragmentContainer.showSnackBar(getString(R.string.permission_rejected))
         } else {
             startSTT()
         }
@@ -201,11 +203,11 @@ class AudioRecordFragment : Fragment() {
     private fun checkAudioSaveState(): Boolean {
         return when {
             dataBinding.etAudioRecordEnterTitle.text.toString() == "" -> {
-                Toast.makeText(requireContext(), getString(R.string.title_warning), Toast.LENGTH_SHORT).show()
+                fragmentContainer.showSnackBar(getString(R.string.title_warning))
                 false
             }
             audioRecordViewModel.isFileListEmpty() -> {
-                Toast.makeText(requireContext(), getString(R.string.audio_list_warning), Toast.LENGTH_SHORT).show()
+                fragmentContainer.showSnackBar(getString(R.string.audio_list_warning))
                 false
             }
             else -> {
