@@ -1,4 +1,4 @@
-package com.kotlinisgood.boomerang.model
+package com.kotlinisgood.boomerang.ui.home
 
 enum class OrderState(val order: String) {
     CREATE_RECENT("create_recent"),

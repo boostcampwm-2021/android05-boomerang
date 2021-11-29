@@ -1,6 +1,5 @@
 package com.kotlinisgood.boomerang.ui.home.bottomsheet
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentBottomSheetBinding
-import com.kotlinisgood.boomerang.model.OrderState
+import com.kotlinisgood.boomerang.ui.home.OrderState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

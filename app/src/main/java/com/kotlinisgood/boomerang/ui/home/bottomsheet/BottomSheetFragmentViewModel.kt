@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kotlinisgood.boomerang.model.OrderState
+import com.kotlinisgood.boomerang.ui.home.OrderState
 import com.kotlinisgood.boomerang.repository.SharedPrefDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

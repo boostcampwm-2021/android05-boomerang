@@ -2,7 +2,7 @@ package com.kotlinisgood.boomerang.repository
 
 import android.content.Context
 import androidx.core.content.edit
-import com.kotlinisgood.boomerang.model.OrderState
+import com.kotlinisgood.boomerang.ui.home.OrderState
 import com.kotlinisgood.boomerang.util.IS_FIRST
 import com.kotlinisgood.boomerang.util.ORDER_STATE
 import com.kotlinisgood.boomerang.util.PREF_NAME
@@ -23,9 +23,11 @@ class SharedPrefDataSource @Inject constructor(context: Context) {
     fun getOrderState(): OrderState {
         return when (sharedPref.getString(ORDER_STATE, "X") ?: "X") {
             "create_recent" -> { OrderState.CREATE_RECENT }
-            "create_old" -> {OrderState.CREATE_OLD}
+            "create_old" -> {
+                OrderState.CREATE_OLD}
             "modify_recent" -> { OrderState.MODIFY_RECENT }
-            "modify_old" -> {OrderState.MODIFY_OLD}
+            "modify_old" -> {
+                OrderState.MODIFY_OLD}
             else -> { OrderState.CREATE_RECENT }
         }
     }
