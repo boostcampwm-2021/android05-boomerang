@@ -24,7 +24,7 @@ import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleLightBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.util.ViewRecorder
 import com.kotlinisgood.boomerang.util.Util
-import com.kotlinisgood.boomerang.util.Util.showToast
+import com.kotlinisgood.boomerang.util.Util.showSnackBar
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -120,7 +120,9 @@ class VideoDoodleLightFragment : Fragment() {
                     when {
                         playerEnded || currentTime > player.duration - 300 -> {
                             toggleBtnDoodle.uncheck(R.id.btn_doodle)
-                            this@VideoDoodleLightFragment.showToast("영상이 끝났습니다")
+                            dataBinding.layoutVideoDoodle.showSnackBar(
+                                "영상이 끝났습니다"
+                            )
                         }
                         canMemo -> {
                             startRecord()
@@ -128,7 +130,9 @@ class VideoDoodleLightFragment : Fragment() {
                         }
                         else -> {
                             toggleBtnDoodle.uncheck(R.id.btn_doodle)
-                            this@VideoDoodleLightFragment.showToast("이미 메모가 있습니다")
+                            dataBinding.layoutVideoDoodle.showSnackBar(
+                                "이미 메모가 있습니다"
+                            )
                         }
                     }
 
@@ -179,7 +183,7 @@ class VideoDoodleLightFragment : Fragment() {
                 stopRecord()
                 videoDoodleLightViewModel.resetTimer()
                 dataBinding.toggleBtnDoodle.uncheck(R.id.btn_doodle)
-                this.showToast("영상 시간을 초과하여 메모하실 수 없습니다")
+                dataBinding.layoutVideoDoodle.showSnackBar("영상 시간을 초과하여 메모하실 수 없습니다")
             }
         }
     }
