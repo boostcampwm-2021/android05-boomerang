@@ -40,8 +40,8 @@ class EglWindowSurface(private val egl: Egl, private var surface: Surface?) {
 
         // Don't cache width/height here, because the size of the underlying surface can change
         // out from under us (see e.g. HardwareScalerActivity).
-        mWidth = egl.querySurface(eglSurface, EGL14.EGL_WIDTH);
-        mHeight = egl.querySurface(eglSurface, EGL14.EGL_HEIGHT);
+        mWidth = egl.querySurface(eglSurface, EGL14.EGL_WIDTH)
+        mHeight = egl.querySurface(eglSurface, EGL14.EGL_HEIGHT)
     }
 
     /**

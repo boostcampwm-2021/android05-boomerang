@@ -1,7 +1,6 @@
 package com.kotlinisgood.boomerang.ui.videodoodle
 
 import android.opengl.GLES20
-import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
 import java.lang.RuntimeException
@@ -17,7 +16,7 @@ object GlUtil {
     private const val TAG = "GlUtilTAG"
 
     /** Identity matrix for general use.  Don't modify or life will get weird.  */
-    val IDENTITY_MATRIX: FloatArray
+    val IDENTITY_MATRIX: FloatArray = FloatArray(16)
     private const val SIZEOF_FLOAT = 4
 
     /**
@@ -102,46 +101,6 @@ object GlUtil {
     }
 
     /**
-     * Creates a texture from raw data.
-     *
-     * @param data Image data, in a "direct" ByteBuffer.
-     * @param width Texture width, in pixels (not bytes).
-     * @param height Texture height, in pixels.
-     * @param format Image data format (use constant appropriate for glTexImage2D(), e.g. GL_RGBA).
-     * @return Handle to texture.
-     */
-    fun createImageTexture(data: ByteBuffer?, width: Int, height: Int, format: Int): Int {
-        val textureHandles = IntArray(1)
-        val textureHandle: Int
-        GLES20.glGenTextures(1, textureHandles, 0)
-        textureHandle = textureHandles[0]
-        checkGlError("glGenTextures")
-
-        // Bind the texture handle to the 2D texture target.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle)
-
-        // Configure min/mag filtering, i.e. what scaling method do we use if what we're rendering
-        // is smaller or larger than the source image.
-        GLES20.glTexParameteri(
-            GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-            GLES20.GL_LINEAR
-        )
-        GLES20.glTexParameteri(
-            GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,
-            GLES20.GL_LINEAR
-        )
-        checkGlError("loadImageTexture")
-
-        // Load the data from the buffer into the texture handle.
-        GLES20.glTexImage2D(
-            GLES20.GL_TEXTURE_2D,  /*level*/0, format,
-            width, height,  /*border*/0, format, GLES20.GL_UNSIGNED_BYTE, data
-        )
-        checkGlError("loadImageTexture")
-        return textureHandle
-    }
-
-    /**
      * Allocates a direct float buffer, and populates it with the float array data.
      */
     fun createFloatBuffer(coords: FloatArray): FloatBuffer {
@@ -154,27 +113,7 @@ object GlUtil {
         return fb
     }
 
-    /**
-     * Writes GL version info to the log.
-     */
-    fun logVersionInfo() {
-        Log.i(TAG, "vendor  : " + GLES20.glGetString(GLES20.GL_VENDOR))
-        Log.i(TAG, "renderer: " + GLES20.glGetString(GLES20.GL_RENDERER))
-        Log.i(TAG, "version : " + GLES20.glGetString(GLES20.GL_VERSION))
-        if (false) {
-            val values = IntArray(1)
-            GLES30.glGetIntegerv(GLES30.GL_MAJOR_VERSION, values, 0)
-            val majorVersion = values[0]
-            GLES30.glGetIntegerv(GLES30.GL_MINOR_VERSION, values, 0)
-            val minorVersion = values[0]
-            if (GLES30.glGetError() == GLES30.GL_NO_ERROR) {
-                Log.i(TAG, "iversion: $majorVersion.$minorVersion")
-            }
-        }
-    }
-
     init {
-        IDENTITY_MATRIX = FloatArray(16)
         Matrix.setIdentityM(IDENTITY_MATRIX, 0)
     }
 }

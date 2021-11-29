@@ -1,6 +1,5 @@
 package com.kotlinisgood.boomerang.ui.videodoodle
 
-import java.lang.RuntimeException
 import java.nio.FloatBuffer
 
 /**
@@ -153,7 +152,6 @@ class Drawable2d(shape: Prefab) {
                 vertexStride = coordsPerVertex * SIZEOF_FLOAT
                 vertexCount = FULL_RECTANGLE_COORDS.size / coordsPerVertex
             }
-            else -> throw RuntimeException("Unknown shape $shape")
         }
         texCoordStride = 2 * SIZEOF_FLOAT
         mPrefab = shape
