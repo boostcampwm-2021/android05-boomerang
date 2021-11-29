@@ -28,6 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
+import com.kotlinisgood.boomerang.util.Util
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -232,8 +233,7 @@ class AudioRecordFragment : Fragment() {
                 read = input.read(bytes)
             }
 
-            getDuration(file)?.let {
-                Log.i(TAG, "save audio's duration $it")
+            Util.getDuration(file)?.let {
                 withContext(Dispatchers.Main) {
                     viewModel.addTimeAndText(recognizedText, it.toInt())
                     dataBinding.tvAudioRecordShowRecognizedText.text =  viewModel.getAccText()
@@ -249,14 +249,6 @@ class AudioRecordFragment : Fragment() {
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-        }
-    }
-
-    private fun getDuration(file: File): String? {
-        val mmr = MediaMetadataRetriever()
-        mmr.setDataSource(file.absolutePath)
-        return mmr.run {
-            extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         }
     }
 
