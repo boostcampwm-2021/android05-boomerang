@@ -40,8 +40,6 @@ class VideoDoodleLightViewModel : ViewModel() {
             while(isActive) {
                 val currentTime = System.currentTimeMillis()
                 if(currentSubVideo!!.startingTime + currentTime - recordStartTime > duration){
-                    println(currentSubVideo!!.startingTime + currentTime - recordStartTime)
-                    println(duration)
                     _timeOver.value = true
                     break
                 }

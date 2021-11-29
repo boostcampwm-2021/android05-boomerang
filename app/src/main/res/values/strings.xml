@@ -49,4 +49,10 @@
     <string name="snackbar_video_doodle_light_video_end">영상이 끝났습니다</string>
     <string name="snackbar_video_doodle_light_cant_memo">이미 메모가 있습니다</string>
     <string name="snackbar_video_doodle_light_video_over">영상 시간을 초과하여 메모하실 수 없습니다</string>
+    <string name="dialog_title_video_doodle_light_stop_memo">메모 작성을 중단하시겠습니까?</string>
+    <string name="dialog_message_video_doodle_light_stop_memo">작성 중인 메모는 삭제됩니다.</string>
+    <string name="dialog_negative_cancel">취소</string>
+    <string name="dialog_positive_delete">삭제</string>
+    <string name="dialog_title_video_doodle_light_delete_subvideo">해당 메모를 삭제하시겠습니까?</string>
+    <string name="dialog_message_video_doodle_light_delete_subvideo">삭제한 메모는 되돌릴 수 없습니다.</string>
 </resources>

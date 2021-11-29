@@ -217,7 +217,6 @@ class VideoDoodleLightFragment : Fragment() {
                 )
             )
         } catch (e: IOException) {
-            Log.e("MainActivity", "startRecord failed", e)
             return
         }
         videoDoodleLightViewModel.startRecordTime()
@@ -259,7 +258,6 @@ class VideoDoodleLightFragment : Fragment() {
     }
 
     private val onErrorListener = MediaRecorder.OnErrorListener { mr, what, extra ->
-        Log.e("MainActivity", "MediaRecorder error: type = $what, code = $extra")
         viewRecorder.reset()
         viewRecorder.release()
     }
@@ -293,12 +291,12 @@ class VideoDoodleLightFragment : Fragment() {
 
     private fun showDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("메모 작성을 중단하시겠습니까?")
-            .setMessage("작성 중인 메모는 삭제됩니다.")
-            .setNegativeButton("취소") { dialog, which ->
+            .setTitle(getString(R.string.dialog_title_video_doodle_light_stop_memo))
+            .setMessage(getString(R.string.dialog_message_video_doodle_light_stop_memo))
+            .setNegativeButton(getString(R.string.dialog_negative_cancel)) { dialog, which ->
                 dialog.dismiss()
             }
-            .setPositiveButton("삭제") { dialog, which ->
+            .setPositiveButton(getString(R.string.dialog_positive_delete)) { dialog, which ->
                 videoDoodleLightViewModel.subVideos.value!!.forEach {
                     val file = File(it.uri.toUri().path!!)
                     file.delete()
@@ -310,12 +308,12 @@ class VideoDoodleLightFragment : Fragment() {
 
     private fun showSubVideoDialog(position: Int) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("해당 메모를 삭제하시겠습니까?")
-            .setMessage("삭제한 메모는 되돌릴 수 없습니다.")
-            .setNegativeButton("취소") { dialog, which ->
+            .setTitle(getString(R.string.dialog_title_video_doodle_light_delete_subvideo))
+            .setMessage(getString(R.string.dialog_message_video_doodle_light_delete_subvideo))
+            .setNegativeButton(R.string.dialog_negative_cancel) { dialog, which ->
                 dialog.dismiss()
             }
-            .setPositiveButton("삭제") { dialog, which ->
+            .setPositiveButton(R.string.dialog_positive_delete) { dialog, which ->
                 videoDoodleLightViewModel.deleteSubVideo(position)
             }
             .show()
