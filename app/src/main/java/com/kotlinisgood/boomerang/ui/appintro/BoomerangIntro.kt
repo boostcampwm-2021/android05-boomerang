@@ -2,8 +2,11 @@ package com.kotlinisgood.boomerang.ui.appintro
 
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro
@@ -15,51 +18,92 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class BoomerangIntro : AppIntro() {
 
-    private val viewModel : IntroViewModel by viewModels()
+    private val viewModel: IntroViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isIndicatorEnabled = true
-        setColorSkipButton(R.color.black)
-        setColorDoneText(R.color.black)
-        setIndicatorColor(
-            selectedIndicatorColor = R.color.black,
-            unselectedIndicatorColor = R.color.recognized_text_no_focus
+        setColorSkipButton(
+            ContextCompat.getColor(
+                applicationContext,
+                R.color.md_theme_onBackground
+            )
         )
+        setColorDoneText(ContextCompat.getColor(applicationContext, R.color.md_theme_onBackground))
+
+        isIndicatorEnabled = true
+        setIndicatorColor(
+            selectedIndicatorColor = ContextCompat.getColor(
+                applicationContext,
+                R.color.md_theme_onPrimary
+            ),
+            unselectedIndicatorColor = ContextCompat.getColor(
+                applicationContext,
+                R.color.md_theme_onBackground
+            )
+        )
+
         addSlide(IntroFragment1())
-        addSlide(AppIntroFragment.newInstance(
-            "나만의 메모",
-            "원하는 곳에 메모를 할 수 있어요",
-            R.drawable.boomerang_intro_2,
-            titleColor = Color.BLACK,
-            descriptionColor = Color.BLACK
-        ))
-        addSlide(AppIntroFragment.newInstance(
-            "모두의 메모",
-            "다른 사람과 공유를 할 수 있어요",
-            R.drawable.boomerang_intro_3,
-            titleColor = Color.BLACK,
-            descriptionColor = Color.BLACK
-        ))
-        addSlide(AppIntroFragment.newInstance(
-            "음성 메모",
-            "녹음을 멜론처럼 텍스트와 들을 수 있어요",
-            R.drawable.boomerang_intro_4,
-            titleColor = Color.BLACK,
-            descriptionColor = Color.BLACK
-        ))
-        addSlide(AppIntroFragment.newInstance(
-            "부메랑 시작하기!",
-        "신개념 메모하러 가자!",
-            R.drawable.boomerang_intro_5,
-            titleColor = Color.BLACK,
-            descriptionColor = Color.BLACK
-        ))
-
-
+        addSlide(
+            AppIntroFragment.newInstance(
+                getString(R.string.app_intro_slide_2_title),
+                getString(R.string.app_intro_slide_2_description),
+                R.drawable.boomerang_intro_2,
+                titleColor = ContextCompat.getColor(
+                    applicationContext,
+                    R.color.md_theme_onBackground
+                ),
+                descriptionColor = ContextCompat.getColor(
+                    applicationContext,
+                    R.color.md_theme_onBackground
+                )
+            )
+        )
+        addSlide(
+            AppIntroFragment.newInstance(
+                getString(R.string.app_intro_slide_3_title),
+                getString(R.string.app_intro_slide_3_description),
+                R.drawable.boomerang_intro_3,
+                titleColor = ContextCompat.getColor(
+                    applicationContext,
+                    R.color.md_theme_onBackground
+                ),
+                descriptionColor = ContextCompat.getColor(
+                    applicationContext,
+                    R.color.md_theme_onBackground
+                )
+            )
+        )
+        addSlide(
+            AppIntroFragment.newInstance(
+                getString(R.string.app_intro_slide_4_title),
+                getString(R.string.app_intro_slide_4_description),
+                R.drawable.boomerang_intro_4,
+                titleColor = ContextCompat.getColor(
+                    applicationContext,
+                    R.color.md_theme_onBackground
+                ),
+                descriptionColor = ContextCompat.getColor(
+                    applicationContext,
+                    R.color.md_theme_onBackground
+                )
+            )
+        )
+        addSlide(
+            AppIntroFragment.newInstance(
+                getString(R.string.app_intro_slide_5_title),
+                getString(R.string.app_intro_slide_5_description),
+                R.drawable.boomerang_intro_5,
+                titleColor = ContextCompat.getColor(
+                    applicationContext,
+                    R.color.md_theme_onBackground
+                ),
+                descriptionColor = ContextCompat.getColor(
+                    applicationContext,
+                    R.color.md_theme_onBackground
+                )
+            )
+        )
     }
-
-
 
     override fun onSkipPressed(currentFragment: Fragment?) {
         super.onSkipPressed(currentFragment)
@@ -73,7 +117,7 @@ class BoomerangIntro : AppIntro() {
         startMainActivity()
     }
 
-    private fun startMainActivity(){
+    private fun startMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
