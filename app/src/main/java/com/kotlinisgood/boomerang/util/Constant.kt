@@ -15,8 +15,8 @@ const val AUDIO_MODE = 10000002
 const val throttle1000 = 1000L
 const val throttle500 = 500L
 const val PREF_NAME = "SETTING"
-const val ORDER_STATE = "orderState"
-const val IS_FIRST = "isFirst"
+const val ORDER_STATE_KEY = "orderState"
+const val IS_FIRST_KEY = "isFirst"
 
 
 fun View.throttle(duration: Long, timeUnit: TimeUnit, method: () -> Unit): Disposable {

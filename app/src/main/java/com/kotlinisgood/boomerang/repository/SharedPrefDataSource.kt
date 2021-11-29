@@ -3,8 +3,8 @@ package com.kotlinisgood.boomerang.repository
 import android.content.Context
 import androidx.core.content.edit
 import com.kotlinisgood.boomerang.ui.home.OrderState
-import com.kotlinisgood.boomerang.util.IS_FIRST
-import com.kotlinisgood.boomerang.util.ORDER_STATE
+import com.kotlinisgood.boomerang.util.IS_FIRST_KEY
+import com.kotlinisgood.boomerang.util.ORDER_STATE_KEY
 import com.kotlinisgood.boomerang.util.PREF_NAME
 import javax.inject.Inject
 
@@ -15,13 +15,13 @@ class SharedPrefDataSource @Inject constructor(context: Context) {
 
     fun saveOrderState(orderState: OrderState) {
         sharedPref.edit {
-            remove(ORDER_STATE)
-            putString(ORDER_STATE, orderState.order)
+            remove(ORDER_STATE_KEY)
+            putString(ORDER_STATE_KEY, orderState.order)
         }
     }
 
     fun getOrderState(): OrderState {
-        return when (sharedPref.getString(ORDER_STATE, "X") ?: "X") {
+        return when (sharedPref.getString(ORDER_STATE_KEY, "X") ?: "X") {
             "create_recent" -> { OrderState.CREATE_RECENT }
             "create_old" -> {
                 OrderState.CREATE_OLD}
@@ -33,7 +33,7 @@ class SharedPrefDataSource @Inject constructor(context: Context) {
     }
 
     fun getIsFirst(): Boolean {
-        return when(sharedPref.getBoolean(IS_FIRST, true)){
+        return when(sharedPref.getBoolean(IS_FIRST_KEY, true)){
             true -> true
             false -> false
         }
@@ -41,8 +41,8 @@ class SharedPrefDataSource @Inject constructor(context: Context) {
 
     fun setIsFirst(){
         sharedPref.edit{
-            remove(IS_FIRST)
-            putBoolean(IS_FIRST, false)
+            remove(IS_FIRST_KEY)
+            putBoolean(IS_FIRST_KEY, false)
         }
     }
 }
