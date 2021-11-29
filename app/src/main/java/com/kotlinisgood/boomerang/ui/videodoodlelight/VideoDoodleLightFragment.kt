@@ -107,7 +107,7 @@ class VideoDoodleLightFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun setListener() {
         with(dataBinding) {
-            canvas.isEnabled = false
+            containerCanvas.isEnabled = false
             toggleBtnDoodle.addOnButtonCheckedListener { group, checkedId, isChecked ->
                 if (isChecked) {
                     val currentTime = player.currentPosition
@@ -120,17 +120,17 @@ class VideoDoodleLightFragment : Fragment() {
                     when {
                         playerEnded || currentTime > player.duration - 300 -> {
                             toggleBtnDoodle.uncheck(R.id.btn_doodle)
-                            dataBinding.layoutVideoDoodle.showSnackBar(
+                            dataBinding.containerVideoDoodleLight.showSnackBar(
                                 getString(R.string.snackbar_video_doodle_light_video_end)
                             )
                         }
                         canMemo -> {
                             startRecord()
-                            dataBinding.canvas.isEnabled = true
+                            dataBinding.containerCanvas.isEnabled = true
                         }
                         else -> {
                             toggleBtnDoodle.uncheck(R.id.btn_doodle)
-                            dataBinding.layoutVideoDoodle.showSnackBar(
+                            dataBinding.containerVideoDoodleLight.showSnackBar(
                                 getString(R.string.snackbar_video_doodle_light_cant_memo)
                             )
                         }
@@ -138,7 +138,7 @@ class VideoDoodleLightFragment : Fragment() {
 
                 } else {
                     stopRecord()
-                    dataBinding.canvas.isEnabled = false
+                    dataBinding.containerCanvas.isEnabled = false
                 }
             }
 
@@ -161,7 +161,7 @@ class VideoDoodleLightFragment : Fragment() {
                 when (it.itemId) {
                     R.id.menu_video_doodle -> {
                         compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
-                            dataBinding.canvas.isEnabled = false
+                            dataBinding.containerCanvas.isEnabled = false
                             stopRecord()
                             val action =
                                 VideoDoodleLightFragmentDirections.actionVideoDoodleLightFragmentToVideoEditLightFragment(
@@ -183,7 +183,7 @@ class VideoDoodleLightFragment : Fragment() {
                 stopRecord()
                 videoDoodleLightViewModel.resetTimer()
                 dataBinding.toggleBtnDoodle.uncheck(R.id.btn_doodle)
-                dataBinding.layoutVideoDoodle.showSnackBar(getString(R.string.snackbar_video_doodle_light_video_over))
+                dataBinding.containerVideoDoodleLight.showSnackBar(getString(R.string.snackbar_video_doodle_light_video_over))
             }
         }
     }
@@ -196,7 +196,7 @@ class VideoDoodleLightFragment : Fragment() {
 
     private fun setDrawingView() {
         drawView = DrawView(requireContext())
-        dataBinding.canvas.addView(drawView)
+        dataBinding.containerCanvas.addView(drawView)
         drawView?.setColor(doodleColor.toInt())
     }
 
@@ -228,7 +228,7 @@ class VideoDoodleLightFragment : Fragment() {
             viewRecorder.stop()
             viewRecorder.reset()
             viewRecorder.release()
-            dataBinding.canvas.removeAllViews()
+            dataBinding.containerCanvas.removeAllViews()
             videoDoodleLightViewModel.resetTimer()
             videoDoodleLightViewModel.setEndTime(
                 Util.getDuration(
@@ -244,8 +244,8 @@ class VideoDoodleLightFragment : Fragment() {
 
     private fun setViewRecorder() {
         viewRecorder = ViewRecorder().apply {
-            val width = Math.round(dataBinding.canvas.width.toFloat() / 10) * 10
-            val height = Math.round(dataBinding.canvas.height.toFloat() / 10) * 10
+            val width = Math.round(dataBinding.containerCanvas.width.toFloat() / 10) * 10
+            val height = Math.round(dataBinding.containerCanvas.height.toFloat() / 10) * 10
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setVideoFrameRate(50)
@@ -253,7 +253,7 @@ class VideoDoodleLightFragment : Fragment() {
             setVideoSize(width, height)
             setVideoEncodingBitRate(2000 * 1000)
             setOnErrorListener(onErrorListener)
-            setRecordedView(dataBinding.canvas)
+            setRecordedView(dataBinding.containerCanvas)
         }
     }
 
