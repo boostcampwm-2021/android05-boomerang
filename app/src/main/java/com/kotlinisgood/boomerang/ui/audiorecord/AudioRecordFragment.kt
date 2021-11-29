@@ -185,7 +185,7 @@ class AudioRecordFragment : Fragment() {
             activityCallback.launch(recognizerIntent)
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
-            makeGoogleErrorDialog()
+            showGoogleErrorDialog()
         }
     }
 
@@ -201,7 +201,7 @@ class AudioRecordFragment : Fragment() {
         }
     }
 
-    private fun makeGoogleErrorDialog() {
+    private fun showGoogleErrorDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.google_warning_title))
             .setMessage(getString(R.string.stt_warning))
