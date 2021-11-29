@@ -72,5 +72,6 @@
     <color name="md_theme_dark_primaryInverse">#5054B4</color>
     <color name="seed">#2E3192</color>
     <color name="error">#BA1B1B</color>
+    <color name="mtrl_textinput_default_box_stroke_color">#61000000</color>
 </resources>
 
