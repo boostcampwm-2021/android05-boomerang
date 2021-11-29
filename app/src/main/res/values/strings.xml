@@ -55,4 +55,5 @@
     <string name="dialog_positive_delete">삭제</string>
     <string name="dialog_title_video_doodle_light_delete_subvideo">해당 메모를 삭제하시겠습니까?</string>
     <string name="dialog_message_video_doodle_light_delete_subvideo">삭제한 메모는 되돌릴 수 없습니다.</string>
+    <string name="menu_video_doodle_light_title">나만의 메모 작성</string>
 </resources>

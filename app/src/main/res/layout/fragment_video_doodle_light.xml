@@ -33,7 +33,7 @@
                 app:menu="@menu/menu_fragment_doodle"
                 app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
                 app:navigationIconTint="?attr/colorOnSurface"
-                app:title="나만의 메모 작성"
+                app:title="@string/menu_video_doodle_light_title"
                 app:titleTextAppearance="?attr/textAppearanceTitleLarge">
 
             </com.google.android.material.appbar.MaterialToolbar>
