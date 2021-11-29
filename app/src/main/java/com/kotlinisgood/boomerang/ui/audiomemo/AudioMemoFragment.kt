@@ -174,19 +174,19 @@ class AudioMemoFragment : Fragment() {
 
     private fun showDeleteDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("메모 삭제")
-            .setMessage("메몰를 삭제하시겠습니까?")
-            .setNegativeButton("취소") { dialog, _ ->
+            .setTitle(getString(R.string.fragment_audio_memo_dialog_deletion_title))
+            .setMessage(getString(R.string.fragment_audio_memo_dialog_deletion_message))
+            .setNegativeButton(getString(R.string.dialog_negative_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("삭제") { dialog, _ ->
+            .setPositiveButton(getString(R.string.dialog_positive_delete)) { dialog, _ ->
                 lifecycleScope.launch {
                     val result = audioMemoViewModel.deleteMemo()
                     if (result) {
                         dialog.dismiss()
                         findNavController().navigate(AudioMemoFragmentDirections.actionAudioMemoFragmentToHomeFragment())
                     } else {
-                        Toast.makeText(requireContext(), "메모 삭제에 실패하였습니다", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.fragment_audio_memo_dialog_deletion_positive), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
