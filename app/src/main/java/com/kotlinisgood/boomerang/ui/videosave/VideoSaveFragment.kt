@@ -292,10 +292,11 @@ class VideoSaveFragment : Fragment() {
                 if (currentAlpha != null && currentAlpha!!.isPlaying) {
                     currentAlpha!!.mediaPlayer.pause()
                 }
-                videoSaveViewModel.getSubVideoStates()
-                    .forEachIndexed { index, _ ->
-                        videoSaveViewModel.getSubVideoStates()[index] = false
+                currentSubVideo?.let {
+                    videoSaveViewModel.getSubVideo().indexOf(it).also { idx ->
+                        videoSaveViewModel.getSubVideoStates()[idx] = false
                     }
+                }
             }
         }
     }
