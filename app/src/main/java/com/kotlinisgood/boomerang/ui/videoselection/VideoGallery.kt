@@ -2,6 +2,7 @@ package com.kotlinisgood.boomerang.ui.videoselection
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
@@ -10,32 +11,17 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class VideoGallery @Inject constructor(private val contentResolver: ContentResolver) {
+    private val projection = arrayOf(
+        MediaStore.Video.Media._ID,
+        MediaStore.Video.Media.DISPLAY_NAME,
+        MediaStore.Video.Media.DURATION,
+        MediaStore.Video.Media.SIZE
+    )
 
     fun loadVideos(): MutableList<ExternalVideoDTO> {
         val videoList = mutableListOf<ExternalVideoDTO>()
 
-        val projection = arrayOf(
-            MediaStore.Video.Media._ID,
-            MediaStore.Video.Media.DISPLAY_NAME,
-            MediaStore.Video.Media.DURATION,
-            MediaStore.Video.Media.SIZE
-        )
-
-        val selection = "${MediaStore.Video.Media.DURATION} <= ?"
-        val selectionArgs = arrayOf(
-            TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES).toString()
-        )
-        val sortOrder = "${MediaStore.Video.Media.DISPLAY_NAME} ASC"
-
-        val query = contentResolver.query(
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            selection,
-            selectionArgs,
-            sortOrder
-        )
-
-        query?.use { cursor ->
+        getQuery()?.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
             val nameColumn =
                 cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
@@ -58,9 +44,24 @@ class VideoGallery @Inject constructor(private val contentResolver: ContentResol
             }
         }
 
-        Log.i(HomeFragment.TAG, videoList.size.toString())
         videoList.forEach { Log.i(HomeFragment.TAG, "$it") }
         return videoList
+    }
+
+    private fun getQuery(): Cursor? {
+        val selection = "${MediaStore.Video.Media.DURATION} <= ?"
+        val selectionArgs = arrayOf(
+            TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES).toString()
+        )
+        val sortOrder = "${MediaStore.Video.Media.DISPLAY_NAME} ASC"
+
+        return contentResolver.query(
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            sortOrder
+        )
     }
 
 }
