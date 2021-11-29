@@ -28,6 +28,7 @@ import com.kotlinisgood.boomerang.databinding.FragmentAudioRecordBinding
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
 import com.kotlinisgood.boomerang.util.Util
 import com.kotlinisgood.boomerang.util.throttle
+import com.kotlinisgood.boomerang.util.throttle1000
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
@@ -78,7 +79,7 @@ class AudioRecordFragment : Fragment() {
                         val audioUri = intent.data as Uri
                         lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
-                                saveAudio(recognizedText, audioUri)
+                                saveAudioFromSTT(recognizedText, audioUri)
                             }
                         }
                     }
@@ -144,16 +145,16 @@ class AudioRecordFragment : Fragment() {
 
     private fun setTbSetting() {
         dataBinding.tbAudioRecord.apply {
-            compositeDisposable.add(throttle(1000,TimeUnit.MILLISECONDS) {
+            compositeDisposable.add(throttle(throttle1000,TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
             })
             menu.forEach {
                 when (it.itemId) {
                     R.id.menu_audio_record_mic -> {
-                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { checkPermissions() })
+                        compositeDisposable.add(it.throttle(throttle1000, TimeUnit.MILLISECONDS) { checkPermissions() })
                     }
                     R.id.menu_audio_record_save -> {
-                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { checkAudioAndSave() })
+                        compositeDisposable.add(it.throttle(throttle1000, TimeUnit.MILLISECONDS) { saveAudioMemo() })
                     }
                 }
             }
@@ -189,15 +190,27 @@ class AudioRecordFragment : Fragment() {
         }
     }
 
-    private fun checkAudioAndSave() {
-        if(dataBinding.etAudioRecordEnterTitle.text.toString() == "") {
-            Toast.makeText(requireContext(), getString(R.string.title_warning), Toast.LENGTH_SHORT).show()
-        } else if (audioRecordViewModel.isFileListEmpty()) {
-            Toast.makeText(requireContext(), getString(R.string.audio_list_warning), Toast.LENGTH_SHORT).show()
-        } else {
+    private fun saveAudioMemo() {
+        if (checkAudioSaveState()) {
             val title = dataBinding.etAudioRecordEnterTitle.text.toString()
             loadingDialog.show()
             audioRecordViewModel.saveAudioMemo(title, requireActivity().filesDir)
+        }
+    }
+
+    private fun checkAudioSaveState(): Boolean {
+        return when {
+            dataBinding.etAudioRecordEnterTitle.text.toString() == "" -> {
+                Toast.makeText(requireContext(), getString(R.string.title_warning), Toast.LENGTH_SHORT).show()
+                false
+            }
+            audioRecordViewModel.isFileListEmpty() -> {
+                Toast.makeText(requireContext(), getString(R.string.audio_list_warning), Toast.LENGTH_SHORT).show()
+                false
+            }
+            else -> {
+                true
+            }
         }
     }
 
@@ -218,7 +231,7 @@ class AudioRecordFragment : Fragment() {
             .show()
     }
 
-    private suspend fun saveAudio(recognizedText: String, audioUri: Uri) {
+    private suspend fun saveAudioFromSTT(recognizedText: String, audioUri: Uri) {
         var input: InputStream? = null
         var output: FileOutputStream? = null
         try {
