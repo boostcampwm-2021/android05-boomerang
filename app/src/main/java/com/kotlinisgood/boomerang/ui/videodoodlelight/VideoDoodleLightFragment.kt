@@ -121,7 +121,7 @@ class VideoDoodleLightFragment : Fragment() {
                         playerEnded || currentTime > player.duration - 300 -> {
                             toggleBtnDoodle.uncheck(R.id.btn_doodle)
                             dataBinding.layoutVideoDoodle.showSnackBar(
-                                "영상이 끝났습니다"
+                                getString(R.string.snackbar_video_doodle_light_video_end)
                             )
                         }
                         canMemo -> {
@@ -131,7 +131,7 @@ class VideoDoodleLightFragment : Fragment() {
                         else -> {
                             toggleBtnDoodle.uncheck(R.id.btn_doodle)
                             dataBinding.layoutVideoDoodle.showSnackBar(
-                                "이미 메모가 있습니다"
+                                getString(R.string.snackbar_video_doodle_light_cant_memo)
                             )
                         }
                     }
@@ -183,7 +183,7 @@ class VideoDoodleLightFragment : Fragment() {
                 stopRecord()
                 videoDoodleLightViewModel.resetTimer()
                 dataBinding.toggleBtnDoodle.uncheck(R.id.btn_doodle)
-                dataBinding.layoutVideoDoodle.showSnackBar("영상 시간을 초과하여 메모하실 수 없습니다")
+                dataBinding.layoutVideoDoodle.showSnackBar(getString(R.string.snackbar_video_doodle_light_video_over))
             }
         }
     }

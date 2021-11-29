@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="bottom_sheet_title">정렬 기준</string>
-    <string name="bottom_sheet_create_recent">생성일 최신 순</string>
-    <string name="bottom_sheet_create_old">생성일 오래된 순</string>
-    <string name="bottom_sheet_modify_recent">수정일 최신 순</string>
-    <string name="bottom_sheet_modify_old">수정일 오래된 순</string>
-</resources>

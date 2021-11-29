@@ -46,4 +46,7 @@
     <string name="menu_video_edit_share_description">동영상 메모를 공유한다</string>
     <string name="menu_video_edit_save_title">메모 저장</string>
     <string name="menu_video_edit_save_description">동영상 메모를 저장한다</string>
+    <string name="snackbar_video_doodle_light_video_end">영상이 끝났습니다</string>
+    <string name="snackbar_video_doodle_light_cant_memo">이미 메모가 있습니다</string>
+    <string name="snackbar_video_doodle_light_video_over">영상 시간을 초과하여 메모하실 수 없습니다</string>
 </resources>
