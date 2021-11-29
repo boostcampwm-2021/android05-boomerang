@@ -100,7 +100,7 @@ class HomeFragment : Fragment() {
                 val action = if (item.memoType == AUDIO_MODE) {
                     HomeFragmentDirections.actionHomeFragmentToAudioMemoFragment(item.id)
                 } else {
-                    HomeFragmentDirections.actionHomeFragmentToMemoFragment(item.id)
+                    HomeFragmentDirections.actionHomeFragmentToMemoFragment(item.id, item.memoType)
                 }
                 findNavController().navigate(action)
             }
