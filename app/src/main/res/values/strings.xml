@@ -56,4 +56,12 @@
     <string name="dialog_title_video_doodle_light_delete_subvideo">해당 메모를 삭제하시겠습니까?</string>
     <string name="dialog_message_video_doodle_light_delete_subvideo">삭제한 메모는 되돌릴 수 없습니다.</string>
     <string name="menu_video_doodle_light_title">나만의 메모 작성</string>
+    <string name="permission_rejected">Permission Not Granted By the User</string>
+    <string name="title_warning">타이틀을 입력해주세요</string>
+    <string name="audio_list_warning">인식된 음성이 존재하지 않습니다</string>
+    <string name="stt_warning">구글앱 사용을 활성화해주시거나 구글 앱의 데이터를 삭제한 후 다시 시도해주세요.
+이동하시겠습니까?</string>
+    <string name="google_warning_title">구글 앱 문제가 있습니다</string>
+    <string name="dialog_negative_close">닫기</string>
+    <string name="dialog_positive_move">이동</string>
 </resources>
