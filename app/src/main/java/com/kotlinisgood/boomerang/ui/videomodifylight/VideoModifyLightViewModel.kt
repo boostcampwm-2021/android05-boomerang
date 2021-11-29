@@ -18,6 +18,7 @@ import javax.inject.Inject
 class VideoModifyLightViewModel @Inject constructor(private val repository: AppRepository) : ViewModel(){
 
     private var duration = 0L
+    private var recordStartTime = 0L
 
     private var _mediaMemo: MutableLiveData<MediaMemo> = MutableLiveData()
     val mediaMemo: LiveData<MediaMemo> get() = _mediaMemo
@@ -28,7 +29,6 @@ class VideoModifyLightViewModel @Inject constructor(private val repository: AppR
 
     private var currentSubVideo: SubVideo? = null
 
-    private var recordStartTime = 0L
     var timer: Job? = null
     private val _timeOver: MutableLiveData<Boolean> = MutableLiveData(false)
     val timeOver: LiveData<Boolean> get() = _timeOver
@@ -58,8 +58,6 @@ class VideoModifyLightViewModel @Inject constructor(private val repository: AppR
             while(isActive) {
                 val currentTime = System.currentTimeMillis()
                 if(currentSubVideo!!.startingTime + currentTime - recordStartTime > duration){
-                    println(currentSubVideo!!.startingTime + currentTime - recordStartTime)
-                    println(duration)
                     _timeOver.value = true
                     break
                 }
