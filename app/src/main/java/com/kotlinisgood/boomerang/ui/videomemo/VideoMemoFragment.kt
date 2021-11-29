@@ -4,10 +4,10 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
@@ -29,6 +29,7 @@ import com.kotlinisgood.boomerang.databinding.FragmentVideoMemoBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.ui.videosave.AlphaViewFactory
 import com.kotlinisgood.boomerang.util.CustomLoadingDialog
+import com.kotlinisgood.boomerang.util.Util.showSnackBar
 import com.kotlinisgood.boomerang.util.VIDEO_MODE_SUB_VIDEO
 import com.kotlinisgood.boomerang.util.throttle
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,8 +67,14 @@ class VideoMemoFragment : Fragment() {
                 if (currentAlpha != null && currentAlpha!!.isPlaying) {
                     currentAlpha!!.mediaPlayer.pause()
                 }
-                videoMemoViewModel.getSubVideoStates()
-                    .forEachIndexed { index, _ -> videoMemoViewModel.getSubVideoStates()[index] = false }
+//                videoMemoViewModel.getSubVideoStates().forEachIndexed { idx, _ ->
+//                    videoMemoViewModel.getSubVideoStates()[idx] = false
+//                }
+                currentSubVideo?.let {
+                    videoMemoViewModel.getSubVideo().indexOf(it).also { idx ->
+                        videoMemoViewModel.getSubVideoStates()[idx] = false
+                    }
+                }
             }
         }
     }
@@ -116,14 +123,14 @@ class VideoMemoFragment : Fragment() {
     }
 
     private fun setObserver() {
-        videoMemoViewModel.isLoading.observe(viewLifecycleOwner){ loading ->
-            if(loading){
+        videoMemoViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            if (loading) {
                 loadingDialog.show()
             } else {
                 loadingDialog.dismiss()
             }
         }
-        videoMemoViewModel.mediaMemo.observe(viewLifecycleOwner){ mediaMemo ->
+        videoMemoViewModel.mediaMemo.observe(viewLifecycleOwner) { mediaMemo ->
             setVideoPlayer(mediaMemo)
             mediaMemo.memoList.forEach {
                 videoMemoViewModel.addAlphaMovieView(alphaViewFactory.create().apply {
@@ -136,16 +143,18 @@ class VideoMemoFragment : Fragment() {
     private fun setMenuOnToolBar() {
         dataBinding.tbVideoMemo.apply {
             inflateMenu(R.menu.menu_fragment_video_memo)
-            if(args.memoType == VIDEO_MODE_SUB_VIDEO) menu.findItem(R.id.menu_video_memo_share).isVisible = false
+            if (args.memoType == VIDEO_MODE_SUB_VIDEO) menu.findItem(R.id.menu_video_memo_share).isVisible =
+                false
             setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-            compositeDisposable.add(throttle(1000,TimeUnit.MILLISECONDS) {
+            compositeDisposable.add(throttle(1000, TimeUnit.MILLISECONDS) {
                 findNavController().popBackStack()
             })
             menu.forEach {
                 when (it.itemId) {
                     R.id.menu_video_memo_share -> {
                         compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
-                            val file = videoMemoViewModel.mediaMemo.value!!.mediaUri.toUri().toFile()
+                            val file =
+                                videoMemoViewModel.mediaMemo.value!!.mediaUri.toUri().toFile()
                             val uri = FileProvider.getUriForFile(
                                 requireContext(),
                                 "com.kotlinisgood.boomerang.fileprovider",
@@ -162,10 +171,18 @@ class VideoMemoFragment : Fragment() {
                         })
                     }
                     R.id.menu_memo_modify -> {
-                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { checkModifyAndMove()})
+                        compositeDisposable.add(
+                            it.throttle(
+                                1000,
+                                TimeUnit.MILLISECONDS
+                            ) { checkModifyAndMove() })
                     }
                     R.id.menu_video_memo_delete -> {
-                        compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) { showDeleteDialog() })
+                        compositeDisposable.add(
+                            it.throttle(
+                                1000,
+                                TimeUnit.MILLISECONDS
+                            ) { showDeleteDialog() })
                     }
                 }
             }
@@ -196,13 +213,10 @@ class VideoMemoFragment : Fragment() {
     }
 
     private fun checkModifyAndMove() {
-        val action = videoMemoViewModel.mediaMemo.value?.id?.let { it ->
-            VideoMemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(
-                it
-            )
-        }
-        if (action != null) {
-            findNavController().navigate(action)
+        videoMemoViewModel.mediaMemo.value?.id?.let { it ->
+            VideoMemoFragmentDirections.actionMemoFragmentToVideoModifyLightFragment(it)
+        }?.let {
+            findNavController().navigate(it)
         }
     }
 
@@ -229,14 +243,19 @@ class VideoMemoFragment : Fragment() {
             }
             .setPositiveButton(getString(R.string.dialog_positive_delete)) { dialog, _ ->
                 lifecycleScope.launch {
-                    val result = videoMemoViewModel.deleteMemo()
-                    delay(500)
-                    if (result) {
-                        dialog.dismiss()
-                        findNavController().navigate(VideoMemoFragmentDirections.actionAudioMemoFragmentToHomeFragment())
-                    } else {
-                        Toast.makeText(requireContext(), getString(R.string.dialog_memo_deletion_fail_message), Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
+                    videoMemoViewModel.deleteMemo().let { success ->
+                        delay(500)
+                        if (success) {
+                            dialog.dismiss()
+                            findNavController().navigate(
+                                VideoMemoFragmentDirections.actionAudioMemoFragmentToHomeFragment()
+                            )
+                        } else {
+                            dataBinding.containerVideoMemo.showSnackBar(
+                                getString(R.string.dialog_memo_deletion_fail_message)
+                            )
+                            dialog.dismiss()
+                        }
                     }
                 }
             }
@@ -247,6 +266,7 @@ class VideoMemoFragment : Fragment() {
     private suspend fun scan() {
         withContext(Dispatchers.Default) {
             while (true) {
+                var containsTrue = false
                 videoMemoViewModel.getSubVideo().forEachIndexed { index, subVideo ->
                     withContext(Dispatchers.Main) {
                         currentTime = player.currentPosition
@@ -254,6 +274,7 @@ class VideoMemoFragment : Fragment() {
                     if ((subVideo.startingTime).toLong() <= currentTime &&
                         (subVideo.endingTime).toLong() >= currentTime
                     ) {
+                        containsTrue = true
                         if (!videoMemoViewModel.getSubVideoStates()[index]) {
                             withContext(Dispatchers.Main) {
                                 // 현재 재생 중이던 영상과 subVideo 가 같을 때
@@ -292,20 +313,22 @@ class VideoMemoFragment : Fragment() {
                                 }
                             }
                         }
+                    } else {
+                        videoMemoViewModel.getSubVideoStates()[index] = false
                     }
-                    if(!videoMemoViewModel.getSubVideoStates().contains(true)) {
-                        withContext(Dispatchers.Main) {
-                            if (currentSubVideo != null) {
-                                dataBinding.alphaViewVideoMemo.removeAllViews()
-                                resetAlphaView(currentSubVideo!!)
-                                currentSubVideo = null
-                                currentAlpha = null
-                            }
+                }
+                if (!containsTrue) {
+                    withContext(Dispatchers.Main) {
+                        currentSubVideo?.let {
+                            dataBinding.alphaViewVideoMemo.removeAllViews()
+                            resetAlphaView(it)
+                            currentSubVideo = null
+                            currentAlpha = null
                         }
                     }
                 }
-                delay(10)
             }
+            delay(10)
         }
     }
 }
