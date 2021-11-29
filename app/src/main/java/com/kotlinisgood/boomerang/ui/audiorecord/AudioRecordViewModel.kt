@@ -23,14 +23,13 @@ class AudioRecordViewModel
 
     private var _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> get() = _loading
+
     private val _audioMemo = MutableLiveData<MediaMemo>()
     val audioMemo: LiveData<MediaMemo> get() = _audioMemo
-    private val fileList = mutableListOf<File>()
 
+    private val fileList = mutableListOf<File>()
     private val timeList = mutableListOf(0)
     private val textList = mutableListOf<String>()
-
-    fun isFileListEmpty() = (fileList.size == 0)
 
     fun saveAudioMemo(title: String, baseFile: File) {
         val createTime = System.currentTimeMillis()
@@ -38,39 +37,49 @@ class AudioRecordViewModel
         try {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
-                    AudioMixer(outputPath).apply {
-                        fileList.forEach {
-                            addDataSource(GeneralAudioInput(it.absolutePath))
-                        }
-                        mixingType = AudioMixer.MixingType.SEQUENTIAL
-                        setProcessingListener(object : AudioMixer.ProcessingListener {
-                            override fun onProgress(progress: Double) {
-                                _loading.postValue(true)
-                            }
-
-                            override fun onEnd() {
-                                _loading.postValue(false)
-                                _audioMemo.postValue(MediaMemo(
-                                    title, outputPath, createTime, createTime,
-                                    AUDIO_MODE, emptyList(), textList, timeList,
-                                    DEFAULT_HEIGHT_WIDTH, DEFAULT_HEIGHT_WIDTH
-                                ).also {
-                                    viewModelScope.launch {
-                                        repository.saveMediaMemo(it)
-                                        deleteAudios()
-                                    }
-                                })
-                            }
-                        })
-                    }.also {
-                        it.start()
-                        it.processAsync()
-                    }
+                    mixAudioFilesToOneFile(title, outputPath, createTime)
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
             _loading.postValue(false)
+        }
+    }
+
+    private fun mixAudioFilesToOneFile(title: String, outputPath: String, createTime: Long) {
+        AudioMixer(outputPath).apply {
+            prepareFilesForMix(this)
+            mixingType = AudioMixer.MixingType.SEQUENTIAL
+            setProcessingListener(object : AudioMixer.ProcessingListener {
+
+                override fun onProgress(progress: Double) {
+                    _loading.postValue(true)
+                }
+
+                override fun onEnd() {
+                    _loading.postValue(false)
+                    _audioMemo.postValue(
+                        MediaMemo(
+                            title, outputPath, createTime, createTime,
+                            AUDIO_MODE, emptyList(), textList, timeList,
+                            DEFAULT_HEIGHT_WIDTH, DEFAULT_HEIGHT_WIDTH
+                        ).also {
+                            viewModelScope.launch {
+                                repository.saveMediaMemo(it)
+                                deleteAudios()
+                            }
+                        })
+                }
+            })
+        }.also {
+            it.start()
+            it.processAsync()
+        }
+    }
+
+    private fun prepareFilesForMix(audioMixer: AudioMixer) {
+        fileList.forEach {
+            audioMixer.addDataSource(GeneralAudioInput(it.absolutePath))
         }
     }
 
@@ -96,5 +105,7 @@ class AudioRecordViewModel
     fun getAccText(): String {
         return textList.reduce { acc, str -> "$acc\n$str" }
     }
+
+    fun isFileListEmpty() = (fileList.size == 0)
 
 }
