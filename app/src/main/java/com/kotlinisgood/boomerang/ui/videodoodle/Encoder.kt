@@ -89,17 +89,12 @@ class Encoder(
         }
     }
 
-    fun muxerStop() {
+    fun stopEncoder() {
         isMuxerStart = false
+        scope.cancel()
         mediaMuxer.stop()
         mediaMuxer.release()
-    }
-
-    fun shutdown() {
-        scope.cancel()
         encoder.stop()
         encoder.release()
-//        mediaMuxer.stop()
-//        mediaMuxer.release()
     }
 }

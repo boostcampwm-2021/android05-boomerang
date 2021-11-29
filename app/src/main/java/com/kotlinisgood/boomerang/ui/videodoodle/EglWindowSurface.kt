@@ -7,17 +7,6 @@ import android.view.Surface
 /**
  * EGLSurface 중 WindowSurface (Pixmap, Pbuffer는 offscreen을 위한 surface)
  *
- *
- * It's good practice to explicitly release() the surface, preferably from a "finally" block.
- */
-/**
- * Associates an EGL surface with the native window surface.
- *
- *
- * Set releaseSurface to true if you want the Surface to be released when release() is
- * called.  This is convenient, but can interfere with framework classes that expect to
- * manage the Surface themselves (e.g. if you release a SurfaceView's Surface, the
- * surfaceDestroyed() callback won't fire).
  */
 class EglWindowSurface(private val egl: Egl, private var surface: Surface?) {
     private var eglSurface = EGL14.EGL_NO_SURFACE
@@ -28,30 +17,14 @@ class EglWindowSurface(private val egl: Egl, private var surface: Surface?) {
         createWindowSurface(surface)
     }
 
-    /**
-     * Creates a window surface.
-     *
-     *
-     * @param surface May be a Surface or SurfaceTexture.
-     */
     fun createWindowSurface(surface: Any?) {
         check(!(eglSurface !== EGL14.EGL_NO_SURFACE)) { "surface already created" }
         eglSurface = egl.createWindowSurface(surface!!)
-
-        // Don't cache width/height here, because the size of the underlying surface can change
-        // out from under us (see e.g. HardwareScalerActivity).
+        
         mWidth = egl.querySurface(eglSurface, EGL14.EGL_WIDTH)
         mHeight = egl.querySurface(eglSurface, EGL14.EGL_HEIGHT)
     }
 
-    /**
-     * Returns the surface's width, in pixels.
-     *
-     *
-     * If this is called on a window surface, and the underlying surface is in the process
-     * of changing size, we may not see the new size right away (e.g. in the "surfaceChanged"
-     * callback).  The size should match after the next buffer swap.
-     */
     val width: Int
         get() = if (mWidth < 0) {
             egl.querySurface(eglSurface, EGL14.EGL_WIDTH)

@@ -22,12 +22,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorSurface"
+                app:menu="@menu/menu_fragment_video_selection"
                 app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
                 app:navigationIconTint="?attr/colorOnSurface"
                 app:title="모두의 메모 작성"
-                app:titleTextAppearance="?attr/textAppearanceTitleLarge"
-                app:menu="@menu/menu_fragment_video_selection">
-            </com.google.android.material.appbar.MaterialToolbar>
+                app:titleTextAppearance="?attr/textAppearanceTitleLarge" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -35,63 +34,63 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginHorizontal="@dimen/dp16"
-            android:layout_marginTop="@dimen/dp16"
-            android:background="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintDimensionRatio="H, 1:1">
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="@dimen/dp16"
+                android:layout_marginTop="@dimen/dp16"
+                android:background="@color/black"
+                app:layout_constraintDimensionRatio="H, 1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
 
-            <com.kotlinisgood.boomerang.ui.videodoodle.AspectFrameLayout
-                android:id="@+id/frame_movie"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center">
-
-                <SurfaceView
-                    android:id="@+id/sv_movie"
+                <com.kotlinisgood.boomerang.ui.videodoodle.AspectFrameLayout
+                    android:id="@+id/frame_video_doodle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center">
 
-            </com.kotlinisgood.boomerang.ui.videodoodle.AspectFrameLayout>
+                    <SurfaceView
+                        android:id="@+id/sv_video_doodle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center" />
 
-        </FrameLayout>
+                </com.kotlinisgood.boomerang.ui.videodoodle.AspectFrameLayout>
+
+            </FrameLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container_video_doodle_media_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#CC00006E"
             android:layout_marginStart="@dimen/dp16"
             android:layout_marginEnd="@dimen/dp16"
-            app:layout_constraintTop_toBottomOf="@id/frame_movie"
-            app:layout_constraintStart_toStartOf="@id/frame_movie"
-            app:layout_constraintEnd_toEndOf="@id/frame_movie" >
+            android:background="#CC00006E"
+            app:layout_constraintEnd_toEndOf="@id/frame_video_doodle"
+            app:layout_constraintStart_toStartOf="@id/frame_video_doodle"
+            app:layout_constraintTop_toBottomOf="@id/frame_video_doodle">
 
             <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/btn_play"
+                android:id="@+id/btn_video_doodle_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dp8"
                 android:background="@drawable/ic_doodle_play"
                 android:enabled="false"
                 android:scaleType="centerCrop"
-                android:layout_margin="@dimen/dp8"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RadioGroup
-            android:id="@+id/rg_doodle_color"
+            android:id="@+id/rg_video_doodle_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -102,7 +101,7 @@
             app:layout_constraintTop_toBottomOf="@id/container_video_doodle_media_button">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rb_red"
+                android:id="@+id/rb_video_doodle_red"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp4"
@@ -112,7 +111,7 @@
                 android:button="@null" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rb_green"
+                android:id="@+id/rb_video_doodle_green"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp4"
@@ -122,7 +121,7 @@
                 android:button="@null" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rb_blue"
+                android:id="@+id/rb_video_doodle_blue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp4"
@@ -132,7 +131,7 @@
                 android:button="@null" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/rb_yellow"
+                android:id="@+id/rb_video_doodle_yellow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp4"
@@ -143,7 +142,7 @@
         </RadioGroup>
 
         <Button
-            android:id="@+id/btn_erase"
+            android:id="@+id/btn_video_doodle_erase"
             style="@style/Widget.App.Button.OutlinedButton.IconOnly.Toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

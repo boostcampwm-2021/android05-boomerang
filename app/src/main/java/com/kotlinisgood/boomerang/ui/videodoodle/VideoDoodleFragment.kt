@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -48,7 +47,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var textureId = 0
     private lateinit var fullFrameBlit: FullFrameRect
     private val mTmpMatrix = FloatArray(16)
-//    private lateinit var encoder: Encoder
 
     private lateinit var mediaPlayer: MediaPlayer
     private var videoWidth = 0
@@ -74,25 +72,14 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _dataBinding =
-            FragmentVideoDoodleBinding.inflate(inflater, container, false)
-//        val mmr = MediaMetadataRetriever()
-//        mmr.setDataSource(UriUtil.getPathFromUri(requireContext().contentResolver, uriString.toUri()))
-//        val testHeight =
-//            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-//                ?.toInt()!!
-//        val testWidth = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-//            ?.toInt()!!
-//        val ratio = testWidth/testHeight.toDouble()
-//        println("Before: $ratio")
-//        dataBinding.frameMovie.setAspectRatio("%.4f".format(ratio).toDouble())
+        _dataBinding = FragmentVideoDoodleBinding.inflate(inflater, container, false)
         return dataBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        surfaceView = dataBinding.svMovie
+        surfaceView = dataBinding.svVideoDoodle
         surfaceView.holder.addCallback(this)
 
         val currentUnixTime = System.currentTimeMillis()
@@ -102,21 +89,19 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         mediaPlayer = MediaPlayer.create(context, uri)
 
         mediaPlayer.setOnPreparedListener {
-            dataBinding.btnPlay.isEnabled = true
+            dataBinding.btnVideoDoodlePlay.isEnabled = true
         }
 
 //        실수부 값이 너무 커지지 않도록 끊어줘야 함
         val ratio = floor(mediaPlayer.videoWidth.toDouble()/mediaPlayer.videoHeight*10000)/10000.0
-//        val ratio = 1.0000
         println("Before: $ratio")
-//        dataBinding.frameMovie.setAspectRatio("%.4f".format(ratio).toDouble())
-        dataBinding.frameMovie.setAspectRatio(ratio)
+        dataBinding.frameVideoDoodle.setAspectRatio(ratio)
 
-        compositeDisposable.add(dataBinding.btnPlay.throttle(throttle1000, TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.btnVideoDoodlePlay.throttle(throttle1000, TimeUnit.MILLISECONDS) {
             playVideo()
         })
 
-        dataBinding.frameMovie.setOnTouchListener { _, motionEvent ->
+        dataBinding.frameVideoDoodle.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
                     if (isPlaying) drawLine(motionEvent.x.toInt(), motionEvent.y.toInt())
@@ -127,21 +112,21 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
                 MotionEvent.ACTION_UP -> {
                 }
             }
-            dataBinding.frameMovie.performClick()
+            dataBinding.frameVideoDoodle.performClick()
             true
         }
 
-        dataBinding.rbRed.isChecked = true
-        dataBinding.rgDoodleColor.setOnCheckedChangeListener { _, checkedId ->
+        dataBinding.rbVideoDoodleRed.isChecked = true
+        dataBinding.rgVideoDoodleColor.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.rb_red -> drawColor = DrawColor(red = 1f, green = 0f, blue = 0f)
-                R.id.rb_green -> drawColor = DrawColor(red = 0f, green = 1f, blue = 0f)
-                R.id.rb_blue -> drawColor = DrawColor(red = 0f, green = 0f, blue = 1f)
-                R.id.rb_yellow -> drawColor = DrawColor(red = 1f, green = 1f, blue = 0f)
+                R.id.rb_video_doodle_red -> drawColor = DrawColor(red = 1f, green = 0f, blue = 0f)
+                R.id.rb_video_doodle_green -> drawColor = DrawColor(red = 0f, green = 1f, blue = 0f)
+                R.id.rb_video_doodle_blue -> drawColor = DrawColor(red = 0f, green = 0f, blue = 1f)
+                R.id.rb_video_doodle_yellow -> drawColor = DrawColor(red = 1f, green = 1f, blue = 0f)
             }
         }
 
-        compositeDisposable.add(dataBinding.btnErase.throttle(throttle500, TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.btnVideoDoodleErase.throttle(throttle500, TimeUnit.MILLISECONDS) {
             currentPoint.forEach {
                 GLES20.glClearColor(0f, 0f, 0f, 1f)
                 GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
@@ -160,7 +145,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             when (it.itemId) {
                 R.id.menu_video_selection_completion -> {
                     compositeDisposable.add(it.throttle(throttle1000, TimeUnit.MILLISECONDS) {
-                        videoDoodleViewModel.encoder.muxerStop()
+                        videoDoodleViewModel.encoder.stopEncoder()
                         saveCompleted()
                     })
                 }
@@ -199,7 +184,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     override fun onPause() {
         super.onPause()
         mediaPlayer.pause()
-        dataBinding.btnPlay.background = ContextCompat.getDrawable(
+        dataBinding.btnVideoDoodlePlay.background = ContextCompat.getDrawable(
             requireContext(),
             R.drawable.ic_doodle_play
         )
@@ -210,10 +195,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         super.onDestroyView()
         mediaPlayer.release()
         surfaceTexture.release()
-//        viewModel.encoder.shutdown()
         encoderSurface.release()
         displaySurface.release()
-        fullFrameBlit.release(false)
         egl.release()
     }
 
@@ -240,8 +223,8 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         videoWidth = mediaPlayer.videoWidth
         videoHeight = mediaPlayer.videoHeight
 
-        width = dataBinding.svMovie.width
-        height = dataBinding.svMovie.height
+        width = dataBinding.svVideoDoodle.width
+        height = dataBinding.svVideoDoodle.height
 
         if (videoWidth > videoHeight) {
             val adjustedHeight = (height * (videoHeight / videoWidth.toFloat())).toInt()
@@ -267,14 +250,14 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private fun playVideo() {
         if (isPlaying) {
             mediaPlayer.pause()
-            dataBinding.btnPlay.background = ContextCompat.getDrawable(
+            dataBinding.btnVideoDoodlePlay.background = ContextCompat.getDrawable(
                 requireContext(),
                 R.drawable.ic_doodle_play
             )
             isPlaying = false
         } else {
             mediaPlayer.start()
-            dataBinding.btnPlay.background = ContextCompat.getDrawable(
+            dataBinding.btnVideoDoodlePlay.background = ContextCompat.getDrawable(
                 requireContext(),
                 R.drawable.ic_doodle_pause
             )

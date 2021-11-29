@@ -84,7 +84,6 @@ class Texture2dProgram
             -rw, 0f, 0f, 0f, rw, 0f,
             -rw, rh, 0f, rh, rw, rh
         )
-        //Log.d(TAG, "filt size: " + width + "x" + height + ": " + Arrays.toString(mTexOffset));
     }
 
     /**
@@ -174,8 +173,6 @@ class Texture2dProgram
                 "    vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n" +
                 "}\n")
 
-        // Simple fragment shader for use with external 2D textures (e.g. what we get from
-        // SurfaceTexture).
         private const val FRAGMENT_SHADER_EXT = ("#extension GL_OES_EGL_image_external : require\n" +
                 "precision mediump float;\n" +
                 "varying vec2 vTextureCoord;\n" +

@@ -7,19 +7,16 @@ import android.widget.FrameLayout
 import kotlin.math.abs
 
 /**
- * Layout that adjusts to maintain a specific aspect ratio.
+ * SurfaceView 의 Layout 상에서 위치와 크기, 비율을 잡아주는 FrameLayout
  */
 class AspectFrameLayout : FrameLayout {
-    private var mTargetAspect = -1.0 // initially use default window size
+    private var mTargetAspect = -1.0
 
     constructor(context: Context?) : super(context!!)
     constructor(context: Context?, attrs: AttributeSet?) : super(
         context!!, attrs
     )
 
-    /**
-     * Sets the desired aspect ratio.  The value is `width / height`.
-     */
     fun setAspectRatio(aspectRatio: Double) {
         require(aspectRatio >= 0)
         Log.d(
@@ -48,13 +45,10 @@ class AspectFrameLayout : FrameLayout {
                     "] height=[" + MeasureSpec.toString(exactHeightMeasureSpec) + "]"
         )
 
-        // Target aspect ratio will be < 0 if it hasn't been set yet.  In that case,
-        // we just use whatever we've been handed.
         if (mTargetAspect > 0) {
             var initialWidth = MeasureSpec.getSize(exactWidthMeasureSpec)
             var initialHeight = MeasureSpec.getSize(exactHeightMeasureSpec)
 
-            // factor the padding out
             val horizPadding = paddingLeft + paddingRight
             val vertPadding = paddingTop + paddingBottom
             initialWidth -= horizPadding
@@ -62,20 +56,15 @@ class AspectFrameLayout : FrameLayout {
             val viewAspectRatio = initialWidth.toDouble() / initialHeight
             val aspectDiff = mTargetAspect / viewAspectRatio - 1
             if (abs(aspectDiff) < 0.01) {
-                // We're very close already.  We don't want to risk switching from e.g. non-scaled
-                // 1280x720 to scaled 1280x719 because of some floating-point round-off error,
-                // so if we're really close just leave it alone.
                 Log.d(
                     TAG, "aspect ratio is good (target=" + mTargetAspect +
                             ", view=" + initialWidth + "x" + initialHeight + ")"
                 )
             } else {
                 if (aspectDiff > 0) {
-                    // limited by narrow width; restrict height
                     val preHeight = (initialWidth / mTargetAspect).toInt()
                     initialHeight = preHeight - (preHeight % 16)
                 } else {
-                    // limited by short height; restrict width
                     val preWidth = (initialHeight * mTargetAspect).toInt()
                     initialWidth = preWidth - (preWidth % 16)
                 }
@@ -91,10 +80,6 @@ class AspectFrameLayout : FrameLayout {
                     MeasureSpec.makeMeasureSpec(initialHeight, MeasureSpec.EXACTLY)
             }
         }
-
-        //Log.d(TAG, "set width=[" + MeasureSpec.toString(widthMeasureSpec) +
-        //        "] height=[" + View.MeasureSpec.toString(heightMeasureSpec) + "]");
-//        super.onMeasure(exactWidthMeasureSpec, exactHeightMeasureSpec)
         super.onMeasure(exactWidthMeasureSpec, exactHeightMeasureSpec)
     }
 

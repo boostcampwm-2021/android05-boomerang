@@ -7,7 +7,6 @@ import android.view.Surface
 
 class Egl {
     private lateinit var eglDisplay: EGLDisplay
-
     private lateinit var eglContext: EGLContext
     private var eglConfig: EGLConfig? = null
 
@@ -132,15 +131,6 @@ class Egl {
      */
     fun setPresentationTime(eglSurface: EGLSurface?, nsecs: Long) {
         EGLExt.eglPresentationTimeANDROID(eglDisplay, eglSurface, nsecs)
-    }
-
-    /**
-     * Returns true if our context and the specified surface are current.
-     */
-    fun isCurrent(eglSurface: EGLSurface): Boolean {
-        return eglContext == EGL14.eglGetCurrentContext() && eglSurface == EGL14.eglGetCurrentSurface(
-            EGL14.EGL_DRAW
-        )
     }
 
     /**
@@ -272,7 +262,7 @@ class Egl {
     }
 
     companion object {
-        private const val TAG: String = "EglCoreTAG"
+        private const val TAG: String = "Egl"
 
         private const val EGL_RECORDABLE_ANDROID = 0x3142
     }
