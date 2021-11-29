@@ -64,9 +64,8 @@ class VideoSaveFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _dataBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.fragment_video_save,
+        _dataBinding = FragmentVideoSaveBinding.inflate(
+            inflater,
             container,
             false
         )
