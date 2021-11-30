@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">boomerang</string>
-    <string name="app_name_kr">부메랑</string>
     <string name="menu_home_search_description">Search a title of video</string>
     <string name="menu_home_search_title">Search</string>
     <string name="menu_home_order_title">Order</string>
@@ -72,7 +71,6 @@
     <string name="item_rv_home_show_videos_cd">비디오 메모 썸네일</string>
     <string name="item_rv_home_show_videos_icon_cd_people">모두의 메모</string>
     <string name="item_rv_home_show_videos_icon_cd_person">나만의 메모</string>
-    <string name="item_rv_home_show_videos_icon_cd">모두의 메모</string>
     <string name="app_intro_slide_2_title">나만의 메모</string>
     <string name="app_intro_slide_2_description">원하는 곳에 메모를 할 수 있어요</string>
     <string name="app_intro_slide_3_title">모두의 메모</string>
@@ -84,11 +82,16 @@
     <string name="app_intro_slide_1_text">동영상에 메모가 된다고?!\n\n음성 메모가 멜론처럼 재생된다고?!</string>
     <string name="exo_player_play_button_content_description">재생 버튼</string>
     <string name="exo_player_pause_button_content_description">일시 정지 버튼</string>
-    <string name="bottom_sheet_create_recent_content_description">생성일 최신 순 체크</string>
-    <string name="bottom_sheet_create_old_content_description">생성일 오래된 순 체크</string>
-    <string name="bottom_sheet_modify_recent_content_description">수정일 최신 순 체크</string>
-    <string name="bottom_sheet_modify_old_content_description">수정일 오래된 순 체크</string>
     <string name="textview_create_date_from_video_memo">생성일 : %1$s</string>
     <string name="textview_edit_date_from_video_memo">수정일 : %1$s</string>
     <string name="textview_time_from_subVideo">%1$s ~ %2$s</string>
+    <string name="header_navigation_drawer_title">boomerang</string>
+    <string name="header_navigation_drawer_subtitle">media memo</string>
+    <string name="navigation_drawer_memo_type_memo">메모</string>
+    <string name="navigation_drawer_memo_type_all">전체 메모</string>
+    <string name="navigation_drawer_memo_type_voice">음성 메모</string>
+    <string name="navigation_drawer_memo_type_person">나만의 메모</string>
+    <string name="navigation_drawer_memo_type_people">모두의 메모</string>
+    <string name="navigation_drawer_memo_type_oss">오픈소스 라이선스</string>
+    <string name="navigation_drawer_memo_type_setting">설정</string>
 </resources>
