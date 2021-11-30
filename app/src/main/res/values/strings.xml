@@ -86,4 +86,8 @@
     <string name="app_intro_slide_1_text">동영상에 메모가 된다고?!\n\n음성 메모가 멜론처럼 재생된다고?!</string>
     <string name="exo_player_play_button_content_description">재생 버튼</string>
     <string name="exo_player_pause_button_content_description">일시 정지 버튼</string>
+    <string name="bottom_sheet_create_recent_content_description">생성일 최신 순 체크</string>
+    <string name="bottom_sheet_create_old_content_description">생성일 오래된 순 체크</string>
+    <string name="bottom_sheet_modify_recent_content_description">수정일 최신 순 체크</string>
+    <string name="bottom_sheet_modify_old_content_description">수정일 오래된 순 체크</string>
 </resources>
