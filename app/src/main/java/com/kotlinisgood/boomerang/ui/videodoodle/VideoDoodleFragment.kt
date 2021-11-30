@@ -40,12 +40,12 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private lateinit var egl: Egl
     private lateinit var surfaceTexture: SurfaceTexture
 
-    private lateinit var displaySurface: EglWindowSurface
+    private lateinit var displaySurface: WindowSurface
     private lateinit var surfaceView: SurfaceView
 
-    private lateinit var encoderSurface: EglWindowSurface
+    private lateinit var encoderSurface: WindowSurface
     private var textureId = 0
-    private lateinit var fullFrameBlit: FullFrameRect
+    private lateinit var fullFrameBlit: FullFrameRectangle
     private val mTmpMatrix = FloatArray(16)
 
     private lateinit var mediaPlayer: MediaPlayer
@@ -60,7 +60,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private var viewportWidth = 0
     private var viewportHeight = 0
 
-    //    x, y, 색상
     private var currentPoint: MutableList<Triple<Int, Int, DrawColor>> = mutableListOf()
     private var drawColor = DrawColor(red = 1f, green = 0f, blue = 0f)
     private var isPlaying = false
@@ -94,7 +93,6 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
 //        실수부 값이 너무 커지지 않도록 끊어줘야 함
         val ratio = floor(mediaPlayer.videoWidth.toDouble()/mediaPlayer.videoHeight*10000)/10000.0
-        println("Before: $ratio")
         dataBinding.frameVideoDoodle.setAspectRatio(ratio)
 
         compositeDisposable.add(dataBinding.btnVideoDoodlePlay.throttle(throttle1000, TimeUnit.MILLISECONDS) {
@@ -210,10 +208,10 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         Log.d(TAG, "surfaceCreated: surfaceHolder=$p0")
         isSurfaceDestroyed = false
         egl = Egl()
-        displaySurface = EglWindowSurface(egl, p0.surface)
+        displaySurface = WindowSurface(egl, p0.surface)
         displaySurface.makeCurrent()
 
-        fullFrameBlit = FullFrameRect()
+        fullFrameBlit = FullFrameRectangle()
         textureId = fullFrameBlit.createTextureObject()
         surfaceTexture = SurfaceTexture(textureId)
         surfaceTexture.setOnFrameAvailableListener(this)
@@ -242,7 +240,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
         if (!videoDoodleViewModel.isEncoderWorking) {
             videoDoodleViewModel.encoder = Encoder(width, height, 6000000, 30, outputVideo)
-            encoderSurface = EglWindowSurface(egl, videoDoodleViewModel.encoder.inputSurface)
+            encoderSurface = WindowSurface(egl, videoDoodleViewModel.encoder.inputSurface)
         }
         videoDoodleViewModel.isEncoderWorking = true
     }

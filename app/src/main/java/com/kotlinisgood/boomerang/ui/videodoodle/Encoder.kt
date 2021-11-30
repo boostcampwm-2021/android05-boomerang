@@ -38,9 +38,6 @@ class Encoder(
         format.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
 
-//        에러 나면 먼저 주석 풀기
-//        encodedFormat = format
-
         encoder = MediaCodec.createEncoderByType("video/avc")
         encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
         inputSurface = encoder.createInputSurface()
@@ -56,7 +53,6 @@ class Encoder(
                 when (val encoderStatus = encoder.dequeueOutputBuffer(bufferInfo, 0)) {
                     MediaCodec.INFO_TRY_AGAIN_LATER -> break
                     MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
-                        println("FORMAT_CHANGED")
                         encodedFormat = encoder.outputFormat
                         videoTrack = mediaMuxer.addTrack(encodedFormat)
                         mediaMuxer.start()
@@ -64,7 +60,7 @@ class Encoder(
                     }
                     in Int.MIN_VALUE until 0 -> {
 //                        에러 값들 음수로 되어있음. 여기서 에러 발생시 세부적으로 에러값 받아오자
-                        Log.d("Encoder", "dequeOutputBufferError")
+                        Log.d(TAG, "dequeOutputBufferError")
                     }
                     else -> {
                         val encoderOutputBuffers = encoder.getOutputBuffer(encoderStatus)
@@ -94,5 +90,9 @@ class Encoder(
         scope.cancel()
         mediaMuxer.stop()
         mediaMuxer.release()
+    }
+
+    companion object {
+        const val TAG = "Encoder"
     }
 }
