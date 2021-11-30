@@ -64,12 +64,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/settingFragment"
-        android:name="com.kotlinisgood.boomerang.ui.setting.SettingFragment"
-        android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" />
-
-    <fragment
         android:id="@+id/videoDoodleFragment"
         android:name="com.kotlinisgood.boomerang.ui.videodoodle.VideoDoodleFragment"
         android:label="fragment_video_doodle"

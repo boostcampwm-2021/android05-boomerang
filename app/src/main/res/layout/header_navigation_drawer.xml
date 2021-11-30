@@ -9,8 +9,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp24"
         android:layout_marginTop="@dimen/dp24"
-        android:textFontWeight="700"
-        android:text="boomerang"
+        android:textStyle="bold"
+        android:text="@string/header_navigation_drawer_title"
         android:textAppearance="?attr/textAppearanceHeadlineMedium"
         android:textColor="?attr/colorOnSurface" />
 
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp24"
         android:layout_marginBottom="@dimen/dp24"
-        android:text="media memo"
+        android:text="@string/header_navigation_drawer_subtitle"
         android:textAppearance="?attr/textAppearanceBodySmall"
         android:textColor="?attr/colorOnSurfaceVariant" />
 
