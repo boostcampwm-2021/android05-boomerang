@@ -105,7 +105,7 @@
                     android:id="@+id/iv_icon"
                     android:layout_width="12sp"
                     android:layout_height="12sp"
-                    android:contentDescription="@string/item_rv_home_show_videos_icon_cd"
+                    android:contentDescription="@string/item_rv_home_show_videos_icon_cd_people"
                     tools:background="@drawable/ic_people"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

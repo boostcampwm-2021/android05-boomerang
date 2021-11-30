@@ -78,6 +78,8 @@
     <string name="fragment_home_tv_empty_description">메모를 작성해주세요</string>
     <string name="item_rv_home_show_audio_iv_icon_cd">음성 메모</string>
     <string name="item_rv_home_show_videos_cd">비디오 메모 썸네일</string>
+    <string name="item_rv_home_show_videos_icon_cd_people">모두의 메모</string>
+    <string name="item_rv_home_show_videos_icon_cd_person">나만의 메모</string>
     <string name="item_rv_home_show_videos_icon_cd">모두의 메모</string>
     <string name="app_intro_slide_2_title">나만의 메모</string>
     <string name="app_intro_slide_2_description">원하는 곳에 메모를 할 수 있어요</string>

@@ -1,5 +1,6 @@
 package com.kotlinisgood.boomerang.ui.home
 
+import android.content.res.Resources
 import android.database.CursorIndexOutOfBoundsException
 import android.media.MediaMetadataRetriever
 import android.view.LayoutInflater
@@ -19,7 +20,7 @@ import java.lang.Exception
 import java.lang.NullPointerException
 
 
-class HomeAdapter (private val homeViewModel: HomeViewModel) :
+class HomeAdapter(private val homeViewModel: HomeViewModel) :
     ListAdapter<MediaMemo, RecyclerView.ViewHolder>(MediaMemoDiffCallback()) {
 
     private var itemClickListener: OnItemClickListener? = null
@@ -125,11 +126,13 @@ class HomeAdapter (private val homeViewModel: HomeViewModel) :
                 when (item.memoType) {
                     VIDEO_MODE_SUB_VIDEO -> {
                         binding.ivIcon.setBackgroundResource(R.drawable.ic_person)
-                        binding.ivIcon.contentDescription = "나만의 메모"
+                        binding.ivIcon.contentDescription = Resources.getSystem()
+                            .getString(R.string.item_rv_home_show_videos_icon_cd_person)
                     }
                     VIDEO_MODE_FRAME -> {
                         binding.ivIcon.setBackgroundResource(R.drawable.ic_people)
-                        binding.ivIcon.contentDescription = "모두의 메모"
+                        binding.ivIcon.contentDescription = Resources.getSystem()
+                            .getString(R.string.item_rv_home_show_videos_icon_cd_people)
                     }
                 }
             }

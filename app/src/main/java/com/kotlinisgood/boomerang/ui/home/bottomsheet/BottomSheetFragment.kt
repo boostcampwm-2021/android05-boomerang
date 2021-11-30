@@ -13,9 +13,9 @@ import com.kotlinisgood.boomerang.ui.home.OrderState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BottomSheetFragment : BottomSheetDialogFragment(){
+class BottomSheetFragment : BottomSheetDialogFragment() {
 
-    private lateinit var binding : FragmentBottomSheetBinding
+    private lateinit var binding: FragmentBottomSheetBinding
     private val viewModel: BottomSheetFragmentViewModel by viewModels()
 
     override fun onCreateView(
@@ -35,7 +35,7 @@ class BottomSheetFragment : BottomSheetDialogFragment(){
     }
 
     private fun setObserver() {
-        viewModel.orderSetting.observe(viewLifecycleOwner){
+        viewModel.orderSetting.observe(viewLifecycleOwner) {
             viewModel.setCheckBox()
         }
     }
@@ -45,27 +45,27 @@ class BottomSheetFragment : BottomSheetDialogFragment(){
         binding.lifecycleOwner = viewLifecycleOwner
     }
 
-    private fun setListener(){
+    private fun setListener() {
         binding.tvCreateOld.setOnClickListener {
-            if(viewModel.orderSetting.value != OrderState.CREATE_OLD){
+            if (viewModel.orderSetting.value != OrderState.CREATE_OLD) {
                 viewModel.setOrderState(OrderState.CREATE_OLD)
                 findNavController().navigate(R.id.action_bottomSheetFragment_to_homeFragment)
             }
         }
         binding.tvCreateRecent.setOnClickListener {
-            if(viewModel.orderSetting.value != OrderState.CREATE_RECENT){
+            if (viewModel.orderSetting.value != OrderState.CREATE_RECENT) {
                 viewModel.setOrderState(OrderState.CREATE_RECENT)
                 findNavController().navigate(R.id.action_bottomSheetFragment_to_homeFragment)
             }
         }
         binding.tvEditRecent.setOnClickListener {
-            if(viewModel.orderSetting.value != OrderState.MODIFY_RECENT){
+            if (viewModel.orderSetting.value != OrderState.MODIFY_RECENT) {
                 viewModel.setOrderState(OrderState.MODIFY_RECENT)
                 findNavController().navigate(R.id.action_bottomSheetFragment_to_homeFragment)
             }
         }
         binding.tvEditOld.setOnClickListener {
-            if(viewModel.orderSetting.value != OrderState.MODIFY_OLD){
+            if (viewModel.orderSetting.value != OrderState.MODIFY_OLD) {
                 viewModel.setOrderState(OrderState.MODIFY_OLD)
                 findNavController().navigate(R.id.action_bottomSheetFragment_to_homeFragment)
             }

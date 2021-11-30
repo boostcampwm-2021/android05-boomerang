@@ -24,21 +24,18 @@ class HomeViewModel @Inject constructor(
     private val sharedPref: SharedPrefDataSource,
 ) : ViewModel() {
 
-    //    private val queryChannel = BroadcastChannel<String>(Channel.CONFLATED)
     private val searchText: PublishSubject<String> = PublishSubject.create()
     private lateinit var searchTextDisposable: Disposable
 
-    //    private val kotlinDebounceText = debounce(500L, viewModelScope, ::searchVideos)
     private var _mediaMemo = MutableLiveData<List<MediaMemo>>()
     val mediaMemo: LiveData<List<MediaMemo>> = _mediaMemo
 
-//
     private var _orderSetting = MutableLiveData(OrderState.CREATE_RECENT)
     val orderSetting: LiveData<OrderState> get() = _orderSetting
     private var currentQuery: String = ""
 
     private var _isLoading = MutableLiveData(false)
-    val isLoading : LiveData<Boolean> get() = _isLoading
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
     init {
         getOrderState()
@@ -62,65 +59,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun sendQueryRxjava(query: String) {
-        if(query.trim() != currentQuery) {
+        if (query.trim() != currentQuery) {
             searchText.onNext(query)
             currentQuery = query.trim()
         }
     }
-
-/*    fun sendQueryCoroutine(query: String) {
-        kotlinDebounceText(query)
-    }*/
-
-/*
-    private fun <T> debounce(
-        waitMs: Long,
-        scope: CoroutineScope,
-        destinationFunction: (T) -> Unit
-    ): (T) -> Unit {
-        var debounceJob: Job? = null
-        return { param: T ->
-            debounceJob?.cancel()
-            debounceJob = scope.launch {
-                delay(waitMs)
-                destinationFunction(param)
-            }
-        }
-    }
-*/
-
-    /* @FlowPreview
-     @ExperimentalCoroutinesApi
-     fun setSearchResult() {
-         viewModelScope.launch {
-             withContext(Dispatchers.IO) {
-                 queryChannel
-                     .asFlow()
-                     .debounce(500)
-                     .filter {
-                         return@filter it.isNotEmpty()
-                     }
-                     .distinctUntilChanged()
-                     .mapLatest { query ->
-                         try {
-                             repository.searchVideoByKeyword(query)
-                         } catch (e: CancellationException) {
-                             throw e
-                         }
-                     }
-             }.collect {
-                 _videoMemo.value = it
-             }
-         }
-     }
-
-     @ExperimentalCoroutinesApi
-     fun sendQueryToChannel(query: String?) {
-         query?: return
-         viewModelScope.launch {
-             queryChannel.send(query)
-         }
-     }*/
 
     fun loadMediaMemo() {
         viewModelScope.launch {
@@ -149,7 +92,7 @@ class HomeViewModel @Inject constructor(
             val media = withContext(Dispatchers.IO) {
                 repository.getMediaMemosByType(memoType)
             }
-            _mediaMemo.value = when(orderSetting.value) {
+            _mediaMemo.value = when (orderSetting.value) {
                 OrderState.MODIFY_RECENT -> media.sortedBy { it.modifyTime }.reversed()
                 OrderState.MODIFY_OLD -> media.sortedBy { it.modifyTime }
                 OrderState.CREATE_RECENT -> media.sortedBy { it.createTime }.reversed()
@@ -173,7 +116,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateMediaMemo(mediaMemo: MediaMemo){
+    fun updateMediaMemo(mediaMemo: MediaMemo) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 repository.updateMediaMemo(mediaMemo)
@@ -194,5 +137,4 @@ class HomeViewModel @Inject constructor(
             repository.deleteMemoById(id)
         }
     }
-
 }
