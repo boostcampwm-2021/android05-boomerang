@@ -1,17 +1,14 @@
 package com.kotlinisgood.boomerang.ui.videodoodlelight
 
-import android.annotation.SuppressLint
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.core.net.toUri
 import androidx.core.view.forEach
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -31,6 +28,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class VideoDoodleLightFragment : Fragment() {
@@ -103,7 +101,6 @@ class VideoDoodleLightFragment : Fragment() {
         player.prepare()
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private fun setListener() {
         with(dataBinding) {
             containerCanvas.isEnabled = false
@@ -243,8 +240,8 @@ class VideoDoodleLightFragment : Fragment() {
 
     private fun setViewRecorder() {
         viewRecorder = ViewRecorder().apply {
-            val width = Math.round(dataBinding.containerCanvas.width.toFloat() / 10) * 10
-            val height = Math.round(dataBinding.containerCanvas.height.toFloat() / 10) * 10
+            val width = (dataBinding.containerCanvas.width.toFloat() / 10).roundToInt() * 10
+            val height = (dataBinding.containerCanvas.height.toFloat() / 10).roundToInt() * 10
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setVideoFrameRate(50)

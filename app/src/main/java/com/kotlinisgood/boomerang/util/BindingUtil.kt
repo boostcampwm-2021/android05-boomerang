@@ -1,6 +1,5 @@
 package com.kotlinisgood.boomerang.util
 
-import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -12,9 +11,11 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
+import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import java.text.SimpleDateFormat
+import java.util.*
 
 @Suppress("UNCHECKED_CAST")
 @BindingAdapter("submitList")
@@ -44,36 +45,35 @@ fun TextView.showTextFromAudioMemo(mediaMemo: MediaMemo) {
 
 
 @BindingAdapter("setDurationFromMediaMemo")
-fun TextView.setMemoTime(mediaMemo: MediaMemo){
+fun TextView.setMemoTime(mediaMemo: MediaMemo) {
     val uri = Uri.parse(mediaMemo.mediaUri)
     val mmr = MediaMetadataRetriever()
     mmr.setDataSource(context, uri)
     val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: return
     val durationInMilli = duration.toLong()
-    val minute = durationInMilli/1000 / 60 % 60
-    val second = durationInMilli/1000 % 60
+    val minute = durationInMilli / 1000 / 60 % 60
+    val second = durationInMilli / 1000 % 60
     val durationString = String.format("%02d:%02d", minute, second)
     text = durationString
 }
 
-@SuppressLint("SetTextI18n")
 @BindingAdapter("createDateFromMediaMemo")
-fun TextView.createDateFromVideoMemo(mediaMemo: MediaMemo){
-    val sdf = SimpleDateFormat("yyyy-MM-dd")
+fun TextView.createDateFromVideoMemo(mediaMemo: MediaMemo) {
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
     val createTimeStr = sdf.format(mediaMemo.createTime)
-    text = "생성일 : $createTimeStr"
+    text = resources.getString(R.string.textview_create_date_from_video_memo, createTimeStr)
 }
 
 @BindingAdapter("editDateFromMediaMemo")
-fun TextView.editDateFromMediaMemo(mediaMemo: MediaMemo){
-    val sdf = SimpleDateFormat("yyyy-MM-dd")
+fun TextView.editDateFromMediaMemo(mediaMemo: MediaMemo) {
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
     val editTimeStr = sdf.format(mediaMemo.modifyTime)
-    text = "수정일 : $editTimeStr"
+    text = resources.getString(R.string.textview_edit_date_from_video_memo, editTimeStr)
 }
 
 @BindingAdapter("setDateVisibility")
-fun View.bindVisibility(visible: Boolean){
-    visibility = if(visible){
+fun View.bindVisibility(visible: Boolean) {
+    visibility = if (visible) {
         View.VISIBLE
     } else {
         View.GONE
@@ -81,7 +81,7 @@ fun View.bindVisibility(visible: Boolean){
 }
 
 @BindingAdapter("imageFromSubVideo")
-fun ShapeableImageView.imageFromSubVideo(subVideo: SubVideo){
+fun ShapeableImageView.imageFromSubVideo(subVideo: SubVideo) {
     val uri = subVideo.uri.toUri()
     val mmr = MediaMetadataRetriever()
     mmr.setDataSource(context, uri)
@@ -91,16 +91,15 @@ fun ShapeableImageView.imageFromSubVideo(subVideo: SubVideo){
     setImageBitmap(bmp)
 }
 
-@SuppressLint("SetTextI18n")
 @BindingAdapter("timeFromSubVideo")
-fun TextView.timeFromSubVideo(subVideo: SubVideo){
-    val startMinute = subVideo.startingTime/1000 / 60 % 60
-    val startSecond = subVideo.startingTime/1000 % 60
-    val endMinute = subVideo.endingTime/1000 / 60 % 60
-    val endSecond = subVideo.endingTime/1000 % 60
+fun TextView.timeFromSubVideo(subVideo: SubVideo) {
+    val startMinute = subVideo.startingTime / 1000 / 60 % 60
+    val startSecond = subVideo.startingTime / 1000 % 60
+    val endMinute = subVideo.endingTime / 1000 / 60 % 60
+    val endSecond = subVideo.endingTime / 1000 % 60
     val startingTime = String.format("%02d:%02d", startMinute, startSecond)
-    val endingTime = String.format("%02d:%02d", endMinute,endSecond)
-    text = "$startingTime ~ $endingTime"
+    val endingTime = String.format("%02d:%02d", endMinute, endSecond)
+    text = resources.getString(R.string.textview_time_from_subVideo, startingTime, endingTime)
 }
 
 @BindingAdapter("isBold")

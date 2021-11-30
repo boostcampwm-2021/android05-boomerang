@@ -9,6 +9,7 @@
         style="@style/ExoMediaButton.Play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/exo_player_play_button_content_description"
         android:padding="@dimen/dp8" />
 
     <ImageButton
@@ -16,6 +17,7 @@
         style="@style/ExoMediaButton.Pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/exo_player_pause_button_content_description"
         android:padding="@dimen/dp8" />
 
     <TextView

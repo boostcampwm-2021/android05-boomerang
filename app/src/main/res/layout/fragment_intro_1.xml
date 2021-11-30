@@ -12,7 +12,7 @@
         android:text="@string/app_intro_slide_1_text"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textSize="@dimen/dp24"
+        android:textSize="@dimen/sp24"
         android:fontFamily="@font/nanum_square_bold"/>
 
 </FrameLayout>
