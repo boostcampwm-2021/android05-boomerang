@@ -1,6 +1,5 @@
 package com.kotlinisgood.boomerang.ui.videoselection
 
-import android.content.ContentResolver
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,8 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kotlinisgood.boomerang.databinding.ItemRvVideoSelectionShowVideosBinding
 
-class VideoSelectionAdapter(
-) : ListAdapter<ExternalVideoDTO, VideoSelectionAdapter.VideoSelectionViewHolder>(
+class VideoSelectionAdapter : ListAdapter<ExternalVideoDTO, VideoSelectionAdapter.VideoSelectionViewHolder>(
     ExternalVideoDiffItemCallback()
 ) {
 

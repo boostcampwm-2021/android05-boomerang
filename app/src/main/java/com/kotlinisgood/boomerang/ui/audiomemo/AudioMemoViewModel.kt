@@ -22,7 +22,7 @@ class AudioMemoViewModel @Inject constructor(val repository: AppRepository): Vie
     val timeSeriesTextList: LiveData<List<TimeSeriesText>> get() = _timeSeriesTextList
     private var _selected = -1
 
-    private var _isLoading = MutableLiveData<Boolean>(false)
+    private var _isLoading = MutableLiveData(false)
     val isLoading : LiveData<Boolean> get() = _isLoading
 
     fun getMediaMemo(id: Int) {
