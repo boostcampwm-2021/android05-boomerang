@@ -3,7 +3,6 @@ package com.kotlinisgood.boomerang.ui.audiomemo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +28,7 @@ class AudioMemoAdapter : ListAdapter<TimeSeriesText, AudioMemoAdapter.AudioMemoV
 
         init {
             itemView.setOnClickListener {
-                audioMemoItemClickListener?.onItemClick(itemView, adapterPosition)
+                audioMemoItemClickListener?.onItemClick(itemView, absoluteAdapterPosition)
             }
         }
 

@@ -11,7 +11,6 @@ import android.speech.RecognizerIntent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -55,7 +54,6 @@ class AudioRecordFragment : Fragment() {
     private val audioRecordViewModel: AudioRecordViewModel by viewModels()
 
     private val permissions = arrayOf(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.RECORD_AUDIO,
     )
     private val permissionsResultCallback = registerForActivityResult(
@@ -68,7 +66,7 @@ class AudioRecordFragment : Fragment() {
         }
     }
 
-    private val activityCallback: ActivityResultLauncher<Intent> = selfReference {
+    private val activityCallback: ActivityResultLauncher<Intent> = run {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
             ActivityResultCallback { result ->
@@ -80,12 +78,10 @@ class AudioRecordFragment : Fragment() {
                     recognizedText?.let {
                         val audioUri = intent.data as Uri
                         lifecycleScope.launch {
-                            withContext(Dispatchers.IO) {
                                 saveAudioFromSTT(recognizedText, audioUri)
-                            }
                         }
                     }
-                    self.launch(recognizerIntent)
+                    activityCallback.launch(recognizerIntent)
                 }
             }
         )
@@ -233,39 +229,41 @@ class AudioRecordFragment : Fragment() {
             .show()
     }
 
-    private suspend fun saveAudioFromSTT(recognizedText: String, audioUri: Uri) {
-        var input: InputStream? = null
-        var output: FileOutputStream? = null
-        try {
-            input = requireActivity().contentResolver.openInputStream(audioUri)
-
-            val createTime = System.currentTimeMillis()
-            val fileName = "$createTime.mp3"
-            val file = File(requireActivity().filesDir, fileName)
-            output = FileOutputStream(file)
-
-            val bytes = ByteArray(1024)
-            var read = input?.read(bytes)!!
-            while (read != -1) {
-                output.write(bytes, 0, read)
-                read = input.read(bytes)
-            }
-
-            Util.getDuration(file)?.let {
-                withContext(Dispatchers.Main) {
-                    audioRecordViewModel.addTimeAndText(recognizedText, it.toInt())
-                    dataBinding.tvAudioRecordShowRecognizedText.text =  audioRecordViewModel.getAccText()
-                    audioRecordViewModel.addFileToList(file)
-                }
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
+    private fun saveAudioFromSTT(recognizedText: String, audioUri: Uri) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            var input: InputStream? = null
+            var output: FileOutputStream? = null
             try {
-                input?.close()
-                output?.close()
+                input = requireActivity().contentResolver.openInputStream(audioUri)
+
+                val createTime = System.currentTimeMillis()
+                val fileName = "$createTime.mp3"
+                val file = File(requireActivity().filesDir, fileName)
+                output = FileOutputStream(file)
+
+                val bytes = ByteArray(1024)
+                var read = input?.read(bytes)!!
+                while (read != -1) {
+                    output.write(bytes, 0, read)
+                    read = input.read(bytes)
+                }
+
+                Util.getDuration(file)?.let {
+                    withContext(Dispatchers.Main) {
+                        audioRecordViewModel.addTimeAndText(recognizedText, it.toInt())
+                        dataBinding.tvAudioRecordShowRecognizedText.text =  audioRecordViewModel.getAccText()
+                        audioRecordViewModel.addFileToList(file)
+                    }
+                }
             } catch (e: IOException) {
                 e.printStackTrace()
+            } finally {
+                try {
+                    input?.close()
+                    output?.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
             }
         }
     }

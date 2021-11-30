@@ -19,6 +19,8 @@ import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentVideoDoodleBinding
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import com.kotlinisgood.boomerang.util.throttle
+import com.kotlinisgood.boomerang.util.throttle1000
+import com.kotlinisgood.boomerang.util.throttle500
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -110,7 +112,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 //        dataBinding.frameMovie.setAspectRatio("%.4f".format(ratio).toDouble())
         dataBinding.frameMovie.setAspectRatio(ratio)
 
-        compositeDisposable.add(dataBinding.btnPlay.throttle(1000, TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.btnPlay.throttle(throttle1000, TimeUnit.MILLISECONDS) {
             playVideo()
         })
 
@@ -139,7 +141,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             }
         }
 
-        compositeDisposable.add(dataBinding.btnErase.throttle(500, TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.btnErase.throttle(throttle500, TimeUnit.MILLISECONDS) {
             currentPoint.forEach {
                 GLES20.glClearColor(0f, 0f, 0f, 1f)
                 GLES20.glEnable(GLES20.GL_SCISSOR_TEST)
@@ -150,14 +152,14 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
             currentPoint.clear()
         })
 
-        compositeDisposable.add(dataBinding.tbVideoDoodle.throttle(1000, TimeUnit.MILLISECONDS) {
+        compositeDisposable.add(dataBinding.tbVideoDoodle.throttle(throttle1000, TimeUnit.MILLISECONDS) {
             findNavController().popBackStack()
         })
 
         dataBinding.tbVideoDoodle.menu.forEach {
             when (it.itemId) {
                 R.id.menu_video_selection_completion -> {
-                    compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
+                    compositeDisposable.add(it.throttle(throttle1000, TimeUnit.MILLISECONDS) {
                         videoDoodleViewModel.encoder.muxerStop()
                         saveCompleted()
                     })

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#CC00006E">
+    android:background="@color/md_theme_onPrimaryContainer">
 
     <ImageButton
         android:id="@+id/exo_play"
         style="@style/ExoMediaButton.Play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:tint="?attr/colorSurface" />
         android:contentDescription="@string/exo_player_play_button_content_description"
         android:padding="@dimen/dp8" />
 
@@ -17,6 +19,7 @@
         style="@style/ExoMediaButton.Pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:tint="?attr/colorSurface"/>
         android:contentDescription="@string/exo_player_pause_button_content_description"
         android:padding="@dimen/dp8" />
 
@@ -28,7 +31,7 @@
         android:includeFontPadding="false"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
-        android:textColor="#FFBEBEBE"
+        android:textColor="?attr/colorSurface"
         android:textSize="14sp"
         android:textStyle="bold" />
 
@@ -37,7 +40,11 @@
         android:layout_width="0dp"
         android:layout_height="26dp"
         android:layout_gravity="center"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        app:unplayed_color="?attr/colorOnSurfaceVariant"
+        app:buffered_color="?attr/colorOutline"
+        app:played_color="?attr/colorSurface"
+        app:scrubber_color="?attr/colorSurface" />
 
     <TextView
         android:id="@id/exo_duration"
@@ -47,7 +54,7 @@
         android:includeFontPadding="false"
         android:paddingStart="@dimen/dp4"
         android:paddingEnd="@dimen/dp12"
-        android:textColor="#FFBEBEBE"
+        android:textColor="?attr/colorSurface"
         android:textSize="14sp"
         android:textStyle="bold" />
 </LinearLayout>
