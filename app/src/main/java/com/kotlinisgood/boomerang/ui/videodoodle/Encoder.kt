@@ -94,7 +94,5 @@ class Encoder(
         scope.cancel()
         mediaMuxer.stop()
         mediaMuxer.release()
-        encoder.stop()
-        encoder.release()
     }
 }
