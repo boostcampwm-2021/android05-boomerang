@@ -62,7 +62,7 @@
         </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
 
         <FrameLayout
-            android:id="@+id/container_alpha_view"
+            android:id="@+id/container_canvas"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@android:color/transparent"
