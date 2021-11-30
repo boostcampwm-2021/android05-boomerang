@@ -31,6 +31,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class VideoModifyLightFragment : Fragment() {
@@ -243,8 +244,8 @@ class VideoModifyLightFragment : Fragment() {
 
     private fun setViewRecorder() {
         viewRecorder = ViewRecorder().apply {
-            val width = Math.round(dataBinding.containerAlphaView.width.toFloat() / 10) * 10
-            val height = Math.round(dataBinding.containerAlphaView.height.toFloat() / 10) * 10
+            val width = (dataBinding.containerAlphaView.width.toFloat() / 10).roundToInt() * 10
+            val height = (dataBinding.containerAlphaView.height.toFloat() / 10).roundToInt() * 10
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setVideoFrameRate(50)
