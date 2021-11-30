@@ -12,7 +12,7 @@
         android:text="동영상에 메모가 된다고?!\n\n음성 메모가 멜론처럼 재생된다고?!"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textSize="@dimen/dp24"
+        android:textSize="@dimen/sp24"
         android:fontFamily="@font/nanum_square_bold"/>
 
 </FrameLayout>
