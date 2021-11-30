@@ -1,6 +1,5 @@
 package com.kotlinisgood.boomerang.util
 
-import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -15,6 +14,7 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.kotlinisgood.boomerang.database.entity.MediaMemo
 import com.kotlinisgood.boomerang.ui.videodoodlelight.SubVideo
 import java.text.SimpleDateFormat
+import java.util.*
 
 @Suppress("UNCHECKED_CAST")
 @BindingAdapter("submitList")
@@ -56,17 +56,16 @@ fun TextView.setMemoTime(mediaMemo: MediaMemo){
     text = durationString
 }
 
-@SuppressLint("SetTextI18n")
 @BindingAdapter("createDateFromMediaMemo")
 fun TextView.createDateFromVideoMemo(mediaMemo: MediaMemo){
-    val sdf = SimpleDateFormat("yyyy-MM-dd")
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
     val createTimeStr = sdf.format(mediaMemo.createTime)
     text = "생성일 : $createTimeStr"
 }
 
 @BindingAdapter("editDateFromMediaMemo")
 fun TextView.editDateFromMediaMemo(mediaMemo: MediaMemo){
-    val sdf = SimpleDateFormat("yyyy-MM-dd")
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
     val editTimeStr = sdf.format(mediaMemo.modifyTime)
     text = "수정일 : $editTimeStr"
 }
@@ -91,7 +90,6 @@ fun ShapeableImageView.imageFromSubVideo(subVideo: SubVideo){
     setImageBitmap(bmp)
 }
 
-@SuppressLint("SetTextI18n")
 @BindingAdapter("timeFromSubVideo")
 fun TextView.timeFromSubVideo(subVideo: SubVideo){
     val startMinute = subVideo.startingTime/1000 / 60 % 60
