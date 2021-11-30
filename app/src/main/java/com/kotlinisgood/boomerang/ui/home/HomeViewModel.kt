@@ -33,11 +33,11 @@ class HomeViewModel @Inject constructor(
     val mediaMemo: LiveData<List<MediaMemo>> = _mediaMemo
 
 //
-    private var _orderSetting = MutableLiveData<OrderState>(OrderState.CREATE_RECENT)
+    private var _orderSetting = MutableLiveData(OrderState.CREATE_RECENT)
     val orderSetting: LiveData<OrderState> get() = _orderSetting
     private var currentQuery: String = ""
 
-    private var _isLoading = MutableLiveData<Boolean>(false)
+    private var _isLoading = MutableLiveData(false)
     val isLoading : LiveData<Boolean> get() = _isLoading
 
     init {
@@ -126,14 +126,19 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             val media = repository.getMediaMemos()
-            _mediaMemo.value = if (orderSetting.value == OrderState.MODIFY_RECENT) {
-                media.sortedBy { it.modifyTime }.reversed()
-            } else if (orderSetting.value == OrderState.MODIFY_OLD) {
-                media.sortedBy { it.modifyTime }
-            } else if (orderSetting.value == OrderState.CREATE_OLD) {
-                media.sortedBy { it.createTime }
-            } else {
-                media.sortedBy { it.createTime }.reversed()
+            _mediaMemo.value = when (orderSetting.value) {
+                OrderState.MODIFY_RECENT -> {
+                    media.sortedBy { it.modifyTime }.reversed()
+                }
+                OrderState.MODIFY_OLD -> {
+                    media.sortedBy { it.modifyTime }
+                }
+                OrderState.CREATE_OLD -> {
+                    media.sortedBy { it.createTime }
+                }
+                else -> {
+                    media.sortedBy { it.createTime }.reversed()
+                }
             }
             _isLoading.value = false
         }

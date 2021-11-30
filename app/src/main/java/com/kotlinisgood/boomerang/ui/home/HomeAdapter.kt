@@ -75,15 +75,14 @@ class HomeAdapter (private val homeViewModel: HomeViewModel) :
                         currentList[position].memoWidth = width
                         homeViewModel.updateMediaMemo(currentList[position])
                     }
-                    val vh = holder
-                    val item = currentList.get(position)
-                    val lp = vh.binding.itemIvHomeVideoThumbnail.layoutParams
+                    val item = currentList[position]
+                    val lp = holder.binding.itemIvHomeVideoThumbnail.layoutParams
 
                     val ratio = item.memoHeight / item.memoWidth
                     lp.height = lp.width * ratio
-                    vh.binding.itemIvHomeVideoThumbnail.layoutParams = lp
-                    Glide.with(vh.itemView.context).load(item.mediaUri)
-                        .into(vh.binding.itemIvHomeVideoThumbnail)
+                    holder.binding.itemIvHomeVideoThumbnail.layoutParams = lp
+                    Glide.with(holder.itemView.context).load(item.mediaUri)
+                        .into(holder.binding.itemIvHomeVideoThumbnail)
                     holder.bind(getItem(position))
                 } catch (e: Exception) {
                     when (e) {
@@ -98,7 +97,6 @@ class HomeAdapter (private val homeViewModel: HomeViewModel) :
                             submitList(currentList.toMutableList().apply { removeAt(position) })
                         }
                     }
-
                 }
             }
             is AudioMemoViewHolder -> holder.bind(getItem(position))
@@ -116,7 +114,7 @@ class HomeAdapter (private val homeViewModel: HomeViewModel) :
         init {
             binding.orderState = homeViewModel.orderSetting.value
             itemView.setOnClickListener {
-                itemClickListener?.onItemClick(itemView, adapterPosition)
+                itemClickListener?.onItemClick(itemView, bindingAdapterPosition)
             }
         }
 
@@ -125,8 +123,14 @@ class HomeAdapter (private val homeViewModel: HomeViewModel) :
             if (item.memoType != AUDIO_MODE) {
                 binding.itemIvHomeVideoThumbnail.imageFromVideoMemo(item)
                 when (item.memoType) {
-                    VIDEO_MODE_SUB_VIDEO -> binding.ivIcon.setBackgroundResource(R.drawable.ic_person)
-                    VIDEO_MODE_FRAME -> binding.ivIcon.setBackgroundResource(R.drawable.ic_people)
+                    VIDEO_MODE_SUB_VIDEO -> {
+                        binding.ivIcon.setBackgroundResource(R.drawable.ic_person)
+                        binding.ivIcon.contentDescription = "나만의 메모"
+                    }
+                    VIDEO_MODE_FRAME -> {
+                        binding.ivIcon.setBackgroundResource(R.drawable.ic_people)
+                        binding.ivIcon.contentDescription = "모두의 메모"
+                    }
                 }
             }
         }
@@ -139,7 +143,7 @@ class HomeAdapter (private val homeViewModel: HomeViewModel) :
         init {
             binding.orderState = homeViewModel.orderSetting.value
             itemView.setOnClickListener {
-                itemClickListener?.onItemClick(itemView, adapterPosition)
+                itemClickListener?.onItemClick(itemView, bindingAdapterPosition)
             }
         }
 
