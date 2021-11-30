@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.view.MotionEvent
 import android.view.View
+import kotlin.math.abs
 
 class DrawView(context: Context?) : View(context) {
     private lateinit var bitmap: Bitmap
@@ -17,7 +18,7 @@ class DrawView(context: Context?) : View(context) {
 
     private var mX = 0f
     private  var mY:Float = 0f
-    private val TOUCH_TOLERANCE = 4f
+    private val tolerance = 4f
 
     init {
         paint.color = -0x10000
@@ -41,24 +42,24 @@ class DrawView(context: Context?) : View(context) {
     }
 
 
-    private fun touch_start(x: Float, y: Float) {
+    private fun touchStart(x: Float, y: Float) {
         path.reset()
         path.moveTo(x, y)
         mX = x
         mY = y
     }
 
-    private fun touch_move(x: Float, y: Float) {
-        val dx = Math.abs(x - mX)
-        val dy: Float = Math.abs(y - mY)
-        if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+    private fun touchMove(x: Float, y: Float) {
+        val dx = abs(x - mX)
+        val dy: Float = abs(y - mY)
+        if (dx >= tolerance || dy >= tolerance) {
             path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2)
             mX = x
             mY = y
         }
     }
 
-    private fun touch_up() {
+    private fun touchUp() {
         path.lineTo(mX, mY)
         // commit the path to our offscreen
         canvas.drawPath(path, paint)
@@ -71,16 +72,16 @@ class DrawView(context: Context?) : View(context) {
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                touch_start(x, y)
+                touchStart(x, y)
                 performClick()
                 invalidate()
             }
             MotionEvent.ACTION_MOVE -> {
-                touch_move(x, y)
+                touchMove(x, y)
                 invalidate()
             }
             MotionEvent.ACTION_UP -> {
-                touch_up()
+                touchUp()
                 invalidate()
             }
         }
@@ -88,10 +89,11 @@ class DrawView(context: Context?) : View(context) {
     }
 
     override fun performClick(): Boolean {
+        println()
         return super.performClick()
     }
 
     fun setColor(color: Int) {
-        paint.setColor(color)
+        paint.color = color
     }
 }
