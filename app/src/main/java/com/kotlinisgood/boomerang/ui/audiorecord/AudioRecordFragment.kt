@@ -68,7 +68,7 @@ class AudioRecordFragment : Fragment() {
         }
     }
 
-    private val activityCallback: ActivityResultLauncher<Intent> = selfReference {
+    private val activityCallback: ActivityResultLauncher<Intent> = run {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
             ActivityResultCallback { result ->
@@ -85,7 +85,7 @@ class AudioRecordFragment : Fragment() {
                             }
                         }
                     }
-                    self.launch(recognizerIntent)
+                    activityCallback.launch(recognizerIntent)
                 }
             }
         )

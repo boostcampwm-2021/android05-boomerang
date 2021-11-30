@@ -65,7 +65,12 @@ class AudioMemoFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if (audioMemoViewModel.mediaMemo.value != null) {
+        val mediaMemo = audioMemoViewModel.mediaMemo.value
+        if (this::player.isInitialized) {
+            player.prepare()
+        }
+        if (mediaMemo != null && !this::player.isInitialized) {
+            setAudioPlayer(mediaMemo.mediaUri)
             player.prepare()
         }
     }
