@@ -1,17 +1,14 @@
 package com.kotlinisgood.boomerang.ui.videodoodlelight
 
-import android.annotation.SuppressLint
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.core.net.toUri
 import androidx.core.view.forEach
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -103,7 +100,6 @@ class VideoDoodleLightFragment : Fragment() {
         player.prepare()
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private fun setListener() {
         with(dataBinding) {
             containerCanvas.isEnabled = false

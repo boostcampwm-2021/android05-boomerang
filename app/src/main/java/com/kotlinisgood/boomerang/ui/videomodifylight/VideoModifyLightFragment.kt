@@ -1,8 +1,6 @@
 package com.kotlinisgood.boomerang.ui.videomodifylight
 
-import android.annotation.SuppressLint
 import android.media.MediaRecorder
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -104,7 +102,6 @@ class VideoModifyLightFragment : Fragment() {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private fun setListener() {
         with(dataBinding) {
             containerAlphaView.isEnabled = false
