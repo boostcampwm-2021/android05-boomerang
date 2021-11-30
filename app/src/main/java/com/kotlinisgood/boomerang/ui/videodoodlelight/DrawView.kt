@@ -72,6 +72,7 @@ class DrawView(context: Context?) : View(context) {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 touch_start(x, y)
+                performClick()
                 invalidate()
             }
             MotionEvent.ACTION_MOVE -> {
@@ -84,6 +85,10 @@ class DrawView(context: Context?) : View(context) {
             }
         }
         return true
+    }
+
+    override fun performClick(): Boolean {
+        return super.performClick()
     }
 
     fun setColor(color: Int) {
