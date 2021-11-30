@@ -13,7 +13,6 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.view.forEach
 import androidx.core.widget.doOnTextChanged
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
