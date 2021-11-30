@@ -64,5 +64,8 @@
         // Set the theme of the Activity that directly follows your splash screen.
         <item name="postSplashScreenTheme">@style/Theme.Boomerang</item>  # Required.
     </style>
+    <style name="linearLayout">
+        <item name="android:background">@color/md_theme_onPrimaryContainer</item>
+    </style>
 
 </resources>

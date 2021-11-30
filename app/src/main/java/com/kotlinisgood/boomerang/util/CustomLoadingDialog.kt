@@ -6,13 +6,11 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Path
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.DialogFragment
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentBoomerangLoadingBinding
 import kotlinx.coroutines.CoroutineScope

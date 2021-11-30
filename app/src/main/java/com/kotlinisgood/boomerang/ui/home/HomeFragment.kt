@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
@@ -20,7 +19,6 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.kotlinisgood.boomerang.R
 import com.kotlinisgood.boomerang.databinding.FragmentHomeBinding
 import com.kotlinisgood.boomerang.util.*
-import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
@@ -201,46 +199,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setSpeedDial() {
-        dataBinding.sdHomeShowItems.addAllActionItems(
-            listOf(
-                SpeedDialActionItem.Builder(R.id.menu_home_sd_video, R.drawable.ic_people)
-                    .setFabBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.md_theme_primary
-                        )
-                    )
-                    .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.black))
-                    .setLabel(R.string.menu_home_sd_video)
-                    .create(),
-                SpeedDialActionItem.Builder(
-                    R.id.menu_home_sd_video_light,
-                    R.drawable.ic_person
-                )
-                    .setFabBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.md_theme_primary
-                        )
-                    )
-                    .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.black))
-                    .setLabel(R.string.menu_home_sd_video_light)
-                    .create(),
-                SpeedDialActionItem.Builder(
-                    R.id.menu_home_sd_audio,
-                    R.drawable.ic_voice
-                )
-                    .setFabBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.md_theme_primary
-                        )
-                    )
-                    .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.black))
-                    .setLabel(R.string.menu_home_sd_audio)
-                    .create()
-            )
-        )
+        dataBinding.sdHomeShowItems.inflate(R.menu.menu_fragment_home_speed_dial)
         dataBinding.sdHomeShowItems.setOnActionSelectedListener { actionItem ->
             when (actionItem.id) {
                 R.id.menu_home_sd_video -> {
