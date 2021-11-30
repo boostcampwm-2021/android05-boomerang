@@ -13,12 +13,13 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class BottomSheetFragmentViewModel @Inject constructor(private val sharedPrefDataSource: SharedPrefDataSource) : ViewModel() {
+class BottomSheetFragmentViewModel @Inject constructor(private val sharedPrefDataSource: SharedPrefDataSource) :
+    ViewModel() {
     private var _orderSetting = MutableLiveData<OrderState>()
     val orderSetting: LiveData<OrderState> get() = _orderSetting
 
     private var _createRecent = MutableLiveData<Boolean>()
-    val createRecent : LiveData<Boolean> get() = _createRecent
+    val createRecent: LiveData<Boolean> get() = _createRecent
 
     private var _createOld = MutableLiveData<Boolean>()
     val createOld get() = _createOld
@@ -30,12 +31,12 @@ class BottomSheetFragmentViewModel @Inject constructor(private val sharedPrefDat
     val modifyOld get() = _modifyOld
 
 
-    init{
+    init {
         getOrderState()
         setCheckBox()
     }
 
-    fun setCheckBox(){
+    fun setCheckBox() {
         when (orderSetting.value) {
             OrderState.CREATE_RECENT -> {
                 _createRecent.value = true

@@ -97,6 +97,7 @@
                     android:id="@+id/iv_icon"
                     android:layout_width="12sp"
                     android:layout_height="12sp"
+                    android:contentDescription="@string/item_rv_home_show_audio_iv_icon_cd"
                     android:background="@drawable/ic_voice"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

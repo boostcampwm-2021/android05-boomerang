@@ -11,7 +11,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -24,7 +23,6 @@ import com.kotlinisgood.boomerang.util.*
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
 
@@ -64,8 +62,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun setLoadingObserver() {
-        viewModel.isLoading.observe(viewLifecycleOwner){ loading ->
-            if(loading){
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            if (loading) {
                 loadingDialog.show()
             } else {
                 loadingDialog.dismiss()
@@ -151,8 +149,6 @@ class HomeFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 newText ?: return true
-//                viewModel.sendQueryToChannel(newText)
-//                viewModel.sendQueryCoroutine(newText)
                 viewModel.sendQueryRxjava(newText)
                 return true
             }
@@ -166,11 +162,11 @@ class HomeFragment : Fragment() {
     private fun setMenusOnToolbar() {
         dataBinding.tbHome.apply {
             setNavigationIcon(R.drawable.ic_menu)
-            compositeDisposable.add(throttle(1000,TimeUnit.MILLISECONDS) {
+            compositeDisposable.add(throttle(1000, TimeUnit.MILLISECONDS) {
                 dataBinding.drawerLayout.openDrawer(GravityCompat.START)
             })
             menu.forEach {
-                when(it.itemId) {
+                when (it.itemId) {
                     R.id.menu_home_order -> {
                         compositeDisposable.add(it.throttle(1000, TimeUnit.MILLISECONDS) {
                             findNavController().navigate(R.id.action_homeFragment_to_bottomSheetFragment)
@@ -273,7 +269,6 @@ class HomeFragment : Fragment() {
 
     fun getStaggeredGridLayoutManager() {
         sglm = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL).apply {
-//            gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
         }.also {
             dataBinding.rvHomeShowMedia.layoutManager = it
         }

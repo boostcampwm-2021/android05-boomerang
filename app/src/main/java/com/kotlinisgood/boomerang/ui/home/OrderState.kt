@@ -5,5 +5,4 @@ enum class OrderState(val order: String) {
     CREATE_OLD("create_old"),
     MODIFY_RECENT("modify_recent"),
     MODIFY_OLD("modify_old"),
-    NONE("create_recent")
 }
