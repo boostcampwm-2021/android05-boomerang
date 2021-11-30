@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.kotlinisgood.boomerang.ui.home.bottomsheet.BottomSheetFragmentViewModel" />
@@ -57,45 +59,49 @@
             app:layout_constraintTop_toBottomOf="@id/tv_edit_recent" />
 
         <ImageView
-            android:visibility="@{viewModel.createRecent ? View.VISIBLE : View.GONE}"
             android:id="@+id/iv_check_create_recent"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:contentDescription="@string/bottom_sheet_create_recent_content_description"
             android:padding="12dp"
             android:src="@drawable/ic_baseline_done_24"
+            android:visibility="@{viewModel.createRecent ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/tv_create_recent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_create_recent" />
 
         <ImageView
-            android:visibility="@{viewModel.createOld ? View.VISIBLE : View.GONE}"
             android:id="@+id/iv_check_create_old"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:contentDescription="@string/bottom_sheet_create_old_content_description"
             android:padding="12dp"
             android:src="@drawable/ic_baseline_done_24"
+            android:visibility="@{viewModel.createOld ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/tv_create_old"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_create_old" />
 
         <ImageView
-            android:visibility="@{viewModel.modifyRecent ? View.VISIBLE : View.GONE}"
             android:id="@+id/iv_check_edit_recent"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:contentDescription="@string/bottom_sheet_modify_recent_content_description"
             android:padding="12dp"
             android:src="@drawable/ic_baseline_done_24"
+            android:visibility="@{viewModel.modifyRecent ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/tv_edit_recent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_edit_recent" />
 
         <ImageView
-            android:visibility="@{viewModel.modifyOld ? View.VISIBLE : View.GONE}"
             android:id="@+id/iv_check_edit_old"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:contentDescription="@string/bottom_sheet_modify_old_content_description"
             android:padding="12dp"
             android:src="@drawable/ic_baseline_done_24"
+            android:visibility="@{viewModel.modifyOld ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/tv_edit_old"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_edit_old" />
