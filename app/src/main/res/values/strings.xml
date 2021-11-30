@@ -5,22 +5,14 @@
     <string name="menu_home_search_title">Search</string>
     <string name="menu_home_order_title">Order</string>
     <string name="menu_home_order_description">Order video by selected standard</string>
-    <string name="menu_home_setting_title">Setting</string>
-    <string name="menu_home_setting_description">Navigate setting view</string>
     <string name="searchable_hint">찾는 동영상 제목을 입력해주세요</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="fragment_video_selection_title">동영상 선택</string>
     <string name="menu_video_selection_completion">완료</string>
     <string name="menu_video_selection_completion_description">If user selects a video and then click the button, screen pass to video doodle</string>
-    <string name="menu_home_sd_close">Speed Dial Close</string>
-    <string name="menu_home_sd_close_description">Expanded Speed Dial is closed</string>
     <string name="menu_home_sd_video_light">나만의 메모 작성</string>
     <string name="menu_home_sd_video_light_description">Go to way to Write memo on sub video</string>
     <string name="menu_home_sd_video">모두의 메모 작성</string>
     <string name="menu_home_sd_video_description">Go to write video memo on video</string>
-    <string name="menu_home_order_create_title">생성일 기준</string>
-    <string name="menu_home_order_modify_title">수정일 기준</string>
     <string name="menu_memo_modify">메모 수정</string>
     <string name="bottom_sheet_title">정렬 기준</string>
     <string name="bottom_sheet_create_recent">생성일 최신 순</string>

@@ -6,6 +6,7 @@
         android:contentDescription="@string/menu_home_sd_video_description"
         android:icon="@drawable/ic_people"
         android:title="@string/menu_home_sd_video"
+        app:backgroundColor="@color/md_theme_primary"
         app:iconTint="?attr/colorOnSurface" />
 
     <item
@@ -13,6 +14,7 @@
         android:contentDescription="@string/menu_home_sd_video_light_description"
         android:icon="@drawable/ic_person"
         android:title="@string/menu_home_sd_video_light"
+        app:backgroundColor="@color/md_theme_primary"
         app:iconTint="?attr/colorOnSurface" />
 
     <item
@@ -20,5 +22,6 @@
         android:contentDescription="@string/menu_home_sd_audio_description"
         android:icon="@drawable/ic_voice"
         android:title="@string/menu_home_sd_audio"
+        app:backgroundColor="@color/md_theme_primary"
         app:iconTint="?attr/colorOnSurface" />
 </menu>
