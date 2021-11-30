@@ -1,6 +1,7 @@
 package com.kotlinisgood.boomerang.ui.videomodifylight
 
 import android.media.MediaRecorder
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -105,7 +106,7 @@ class VideoModifyLightFragment : Fragment() {
 
     private fun setListener() {
         with(dataBinding) {
-            containerAlphaView.isEnabled = false
+            containerCanvas.isEnabled = false
             toggleBtnDoodle.addOnButtonCheckedListener { group, checkedId, isChecked ->
                 if (isChecked) {
                     val currentTime = player.currentPosition
@@ -124,7 +125,7 @@ class VideoModifyLightFragment : Fragment() {
                         }
                         canMemo -> {
                             startRecord()
-                            dataBinding.containerAlphaView.isEnabled = true
+                            dataBinding.containerCanvas.isEnabled = true
                         }
                         else -> {
                             toggleBtnDoodle.uncheck(R.id.btn_doodle)
@@ -136,7 +137,7 @@ class VideoModifyLightFragment : Fragment() {
 
                 } else {
                     stopRecord()
-                    dataBinding.containerAlphaView.isEnabled = false
+                    dataBinding.containerCanvas.isEnabled = false
                 }
             }
 
@@ -195,7 +196,7 @@ class VideoModifyLightFragment : Fragment() {
 
     private fun setDrawingView() {
         drawView = DrawView(requireContext())
-        dataBinding.containerAlphaView.addView(drawView)
+        dataBinding.containerCanvas.addView(drawView)
         drawView?.setColor(doodleColor.toInt())
     }
 
@@ -227,7 +228,7 @@ class VideoModifyLightFragment : Fragment() {
             viewRecorder.stop()
             viewRecorder.reset()
             viewRecorder.release()
-            dataBinding.containerAlphaView.removeAllViews()
+            dataBinding.containerCanvas.removeAllViews()
             videoModifyLightViewModel.resetTimer()
             videoModifyLightViewModel.setEndTime(
                 Util.getDuration(File(videoModifyLightViewModel.getCurrentSubVideo()?.uri?.toUri()?.path!!))!!
@@ -243,9 +244,14 @@ class VideoModifyLightFragment : Fragment() {
     }
 
     private fun setViewRecorder() {
-        viewRecorder = ViewRecorder().apply {
-            val width = (dataBinding.containerAlphaView.width.toFloat() / 10).roundToInt() * 10
-            val height = (dataBinding.containerAlphaView.height.toFloat() / 10).roundToInt() * 10
+        viewRecorder = if (Build.VERSION.SDK_INT >= 31){
+            ViewRecorder(requireContext())
+        } else {
+            ViewRecorder()
+        }
+        viewRecorder.apply {
+            val width = (dataBinding.containerCanvas.width.toFloat() / 10).roundToInt() * 10
+            val height = (dataBinding.containerCanvas.height.toFloat() / 10).roundToInt() * 10
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setVideoFrameRate(50)
@@ -253,7 +259,7 @@ class VideoModifyLightFragment : Fragment() {
             setVideoSize(width, height)
             setVideoEncodingBitRate(2000 * 1000)
             setOnErrorListener(onErrorListener)
-            setRecordedView(dataBinding.containerAlphaView)
+            setRecordedView(dataBinding.containerCanvas)
         }
     }
 

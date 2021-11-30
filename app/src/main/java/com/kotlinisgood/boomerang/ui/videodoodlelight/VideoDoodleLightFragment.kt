@@ -2,6 +2,7 @@ package com.kotlinisgood.boomerang.ui.videodoodlelight
 
 import android.media.MediaRecorder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -239,7 +240,12 @@ class VideoDoodleLightFragment : Fragment() {
     }
 
     private fun setViewRecorder() {
-        viewRecorder = ViewRecorder().apply {
+        viewRecorder = if (Build.VERSION.SDK_INT >= 31){
+            ViewRecorder(requireContext())
+        } else {
+            ViewRecorder()
+        }
+        viewRecorder.apply {
             val width = (dataBinding.containerCanvas.width.toFloat() / 10).roundToInt() * 10
             val height = (dataBinding.containerCanvas.height.toFloat() / 10).roundToInt() * 10
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
