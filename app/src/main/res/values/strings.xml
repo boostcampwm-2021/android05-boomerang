@@ -90,4 +90,7 @@
     <string name="bottom_sheet_create_old_content_description">생성일 오래된 순 체크</string>
     <string name="bottom_sheet_modify_recent_content_description">수정일 최신 순 체크</string>
     <string name="bottom_sheet_modify_old_content_description">수정일 오래된 순 체크</string>
+    <string name="textview_create_date_from_video_memo">생성일 : %1$s</string>
+    <string name="textview_edit_date_from_video_memo">수정일 : %1$s</string>
+    <string name="textview_time_from_subVideo">%1$s ~ %2$s</string>
 </resources>
