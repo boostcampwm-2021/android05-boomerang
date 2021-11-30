@@ -84,4 +84,6 @@
     <string name="app_intro_slide_5_title">부메랑 시작하기!</string>
     <string name="app_intro_slide_5_description">신개념 메모하러 가자!</string>
     <string name="app_intro_slide_1_text">동영상에 메모가 된다고?!\n\n음성 메모가 멜론처럼 재생된다고?!</string>
+    <string name="exo_player_play_button_content_description">재생 버튼</string>
+    <string name="exo_player_pause_button_content_description">일시 정지 버튼</string>
 </resources>
