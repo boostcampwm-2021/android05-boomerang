@@ -35,5 +35,6 @@
     <color name="md_theme_inverseSurface">#313034</color>
     <color name="md_theme_primaryInverse">#BFC2FF</color>
     <color name="mtrl_textinput_default_box_stroke_color">#61000000</color>
+    <color name="app_intro_selected_indicator">#BFC2FF</color>
 </resources>
 
