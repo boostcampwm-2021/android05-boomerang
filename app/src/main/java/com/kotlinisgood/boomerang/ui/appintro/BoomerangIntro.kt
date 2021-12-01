@@ -25,12 +25,12 @@ class BoomerangIntro : AppIntro() {
             )
         )
         setColorDoneText(ContextCompat.getColor(applicationContext, R.color.md_theme_onBackground))
-
+        setNextArrowColor(ContextCompat.getColor(applicationContext, R.color.md_theme_onBackground))
         isIndicatorEnabled = true
         setIndicatorColor(
             selectedIndicatorColor = ContextCompat.getColor(
                 applicationContext,
-                R.color.md_theme_onPrimary
+                R.color.app_intro_selected_indicator
             ),
             unselectedIndicatorColor = ContextCompat.getColor(
                 applicationContext,
