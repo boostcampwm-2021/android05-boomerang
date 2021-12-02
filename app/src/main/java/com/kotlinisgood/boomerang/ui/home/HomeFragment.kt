@@ -35,7 +35,6 @@ class HomeFragment : Fragment() {
     private val compositeDisposable by lazy { CompositeDisposable() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadMediaMemo()
     }
 
     override fun onCreateView(
@@ -48,6 +47,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadMediaMemo()
         getStaggeredGridLayoutManager()
         setHasOptionsMenu(true)
         setBinding()
