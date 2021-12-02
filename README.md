@@ -1,7 +1,7 @@
-<img src="https://user-images.githubusercontent.com/75981415/144453642-234ac244-d0dc-4574-a76b-ffe5bf3eb795.png" width ="400">
+<p align="center"><img src="https://user-images.githubusercontent.com/75981415/144453642-234ac244-d0dc-4574-a76b-ffe5bf3eb795.png" width ="300"></p>
 
 # android5-boomerang
-boomerang 🪃 #미디어 #메모
+boomerang #미디어 #메모
 
 
 ## 프로젝트 소개
