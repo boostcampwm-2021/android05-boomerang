@@ -96,4 +96,4 @@ boomerang #미디어 #메모
 ## 관련 링크
 
 - [위키](https://github.com/boostcampwm-2021/android05-boomerang/wiki)
-- [데모 영상]()
+- [데모 영상](https://www.youtube.com/watch?v=OxBSFlZeykQ)
