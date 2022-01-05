@@ -14,7 +14,6 @@ class Program {
     private var colorAdjustLoc = 0
     private val positionLoc: Int
     private val textureCoordLoc: Int
-    private var textureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES
     private lateinit var texOffset: FloatArray
 
     init {
@@ -78,7 +77,6 @@ class Program {
         val compiled = IntArray(1)
         GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0)
         if (compiled[0] == 0) {
-            Log.e(TAG, "Could not compile shader $shaderType:")
             Log.e(TAG, " " + GLES20.glGetShaderInfoLog(shader))
             GLES20.glDeleteShader(shader)
             shader = 0
@@ -92,20 +90,12 @@ class Program {
         val texId = textures[0]
         GLES20.glBindTexture(textureTarget, texId)
         GLES20.glTexParameteri(
-            GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER,
+            textureTarget, GLES20.GL_TEXTURE_MIN_FILTER,
             GLES20.GL_NEAREST
         )
         GLES20.glTexParameteri(
-            GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
+            textureTarget, GLES20.GL_TEXTURE_MAG_FILTER,
             GLES20.GL_LINEAR
-        )
-        GLES20.glTexParameteri(
-            GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
-            GLES20.GL_CLAMP_TO_EDGE
-        )
-        GLES20.glTexParameteri(
-            GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T,
-            GLES20.GL_CLAMP_TO_EDGE
         )
         return texId
     }
@@ -167,6 +157,7 @@ class Program {
                     "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
                     "}\n")
 
+        private const val textureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES
         private const val TAG = "Texture2dProgram"
     }
 }

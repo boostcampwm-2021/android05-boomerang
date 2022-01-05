@@ -58,22 +58,15 @@ class Encoder(
                         mediaMuxer.start()
                         isMuxerStart = true
                     }
-                    in Int.MIN_VALUE until 0 -> {
-//                        에러 값들 음수로 되어있음. 여기서 에러 발생시 세부적으로 에러값 받아오자
-                        Log.d(TAG, "dequeOutputBufferError")
-                    }
                     else -> {
                         val encoderOutputBuffers = encoder.getOutputBuffer(encoderStatus)
-                        val encodedData = encoderOutputBuffers
-                            ?: throw Exception("encoderOutputBuffer[encoderStatus] is null")
+                            ?: throw Exception("MediaCodec.getOutputBuffer is null")
                         if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) bufferInfo.size =
                             0
                         if (bufferInfo.size != 0) {
-                            encodedData.position(bufferInfo.offset)
-                            encodedData.limit(bufferInfo.offset + bufferInfo.size)
                             if (isMuxerStart) mediaMuxer.writeSampleData(
                                 videoTrack,
-                                encodedData,
+                                encoderOutputBuffers,
                                 bufferInfo
                             )
                         }

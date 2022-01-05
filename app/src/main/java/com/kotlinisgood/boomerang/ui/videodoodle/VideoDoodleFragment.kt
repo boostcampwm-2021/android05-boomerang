@@ -46,7 +46,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
     private lateinit var encoderSurface: WindowSurface
     private var textureId = 0
     private lateinit var fullFrameBlit: FullFrameRectangle
-    private val mTmpMatrix = FloatArray(16)
+    private val transformMatrix = FloatArray(16)
 
     private lateinit var mediaPlayer: MediaPlayer
     private var videoWidth = 0
@@ -279,12 +279,12 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
     private fun drawFrame() {
         surfaceTexture.updateTexImage()
-        surfaceTexture.getTransformMatrix(mTmpMatrix)
+        surfaceTexture.getTransformMatrix(transformMatrix)
 
 //        SurfaceView에 그리기
         GLES20.glViewport(0, 0, width, height)
         GLES20.glClearColor(0f, 0f, 0f, 1f)
-        fullFrameBlit.drawFrame(textureId, mTmpMatrix)
+        fullFrameBlit.drawFrame(textureId, transformMatrix)
         drawLine(currentPoint, height)
 
         if (egl.glVersion == 3) {
@@ -314,7 +314,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
 
             encoderSurface.makeCurrent()
             GLES20.glViewport(0, 0, width, height)
-            fullFrameBlit.drawFrame(textureId, mTmpMatrix)
+            fullFrameBlit.drawFrame(textureId, transformMatrix)
             drawLine(currentPoint, height)
             videoDoodleViewModel.encoder.transferBuffer()
             encoderSurface.setPresentationTime(surfaceTexture.timestamp)
