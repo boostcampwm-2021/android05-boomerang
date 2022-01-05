@@ -33,13 +33,14 @@ boomerang #미디어 #메모
 >
 
 ### 모두의 메모
-<img src="https://user-images.githubusercontent.com/62787596/144444812-317ae604-0621-4cb9-97dd-1049af66f2fe.png" width=200>
+
+<img src="https://user-images.githubusercontent.com/37128456/148260925-437ee1bd-7c39-4d36-800e-79e91f87880a.gif" width=200>
 
 > 입력에 따라 동영상에 그림을 그릴 수 있습니다.
 >
 > 결과물은 MP4 파일로 인코딩되어 바로 재생, 공유할 수 있습니다.
 >
-> SurfaceTexture 클래스를 사용한 OpenGL ES 렌더링 과정은 [OpenGL ES를 사용한 동영상 렌더링](https://www.notion.so/OpenGL-ES-446fe6bd387d496eb7b58ff0dd45252d) 페이지에서 읽어보실 수 있습니다.
+> 모두의 메모 과정은 Wiki에서 확인하실 수 있습니다.
 >
 
 ### 나만의 메모
