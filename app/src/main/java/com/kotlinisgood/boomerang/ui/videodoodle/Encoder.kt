@@ -12,8 +12,6 @@ import java.io.File
 class Encoder(
     width: Int,
     height: Int,
-    bitrate: Int,
-    frameRate: Int,
     outputVideo: File?
 ) {
     val inputSurface: Surface
@@ -26,7 +24,6 @@ class Encoder(
     private var videoTrack = -1
     private var isMuxerStart = false
 
-
     init {
         val format = MediaFormat.createVideoFormat("video/avc", width, height)
 
@@ -34,9 +31,9 @@ class Encoder(
             MediaFormat.KEY_COLOR_FORMAT,
             MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
         )
-        format.setInteger(MediaFormat.KEY_BIT_RATE, bitrate)
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
-        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
+        format.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE)
+        format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE)
+        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, I_FRAME_INTERVAL)
 
         encoder = MediaCodec.createEncoderByType("video/avc")
         encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
@@ -86,6 +83,8 @@ class Encoder(
     }
 
     companion object {
-        const val TAG = "Encoder"
+        private const val BIT_RATE = 6000000
+        private const val FRAME_RATE = 30
+        private const val I_FRAME_INTERVAL = 5
     }
 }
