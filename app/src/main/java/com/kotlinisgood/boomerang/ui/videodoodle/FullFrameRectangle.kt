@@ -15,11 +15,7 @@ class FullFrameRectangle {
 
     fun drawFrame(textureId: Int, texMatrix: FloatArray?) {
         program.draw(
-            matrix, rectangleVertex.vertexArray, 0,
-            rectangleVertex.vertexCount, 2,
-            rectangleVertex.vertexStride,
-            texMatrix, rectangleVertex.texCoordArray, textureId,
-            rectangleVertex.texCoordStride
+            matrix, rectangleVertex.vertexArray, texMatrix, rectangleVertex.texCoordArray, textureId
         )
     }
 }

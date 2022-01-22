@@ -239,7 +239,7 @@ class VideoDoodleFragment : Fragment(), SurfaceHolder.Callback,
         }
 
         if (!videoDoodleViewModel.isEncoderWorking) {
-            videoDoodleViewModel.encoder = Encoder(width, height, 6000000, 30, outputVideo)
+            videoDoodleViewModel.encoder = Encoder(width, height, outputVideo)
             encoderSurface = WindowSurface(egl, videoDoodleViewModel.encoder.inputSurface)
         }
         videoDoodleViewModel.isEncoderWorking = true
