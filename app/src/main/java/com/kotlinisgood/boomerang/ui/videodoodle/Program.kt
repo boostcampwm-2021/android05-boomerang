@@ -48,7 +48,7 @@ class Program {
         if (vertexShader == 0) {
             return 0
         }
-        val pixelShader = loadShader(GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER_EXT)
+        val pixelShader = loadShader(GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER)
         if (pixelShader == 0) {
             return 0
         }
@@ -62,7 +62,7 @@ class Program {
         val linkStatus = IntArray(1)
         GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0)
         if (linkStatus[0] != GLES20.GL_TRUE) {
-            Log.e(TAG, "Could not link program: ")
+            Log.e(TAG, "Could not link program")
             Log.e(TAG, GLES20.glGetProgramInfoLog(program))
             GLES20.glDeleteProgram(program)
             program = 0
@@ -101,9 +101,11 @@ class Program {
     }
 
     fun draw(
-        mvpMatrix: FloatArray?, vertexBuffer: FloatBuffer?, firstVertex: Int,
-        vertexCount: Int, coordsPerVertex: Int, vertexStride: Int,
-        texMatrix: FloatArray?, texBuffer: FloatBuffer?, textureId: Int, texStride: Int
+        mvpMatrix: FloatArray?,
+        vertexBufferOld: FloatBuffer?,
+        texMatrix: FloatArray?,
+        texBufferOld: FloatBuffer?,
+        textureId: Int
     ) {
         GLES20.glUseProgram(programHandle)
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
@@ -111,21 +113,28 @@ class Program {
 
         GLES20.glUniformMatrix4fv(mvpMatrixLoc, 1, false, mvpMatrix, 0)
         GLES20.glUniformMatrix4fv(texMatrixLoc, 1, false, texMatrix, 0)
+
+        val vertexBuffer = IntArray(1)
+        val texBuffer = IntArray(1)
+        GLES20.glGenBuffers(1, vertexBuffer, 0)
+        GLES20.glGenBuffers(1, texBuffer, 0)
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBuffer[0])
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, 32, vertexBufferOld, GLES20.GL_STATIC_DRAW)
         GLES20.glEnableVertexAttribArray(positionLoc)
         GLES20.glVertexAttribPointer(
-            positionLoc, coordsPerVertex,
-            GLES20.GL_FLOAT, false, vertexStride, vertexBuffer
+            positionLoc, 2, GLES20.GL_FLOAT, false, 8, 0
         )
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, texBuffer[0])
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, 32, texBufferOld, GLES20.GL_STATIC_DRAW)
         GLES20.glEnableVertexAttribArray(textureCoordLoc)
         GLES20.glVertexAttribPointer(
-            textureCoordLoc, 2,
-            GLES20.GL_FLOAT, false, texStride, texBuffer
+            textureCoordLoc, 2, GLES20.GL_FLOAT, false, 8, 0
         )
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, firstVertex, vertexCount)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
-        GLES20.glDisableVertexAttribArray(positionLoc)
-        GLES20.glDisableVertexAttribArray(textureCoordLoc)
         GLES20.glBindTexture(textureTarget, 0)
         GLES20.glUseProgram(0)
     }
@@ -136,8 +145,6 @@ class Program {
     }
 
     companion object {
-        // attribute로 들어간 aPostition과 aTextureCoord는 위에서 순서대로 넣어준 것이다
-        // varying은 fragment shader로 연결
         private const val VERTEX_SHADER = ("uniform mat4 uMVPMatrix;\n" +
                 "uniform mat4 uTexMatrix;\n" +
                 "attribute vec4 aPosition;\n" +
@@ -148,7 +155,7 @@ class Program {
                 "    vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n" +
                 "}\n")
 
-        private const val FRAGMENT_SHADER_EXT =
+        private const val FRAGMENT_SHADER =
             ("#extension GL_OES_EGL_image_external : require\n" +
                     "precision mediump float;\n" +
                     "varying vec2 vTextureCoord;\n" +
@@ -158,6 +165,6 @@ class Program {
                     "}\n")
 
         private const val textureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES
-        private const val TAG = "Texture2dProgram"
+        private const val TAG = "GLProgram"
     }
 }
