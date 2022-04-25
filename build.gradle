@@ -1,19 +1,50 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 ext {
     nav_version="2.3.5"
+    material_version="1.5.0-beta01"
+    room_version="2.3.0"
+    gson_version="2.8.9"
+    exoplayer_version = "2.16.1"
+    glide_version = "4.12.0"
+    speed_dial_version = "3.2.0"
+    rx_java = "3.0.3"
+    rx_android = "3.0.0"
+    rxbinding = "4.0.0"
+    audio_mixer = "v1.1"
+    lottieVersion = "4.1.0"
+    splash_screen = "1.0.0-alpha02"
+    oss_license = "17.0.0"
 }
 
 buildscript {
+    ext.hilt_version = "2.38.1"
+    ext.nav_version = "2.3.5"
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.3"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0'
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
+        // Add the Crashlytics Gradle plugin
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.0'
 
+        classpath 'com.google.gms:google-services:4.3.10'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+
+        classpath 'com.google.android.gms:oss-licenses-plugin:0.10.4'
+    }
+}
+
+allprojects{
+    repositories{
+        google()
+        mavenCentral()
+        jcenter()
+        maven { url 'https://jitpack.io' }
     }
 }
 

@@ -1,10 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="boomerang_theme_color_surface">#FFFBFE</color>
+    <color name="recognized_text_no_focus">#5BBCB8B8</color>
+    <color name="recognized_text_focus">#FF000000</color>
+
+    <color name="boomerang_main_color">#2E3192</color>
+
+    <color name="md_theme_primary">#5054B4</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#E0E0FF</color>
+    <color name="md_theme_onPrimaryContainer">#00006E</color>
+    <color name="md_theme_secondary">#5D5D72</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#E2E0F9</color>
+    <color name="md_theme_onSecondaryContainer">#191A2C</color>
+    <color name="md_theme_tertiary">#79536A</color>
+    <color name="md_theme_onTertiary">#FFFFFF</color>
+    <color name="md_theme_tertiaryContainer">#FFD7EE</color>
+    <color name="md_theme_onTertiaryContainer">#2E1125</color>
+    <color name="md_theme_error">#BA1B1B</color>
+    <color name="md_theme_errorContainer">#FFDAD4</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_onErrorContainer">#410001</color>
+    <color name="md_theme_background">#FFFBFF</color>
+    <color name="md_theme_onBackground">#1B1B1F</color>
+    <color name="md_theme_surface">#FFFBFF</color>
+    <color name="md_theme_onSurface">#1B1B1F</color>
+    <color name="md_theme_surfaceVariant">#E4E1EC</color>
+    <color name="md_theme_onSurfaceVariant">#47464F</color>
+    <color name="md_theme_outline">#777680</color>
+    <color name="md_theme_inverseOnSurface">#F3EFF4</color>
+    <color name="md_theme_inverseSurface">#313034</color>
+    <color name="md_theme_primaryInverse">#BFC2FF</color>
+    <color name="mtrl_textinput_default_box_stroke_color">#61000000</color>
+    <color name="app_intro_selected_indicator">#BFC2FF</color>
 </resources>
+

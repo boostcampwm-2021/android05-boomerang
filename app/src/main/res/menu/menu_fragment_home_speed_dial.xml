@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_home_sd_video"
+        android:contentDescription="@string/menu_home_sd_video_description"
+        android:icon="@drawable/ic_people"
+        android:title="@string/menu_home_sd_video"
+        app:backgroundColor="@color/md_theme_primary"
+        app:iconTint="?attr/colorOnSurface" />
+
+    <item
+        android:id="@+id/menu_home_sd_video_light"
+        android:contentDescription="@string/menu_home_sd_video_light_description"
+        android:icon="@drawable/ic_person"
+        android:title="@string/menu_home_sd_video_light"
+        app:backgroundColor="@color/md_theme_primary"
+        app:iconTint="?attr/colorOnSurface" />
+
+    <item
+        android:id="@+id/menu_home_sd_audio"
+        android:contentDescription="@string/menu_home_sd_audio_description"
+        android:icon="@drawable/ic_voice"
+        android:title="@string/menu_home_sd_audio"
+        app:backgroundColor="@color/md_theme_primary"
+        app:iconTint="?attr/colorOnSurface" />
+</menu>

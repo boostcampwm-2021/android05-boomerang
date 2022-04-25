@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_video_selection_completion"
+        android:title="@string/menu_video_selection_completion"
+        android:contentDescription="@string/menu_video_selection_completion_description"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="always" />
+
+</menu>

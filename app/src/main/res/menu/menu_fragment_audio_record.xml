@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_audio_record_mic"
+        android:title="@string/menu_audio_record_mic_title"
+        android:icon="@drawable/ic_baseline_mic_24"
+        android:contentDescription="@string/menu_audio_record_mic_description"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_audio_record_save"
+        android:title="@string/menu_audio_record_save_title"
+        android:icon="@drawable/ic_baseline_save_24"
+        android:contentDescription="@string/menu_audio_record_save_description"
+        app:showAsAction="ifRoom" />
+</menu>

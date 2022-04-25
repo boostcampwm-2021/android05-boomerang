@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/navigation_drawer_memo_type"
+        android:title="@string/navigation_drawer_memo_type_memo">
+        <menu>
+            <item
+                android:id="@+id/navigation_drawer_memo_type_all"
+                android:checkable="true"
+                android:icon="@drawable/ic_all"
+                android:title="@string/navigation_drawer_memo_type_all"
+                app:iconTint="?attr/colorOnSurface"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/navigation_drawer_memo_type_voice"
+                android:checkable="true"
+                android:icon="@drawable/ic_voice"
+                android:title="@string/navigation_drawer_memo_type_voice"
+                app:iconTint="?attr/colorOnSurface"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/navigation_drawer_memo_type_my_video"
+                android:checkable="true"
+                android:icon="@drawable/ic_person"
+                android:title="@string/navigation_drawer_memo_type_person"
+                app:iconTint="?attr/colorOnSurface"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/navigation_drawer_memo_type_together_video"
+                android:checkable="true"
+                android:icon="@drawable/ic_people"
+                android:title="@string/navigation_drawer_memo_type_people"
+                app:iconTint="?attr/colorOnSurface"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/navigation_drawer_option"
+        android:title="@string/navigation_drawer_memo_type_setting">
+        <menu>
+            <item
+                android:id="@+id/navigation_drawer_option_open_source"
+                android:checkable="true"
+                android:icon="@drawable/ic_baseline_code_24"
+                android:title="@string/navigation_drawer_memo_type_oss"
+                app:iconTint="?attr/colorOnSurface"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+
+</menu>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="timeSeriesText"
+            type="com.kotlinisgood.boomerang.ui.audiomemo.TimeSeriesText" />
+        <import type="android.graphics.Typeface" />
+        <import type="android.app.assist.AssistStructure.ViewNode" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            app:isBold="@{timeSeriesText.focused}"
+            android:id="@+id/item_iv_audio_memo_recognized_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textColor="@{timeSeriesText.focused ? @color/recognized_text_focus : @color/recognized_text_no_focus}"
+            android:text="@{timeSeriesText.text}"
+            android:layout_marginTop="@dimen/dp4"
+            android:layout_marginBottom="@dimen/dp4"
+            android:paddingTop="@dimen/dp4"
+            android:paddingBottom="@dimen/dp4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent "/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
