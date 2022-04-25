@@ -16,8 +16,8 @@ android {
         applicationId "com.kotlinisgood.boomerang"
         minSdk 21
         targetSdk 31
-        versionCode 2
-        versionName "1.1"
+        versionCode 1
+        versionName "1.0.0"
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
