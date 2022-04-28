@@ -1,7 +1,14 @@
 <!-- <p align="center"><img src="https://user-images.githubusercontent.com/75981415/144453642-234ac244-d0dc-4574-a76b-ffe5bf3eb795.png" width ="300"></p> -->
 ![Artboard 17](https://user-images.githubusercontent.com/37128456/144969495-25b5b80e-79a7-458b-98e2-0d9f6ad78f36.png)
 
+
+
 # android5-boomerang
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/boostcampwm-2021/android05-boomerang)
+![GitHub last commit](https://img.shields.io/github/last-commit/boostcampwm-2021/android05-boomerang)
+<br>
+<a href='https://play.google.com/store/apps/details?id=com.kotlinisgood.boomerang'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' height="70" width="180"/></a>
+<br>
 boomerang #미디어 #메모
 
 
